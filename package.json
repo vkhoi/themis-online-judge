@@ -9,6 +9,8 @@
   "author": "khoipham, haidang",
   "license": "ISC",
   "dependencies": {
+    "@uirouter/angularjs": "latest",
+    "body-parser": "^1.17.1",
     "express": "^4.15.2"
   }
 }
