@@ -1,0 +1,14 @@
+{
+  "name": "themis-online-judge",
+  "version": "1.0.0",
+  "description": "online judge using themis",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "khoipham, haidang",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
