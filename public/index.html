@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html ng-app="themisApp">
 	<head>
         <!-- META -->
         <meta charset="utf-8">
@@ -28,10 +28,16 @@
 		<!-- LOCAL -->
 		<script src="core.js"></script>
 		<script src="lib/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+		<!-- CONTROLLERS -->
+		<script src="controllers/application-controller.js"></script>
+		<script src="controllers/login-controller.js"></script>
+		<!-- SERVICES -->
+        <script src="services/auth-service.js"></script>
+        <script src="services/session.js"></script>
 
 	</head>
 
-	<body ng-app="themisApp">
+	<body>
 		<div ui-view></div>
 	</body>
 </html>
