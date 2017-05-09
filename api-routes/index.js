@@ -35,6 +35,9 @@ router.post('/login', function(req, res) {
 	// Flag to indicate whether there exists this username.
 	var accountExisted = false;
 
+	// Flag to indicate whether we have authenticated this username & password.
+	var accountAuthenticated = false;
+
 	Users.forEach(function(user) {
 		if (user[0] == username) {
 			// Username exists.
@@ -42,12 +45,13 @@ router.post('/login', function(req, res) {
 
 			// Check password.
 			if (user[2] == password) {
+				accountAuthenticated = true;
 				res.json({ user: { username: username, password: password, userRole: user[1] }});
 				return;
 			}
 		}
 	});
-	if (accountExisted)
+	if (accountAuthenticated)
 		return;
 
 	// Failed response message.
