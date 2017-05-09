@@ -1,4 +1,4 @@
-themisApp.controller('LoginController', ['$rootScope', '$scope', 'AUTH_EVENTS', 'AuthService', function($rootScope, $scope, AUTH_EVENTS, AuthService) {
+themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH_EVENTS', 'AuthService', function($rootScope, $scope, $state, AUTH_EVENTS, AuthService) {
 	var vm = this;
 
 	vm.credentials = {
@@ -9,11 +9,10 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', 'AUTH_EVENTS', 
 	vm.login = function(credentials) {
 		AuthService.login(credentials).then(function(user) {
 			console.log('Login Controller', 'login success');
-			$rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
 			$scope.setCurrentUser(user);
+			$state.go('app.auth');
 		}, function() {
 			console.log('Login Controller', 'login failed');
-			$rootScope.$broadcast(AUTH_EVENTS.loginFailed);
 		});
 		return credentials;
 	}

@@ -3,6 +3,6 @@ themisApp.controller('ApplicationController', ['$scope', function($scope) {
 	$scope.currentUser = null;
 
 	$scope.setCurrentUser = function(user) {
-		vm.currentUser = user;
+		$scope.currentUser = user;
 	}
 }]);

@@ -10,12 +10,11 @@ themisApp.constant('AUTH_EVENTS', {
 });
 
 themisApp.constant('USER_ROLES', {
-	all: '*',
 	admin: 'admin',
 	contestant: 'contestant'
 });
 
-themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider, $httpProvider, $provide) {
+themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider, $httpProvider, $provide, USER_ROLES) {
 	$stateProvider
 		.state('app', {
 			abstract: true,
@@ -27,6 +26,15 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				controller: 'LoginController',
 				controllerAs: 'LoginCtrl',
 				templateUrl: 'html/login.html'
+			})
+			.state('app.auth', {
+				url: '/',
+				template: 'ahihi do ngok',
+				controller: 'HomeController',
+				controllerAs: 'HomeCtrl',
+				data: {
+					authorizedRoles: [USER_ROLES.contestant]
+				}
 			})
 
 	$locationProvider.html5Mode(true);
@@ -43,4 +51,19 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 		};
 	}]);
 	$httpProvider.interceptors.push('AuthInterceptor');
+});
+
+themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {
+	$transitions.onStart({ to: 'app.auth.**'}, function(trans) {
+		var authorizedRoles = trans.to().data.authorizedRoles;
+		var AuthService = trans.injector().get('AuthService');
+    	if (!AuthService.isAuthorized(authorizedRoles)) {
+      		if (AuthService.isAuthenticated()) {
+        		$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+      		} else {
+        		$rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+        		return trans.router.stateService.target('app.login');
+      		}
+    	}
+	});
 });

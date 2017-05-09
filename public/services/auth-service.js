@@ -11,6 +11,7 @@ themisApp.factory('AuthService', ['$http', 'Session', function($http, Session) {
 		return $http
 			.post('/api/login', credentials)
 			.then(function successCallback(res) {
+				console.log(res);
 				Session.create(res.data.user.username, res.data.user.userRole);
 				return res.data.user;
 			});;

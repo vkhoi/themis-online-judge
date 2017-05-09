@@ -41,10 +41,14 @@ router.post('/login', function(req, res) {
 			accountExisted = true;
 
 			// Check password.
-			if (user[2] == password)
+			if (user[2] == password) {
 				res.json({ user: { username: username, password: password, userRole: user[1] }});
+				return;
+			}
 		}
 	});
+	if (accountExisted)
+		return;
 
 	// Failed response message.
 	var message = {};
@@ -57,8 +61,7 @@ router.post('/login', function(req, res) {
 		message.description = 'Password is incorrect';
 
 	// Unauthorized request -> exit code = 401.
-	res.status(401);
-	res.send(message);
+	res.status(401).send(message);
 });
 
 module.exports = router;
