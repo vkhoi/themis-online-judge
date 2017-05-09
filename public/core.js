@@ -1,4 +1,4 @@
-var themisApp = angular.module('themisApp', ['ui.router']);
+var themisApp = angular.module('themisApp', ['ui.router', 'ngStorage']);
 
 themisApp.constant('AUTH_EVENTS', {
 	loginSuccess: 'auth-login-success',
@@ -16,31 +16,33 @@ themisApp.constant('USER_ROLES', {
 
 themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider, $httpProvider, $provide, USER_ROLES) {
 	$stateProvider
-		.state('app', {
-			abstract: true,
-			controller: 'ApplicationController',
-			controllerAs: 'AppCtrl'
+		.state('login', {
+			url: '/login',
+			controller: 'LoginController',
+			controllerAs: 'LoginCtrl',
+			templateUrl: 'html/login.html'
 		})
-			.state('app.login', {
-				url: '/login',
-				controller: 'LoginController',
-				controllerAs: 'LoginCtrl',
-				templateUrl: 'html/login.html'
-			})
-			.state('app.auth', {
-				url: '/',
-				template: 'ahihi do ngok',
-				controller: 'HomeController',
-				controllerAs: 'HomeCtrl',
-				data: {
-					authorizedRoles: [USER_ROLES.contestant]
-				}
-			})
+		.state('home', {
+			url: '/',
+			controller: 'HomeController',
+			controllerAs: 'HomeCtrl',
+			templateUrl: 'html/home.html',
+			data: {
+				authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
+			}
+		})
 
 	$locationProvider.html5Mode(true);
 
-	$provide.factory('AuthInterceptor', ['$rootScope', '$q', 'AUTH_EVENTS', function($rootScope, $q, AUTH_EVENTS) {
+	$provide.factory('AuthInterceptor', ['$rootScope', '$q', '$localStorage', 'AUTH_EVENTS', function($rootScope, $q, $localStorage, AUTH_EVENTS) {
 		return {
+			request: function(request) {
+				request.headers = request.headers || {};
+				if ($localStorage.token) {
+					request.headers.Authorization = 'Bearer ' + $localStorage.token;
+				}
+				return request;
+			},
 			responseError: function(response) {
 				$rootScope.$broadcast({
 					401: AUTH_EVENTS.notAuthenticated,
@@ -54,16 +56,25 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 });
 
 themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {
-	$transitions.onStart({ to: 'app.auth.**'}, function(trans) {
-		var authorizedRoles = trans.to().data.authorizedRoles;
+	$transitions.onStart({ to: 'home.**'}, function(trans) {
+		// var authorizedRoles = trans.to().data.authorizedRoles;
 		var AuthService = trans.injector().get('AuthService');
-    	if (!AuthService.isAuthorized(authorizedRoles)) {
-      		if (AuthService.isAuthenticated()) {
-        		$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-      		} else {
-        		$rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-        		return trans.router.stateService.target('app.login');
-      		}
-    	}
+
+		return AuthService.isAuthenticated().then(function(isAuthenticated) {
+			if (!isAuthenticated) {
+				$rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+    			return trans.router.stateService.target('login');
+			}
+		});
+	});
+
+	$transitions.onStart({ to: 'login'}, function(trans) {
+		var AuthService = trans.injector().get('AuthService');
+
+		return AuthService.isAuthenticated().then(function(isAuthenticated) {
+			if (isAuthenticated) {
+    			return trans.router.stateService.target('home');
+			}
+		});
 	});
 });

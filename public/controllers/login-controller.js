@@ -9,11 +9,9 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH
 	vm.login = function(credentials) {
 		AuthService.login(credentials).then(function(user) {
 			console.log('Login Controller', 'login success');
-			$scope.setCurrentUser(user);
-			$state.go('app.auth');
+			$state.go('home');
 		}, function() {
 			console.log('Login Controller', 'login failed');
 		});
-		return credentials;
 	}
 }]);

@@ -11,6 +11,9 @@
   "dependencies": {
     "@uirouter/angularjs": "latest",
     "body-parser": "^1.17.1",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "jsonwebtoken": "^7.4.0",
+    "ngstorage": "^0.3.11",
+    "redis": "^2.7.1"
   }
 }
