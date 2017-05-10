@@ -7,6 +7,24 @@ var path 		= require('path');
 var readline 	= require('readline');
 var jwt			= require('jsonwebtoken');
 var redis		= require('redis');
+var multer		= require('multer');
+
+var storage 	= multer.diskStorage({
+	destination: function(req, file, cb) {
+		cb(null, './uploads');
+	},
+	filename: function(req, file, cb) {
+		var username = req.body.username;
+		var problem = req.body.problem;
+		var originalName = file.originalname;
+		var ext = originalName.split('.').pop();
+		var newname = '[' + username + '][' + problem + '].' + ext;
+		cb(null, Date.now() + '-' + newname);
+	}
+});
+
+var upload		= multer({ storage: storage }).single('file');
+// var upload		= multer({ storage: storage }).fields([{ name: 'file', maxCount: 1 }, { name: 'username', maxCount: 1 }, { name: 'problem', maxCount: 1 }]);
 
 var redisClient = redis.createClient();
 redisClient.on('connect', function() {
@@ -45,12 +63,21 @@ function ensureAuthorized(req, res, next) {
         var bearer = bearerHeader.split(" ");
         // Retrieve the token.
         bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
+
+        // Check if token exists.
+        redisClient.exists(bearerToken, function(err, reply) {
+        	if (reply) {
+        		req.token = bearerToken;
+        		next();
+        	}
+        	else {
+        		res.sendStatus(403);
+        	}
+        });
     }
     else {
     	// Cannot find field "authorization" in headers -> return 403 (Forbidden).
-        res.send(403);
+        res.sendStatus(403);
     }
 }
 
@@ -139,6 +166,18 @@ router.post('/logout', function(req, res) {
 
 	redisClient.del(token, function(err, reply) {
 		res.json({ status: 'SUCCESS' });
+	});
+});
+
+// Name: Upload code.
+// Type: POST.
+router.post('/upload', [ensureAuthorized, upload], function(req, res) {
+	upload(req, res, function(err) {
+		if (err) {
+			res.status(400).send('FAILED');
+			return;
+		}
+		res.send('SUCCESS');
 	});
 });
 
