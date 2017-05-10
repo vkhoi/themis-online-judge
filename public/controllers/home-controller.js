@@ -47,7 +47,7 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 	vm.submit = function() {
 		console.log(vm.file.name);
 		Upload.upload({
-			url: '/api/upload',
+			url: '/api/submit',
 			data: {
 				username: Session.username,
 				problem: vm.selectedProblem,

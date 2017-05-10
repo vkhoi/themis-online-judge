@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({'extended':'true'}));            // Parse applica
 app.use(bodyParser.json());                                     // Parse application/json.
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // Parse application/vnd.api+json as json.
 
-app.use('/api', require('./api-routes'));
+app.use('/api', require('./api/index'));
 
 // Respond to all requests with this single file. Angular will handle all page changes on the front-end. 
 app.get('*', function(req, res) {
