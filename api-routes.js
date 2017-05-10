@@ -30,35 +30,37 @@ var storage 	= multer.diskStorage({
 
 var upload		= multer({ storage: storage }).single('file');
 
+var ensureAuthorized = require('./helpers/ensureAuthorized');
+
 // Function to ensure that the request's headers contain field "authorization",
 // which contains the token key.
-function ensureAuthorized(req, res, next) {
-	// Store the token.
-    var bearerToken;
+// function ensureAuthorized(req, res, next) {
+// 	// Store the token.
+//     var bearerToken;
 
-    var bearerHeader = req.headers["authorization"];
-    if (typeof bearerHeader !== 'undefined') {
-    	// Found "authorization" in headers.
-        var bearer = bearerHeader.split(" ");
-        // Retrieve the token.
-        bearerToken = bearer[1];
+//     var bearerHeader = req.headers["authorization"];
+//     if (typeof bearerHeader !== 'undefined') {
+//     	// Found "authorization" in headers.
+//         var bearer = bearerHeader.split(" ");
+//         // Retrieve the token.
+//         bearerToken = bearer[1];
 
-        // Check if token exists.
-        redisClient.exists(bearerToken, function(err, reply) {
-        	if (reply) {
-        		req.token = bearerToken;
-        		next();
-        	}
-        	else {
-        		res.sendStatus(403);
-        	}
-        });
-    }
-    else {
-    	// Cannot find field "authorization" in headers -> return 403 (Forbidden).
-        res.sendStatus(403);
-    }
-}
+//         // Check if token exists.
+//         redisClient.exists(bearerToken, function(err, reply) {
+//         	if (reply) {
+//         		req.token = bearerToken;
+//         		next();
+//         	}
+//         	else {
+//         		res.sendStatus(403);
+//         	}
+//         });
+//     }
+//     else {
+//     	// Cannot find field "authorization" in headers -> return 403 (Forbidden).
+//         res.sendStatus(403);
+//     }
+// }
 
 // Name: Log in.
 // Type: POST.
@@ -70,11 +72,19 @@ router.post('/login', function(req, res) {
 
 	// Check if log in using token or username+password.
 	if (token) {
+		// Use token.
 		redisClient.get(token, function(err, reply) {
+			// Check if token exists in Redis.
 			if (reply) {
+				// Get the username corresponds with this token.
 				var username = reply, userRole;
+
+				// Find the user with this username.
 				var user = User.find(username);
+
+				// Check if user exists.
 				if (user) {
+					// Respond with user's information and token.
 					res.json({
 						user: {
 							username: username,
@@ -84,6 +94,7 @@ router.post('/login', function(req, res) {
 					});
 				}
 				else {
+					// User not exists.
 					var message = {};
 					message.status = 'FAILED';
 					message.description = 'Account does not exist';
@@ -91,6 +102,7 @@ router.post('/login', function(req, res) {
 				}
 			}
 			else {
+				// Token not exists in Redis -> must have been expired.
 				var message = {};
 				message.status = 'FAILED';
 				message.description = 'Session expired';
@@ -100,12 +112,21 @@ router.post('/login', function(req, res) {
 		return;
 	}
 
+	// Log in using username+password.
+	// Find user with this username.
 	var user = User.find(username);
 	if (user) {
+		// User exists. Check password.
 		if (user.password == password) {
+			// Password is correct.
+			// Create token corresponds with this username.
 			var token = jwt.sign(username, config.JWT_SECRET);
+
+			// Set token along with an expiration time.
 			redisClient.set(token, username);
 			redisClient.expire(token, '3600');
+
+			// Response with user's information and token.
 			res.json({ 
 				user: { 
 					username: username,
