@@ -7,6 +7,24 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 	vm.problems = ["SEGMENT", "ANT", "POLYGON"];
 	vm.selectedProblem = "SEGMENT";
 
+	vm.submissionLogs = [
+		{
+			id: 1,
+			problem: "SEGMENT",
+			score: 50
+		},
+		{
+			id: 2,
+			problem: "SEGMENT",
+			score: 70
+		},
+		{
+			id: 3,
+			problem: "SEGMENT",
+			score: 80
+		}
+	];
+
 	vm.init = function() {
 		vm.username = Session.username;
 	}
