@@ -1,5 +1,17 @@
+html {
+	font-size: 16px;
+}
+
+.col-form-label {
+	padding-top: calc(.5rem - 1px * 2);
+	padding-bottom: calc(.5rem - 1px * 2);
+	margin-bottom: 0;
+}
+
+/*----------- NAVIGATION BAR -----------*/
 .nav-tabs {
-	border-bottom: 2px solid #DDD; 
+	border-bottom: 2px solid #DDD;
+	margin-bottom: 1.5rem;
 }
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
 	border-width: 0;
@@ -32,6 +44,10 @@
 	margin-top: 8px;
 }
 
-/*#home-panel .main-tap {
-	display
-}*/
+/*----------- NỘP BÀI -----------*/
+#submissionTab button {
+	width: 6rem;
+}
+#uploadSolution {
+	margin-bottom: 3rem;
+}

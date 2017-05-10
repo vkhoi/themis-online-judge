@@ -24,22 +24,30 @@
 		Tab 0
 	</div>
 	<div id="submissionTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(1)">
-		<h4>Nộp bài</h4>
-		<form id="uploadSolution" class="form-inline">
-			<div class="form-group">
-				<label for="problemName">Chọn bài</label>
-				<select id="problemName" class="form-control" ng-model="HomeCtrl.selectedProblem">
-					<option ng-repeat="p in HomeCtrl.problems track by $index">{{ p }}</option>
-				</select>
+		<h3>Nộp bài</h3>
+		<form id="uploadSolution">
+			<div class="form-group row">
+				<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
+				<div class="col-sm-6">
+					<select id="problemName" class="form-control" ng-model="HomeCtrl.selectedProblem">
+						<option ng-repeat="p in HomeCtrl.problems track by $index">{{ p }}</option>
+					</select>
+				</div>
 			</div>
-			<div class="form-group">
-				<label>Chọn file mã nguồn</label>
-				<button class="btn btn-default" ngf-select ng-model="HomeCtrl.file" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
-				<span>{{ HomeCtrl.getSolutionName() }}</span>
+			<div class="form-group row">
+				<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file mã nguồn</label>
+				<div class="col-sm-4">
+					<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="HomeCtrl.file" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
+					<span>{{ HomeCtrl.getSolutionName() }}</span>
+				</div>
 			</div>
-			<button class="btn btn-primary" type="submit" ng-click="HomeCtrl.submit()">Nộp bài</button>
+			<div class="form-group row">
+				<div class="col-sm-2 col-sm-offset-2">
+					<button class="btn btn-primary" type="submit" ng-click="HomeCtrl.submit()">Nộp bài</button>
+				</div>
+			</div>
 		</form>
-		<h4>Các lần bạn nộp</h4>
+		<h3>Các lần bạn nộp</h3>
 	</div>
 	<div id="problemTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(2)">
 		Tab 2
