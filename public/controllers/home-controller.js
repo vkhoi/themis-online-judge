@@ -54,6 +54,7 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 				file: vm.file
 			}
 		}).then(function successCallback(res) {
+			vm.file = null;
 		});
 	}
 

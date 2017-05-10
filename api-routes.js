@@ -8,6 +8,11 @@ var readline 	= require('readline');
 var jwt			= require('jsonwebtoken');
 var redis		= require('redis');
 var multer		= require('multer');
+var DataStore 	= require('nedb'),
+	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'), 							autoload: true });
+var User 		= require('./models/user');
+var config 		= require('./config');
+var redisClient = redis.createClient();
 
 var storage 	= multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -24,32 +29,6 @@ var storage 	= multer.diskStorage({
 });
 
 var upload		= multer({ storage: storage }).single('file');
-// var upload		= multer({ storage: storage }).fields([{ name: 'file', maxCount: 1 }, { name: 'username', maxCount: 1 }, { name: 'problem', maxCount: 1 }]);
-
-var redisClient = redis.createClient();
-redisClient.on('connect', function() {
-});
-
-var config = require('./config');
-
-// Array to store all user accounts in data/accounts.csv.
-Users = [];
-
-// Function to read all user accounts in data/accounts.csv.
-(function readAllUsers() {
-	var lineReader = readline.createInterface({
-		input: fs.createReadStream(path.join(process.cwd(), 'data', 'accounts.csv'))
-	});
-
-	// Read line by line.
-	lineReader.on('line', function(line) {
-		// Each account is stored on different lines, separated by a comma. Split line by comma
-		// to separate username, isAdmin, and password.
-		var user = line.split(',');
-
-		Users.push(user);
-	});
-})();
 
 // Function to ensure that the request's headers contain field "authorization",
 // which contains the token key.
@@ -94,53 +73,47 @@ router.post('/login', function(req, res) {
 		redisClient.get(token, function(err, reply) {
 			if (reply) {
 				var username = reply, userRole;
-				for (var i = 0; i < Users.length; i += 1) {
-					var user = Users[i];
-					if (user[0] == username) {
-						userRole = user[1];
-						break;
-					}
+				var user = User.find(username);
+				if (user) {
+					res.json({
+						user: {
+							username: username,
+							userRole: userRole,
+							token: token
+						}
+					});
 				}
-				res.json({
-					user: {
-						username: username,
-						userRole: userRole,
-						token: token
-					}
-				});
-				return;
+				else {
+					var message = {};
+					message.status = 'FAILED';
+					message.description = 'Account does not exist';
+					res.status(401).send(message);
+				}
 			}
-			var message = {};
-			message.status = 'FAILED';
-			message.description = 'Session Expired';
-			res.status(401).send(message);
+			else {
+				var message = {};
+				message.status = 'FAILED';
+				message.description = 'Session expired';
+				res.status(401).send(message);
+			}
 		});
 		return;
 	}
 
-	// Flag to indicate whether there exists this username.
-	var accountExisted = false;
-
-	for (var i = 0; i < Users.length; i += 1) {
-		var user = Users[i];
-		if (user[0] == username) {
-			// Username exists.
-			accountExisted = true;
-
-			// Check password.
-			if (user[2] == password) {
-				var token = jwt.sign(username, config.JWT_SECRET);
-				redisClient.set(token, username);
-				redisClient.expire(token, '3600');
-				res.json({ 
-					user: { 
-						username: username,
-						userRole: user[1],
-						token: token
-					}
-				});
-				return;
-			}
+	var user = User.find(username);
+	if (user) {
+		if (user.password == password) {
+			var token = jwt.sign(username, config.JWT_SECRET);
+			redisClient.set(token, username);
+			redisClient.expire(token, '3600');
+			res.json({ 
+				user: { 
+					username: username,
+					userRole: user.userRole,
+					token: token
+				}
+			});
+			return;
 		}
 	}
 
@@ -149,7 +122,7 @@ router.post('/login', function(req, res) {
 	message.status = 'FAILED';
 
 	// Notify why it fails.
-	if (!accountExisted)
+	if (!user)
 		message.description = 'Account does not exist';
 	else
 		message.description = 'Password is incorrect';
