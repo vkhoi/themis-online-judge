@@ -1,8 +1,21 @@
+<nav class="navbar navbar-inverse">
+  	<div class="container-fluid">
+	    <div class="navbar-header">
+	    	<a class="navbar-brand" href="#">Themis Online Judge</a>
+	    </div>
+	    <div class="collapse navbar-collapse">
+	      	<ul class="nav navbar-nav navbar-right">
+	        	<li><p class="navbar-text">Xin chào, {{ HomeCtrl.username }}</p></li>
+	        	<li><button ng-click="HomeCtrl.logout()" class="btn btn-danger">Đăng xuất</button></li>
+	      	</ul>
+	    </div>
+</nav>
 <div class="container">
 	<div class="row">
-		<button ng-click="HomeCtrl.logout()" class="btn btn-danger">Log out</button>
-	</div>
-	<div class="row">
-		<h1>Welcome, {{ HomeCtrl.username }}!!!</h1>
+		<ul class="nav nav-tabs" role="tablist">
+			<li ng-class="{active: HomeCtrl.isTabActive(0)}" ng-click="HomeCtrl.selectTab(0)"><a href="#">Bảng điểm</a></li>
+			<li ng-class="{active: HomeCtrl.isTabActive(1)}" ng-click="HomeCtrl.selectTab(1)"><a href="#">Nộp bài</a></li>
+			<li ng-class="{active: HomeCtrl.isTabActive(2)}" ng-click="HomeCtrl.selectTab(2)"><a href="#">Đề bài</a></li>
+		</ul>
 	</div>
 </div>

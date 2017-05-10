@@ -104,7 +104,7 @@ router.post('/login', function(req, res) {
 			if (user[2] == password) {
 				var token = jwt.sign(username, config.JWT_SECRET);
 				redisClient.set(token, username);
-				redisClient.expire(token, '60');
+				redisClient.expire(token, '3600');
 				res.json({ 
 					user: { 
 						username: username,
