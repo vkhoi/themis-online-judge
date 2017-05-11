@@ -7,6 +7,15 @@ var User 		= require('../models/user');
 
 var redisClient = redis.createClient();
 
+// Verify if request is valid.
+router.use(function(req, res, next) {
+	if (((req.body.username) && (req.body.password)) || (req.body.token))
+		next();
+	else {
+		res.status(400).send({ message: 'Bad request' });
+	}
+});
+
 // Name: Log in.
 // Type: POST.
 // Data: (username AND password) OR token.

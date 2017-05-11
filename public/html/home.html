@@ -52,15 +52,17 @@
 			<thead>
 				<tr>
 					<th class="col-sm-1">#</th>
-					<th class="col-sm-8">Tên bài</th>
-					<th class="col-sm-3 text-center">Điểm</th>
+					<th class="col-sm-2">Vào lúc</th>
+					<th class="col-sm-7">Tên bài</th>
+					<th class="col-sm-2 text-center">Điểm</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="log in HomeCtrl.submissionLogs">
 					<td class="col-sm-1">{{ log.id }}</td>
-					<td class="col-sm-8">{{ log.problem }}</td>
-					<td class="col-sm-3 text-center">{{ log.score }}</td>
+					<td class="col-sm-2">{{ log.time }}</td>
+					<td class="col-sm-7">{{ log.problem }}</td>
+					<td class="col-sm-2 text-center">{{ log.score }}</td>
 				</tr>
 			</tbody>
 		</table>
