@@ -37,9 +37,10 @@ function findUser(username, callback) {
 // into the beginning of the name. (Ex: 123-[khoi][SEGMENT].cpp -> 123-cpp-[khoi][SEGMENT]).
 // This helps insert new submission into the database easier.
 function beautifyFilename(filename) {
+	console.log(filename);
 	var tokens = filename.split('.');
 	var tripped = tokens[0];
-	var ext = tokens[tokens.length - 1];
+	var ext = tokens[tokens.length - 1].toLowerCase();
 	tokens = tripped.split('-');
 	tokens.splice(1, 0, ext);
 	var newFilename = tokens.join('-');
@@ -63,6 +64,7 @@ function addSubmission(username, submissionName, fileContent) {
 
 // Function to add new score.
 function addScore(username, submissionName, score) {
+	console.log('addScore', submissionName);
 	findUser(username, function(err, user) {
 		var beautifulName = beautifyFilename(submissionName);
 		UserSubLog.update({ _id: user._id }, {
@@ -78,5 +80,6 @@ function addScore(username, submissionName, score) {
 
 module.exports = {
 	addUser: 		addUser,
-	addSubmission: 	addSubmission
+	addSubmission: 	addSubmission,
+	addScore: 		addScore
 };
