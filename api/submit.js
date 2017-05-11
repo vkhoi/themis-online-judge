@@ -63,7 +63,7 @@ router.post('/', [ensureAuthorized, upload], function(req, res) {
 			res.status(400).send('FAILED');
 			return;
 		}
-		res.send('SUCCESS');
+		res.send({ submissionName: req.file.filename });
 	});
 });
 

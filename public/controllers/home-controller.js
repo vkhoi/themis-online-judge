@@ -42,7 +42,6 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 			});
 			var N = vm.submissionLogs.length;
 			for (var i = 0; i < N; i++) {
-				vm.submissionLogs[i].id = N - i;
 				vm.submissionLogs[i].time = timeToDate(vm.submissionLogs[i].time);
 			}
 		});
@@ -78,6 +77,13 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 			}
 		}).then(function successCallback(res) {
 			vm.file = null;
+			var latestSubmission = res.data.submissionName;
+			var timeStamp = parseInt(latestSubmission.split('-')[0]);
+			vm.submissionLogs.splice(0, 0, {
+				time: timeToDate(timeStamp),
+				problem: vm.selectedProblem,
+				score: 'Đang chấm'
+			});
 		});
 	}
 

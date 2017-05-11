@@ -59,7 +59,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="log in HomeCtrl.submissionLogs">
-					<td class="col-sm-1">{{ log.id }}</td>
+					<td class="col-sm-1">{{ HomeCtrl.submissionLogs.length - $index }}</td>
 					<td class="col-sm-2">{{ log.time }}</td>
 					<td class="col-sm-7">{{ log.problem }}</td>
 					<td class="col-sm-2 text-center">{{ log.score }}</td>
