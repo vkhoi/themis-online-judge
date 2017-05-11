@@ -1,7 +1,10 @@
 var express 			= require('express');
 var router 				= express.Router();
+var fs 					= require('fs');
+var path				= require('path');
 var multer				= require('multer');
-var ensureAuthorized 	= require('../helpers/ensureAuthorized');
+var ensureAuthorized 	= require('../helpers/ensure-authorized');
+var UserSubLog			= require('../models/user-submission-log');
 
 // Specify directory to store submissions.
 // Rename submission files so that Themis can parse user's name and problem's name.
@@ -24,6 +27,17 @@ var upload = multer({ storage: storage }).single('file');
 // Name: Upload code.
 // Type: POST.
 router.post('/', [ensureAuthorized, upload], function(req, res) {
+	var username = req.body.username;
+	var filePath = path.join(process.cwd(), 'uploads', req.file.filename);
+	var fileContent = null;
+	fs.readFile(filePath, 'utf8', function(err, data) {
+		if (err) {
+			return;
+		}
+		fileContent = data;
+		UserSubLog.addSubmission(username, req.file.filename, fileContent);
+	});
+
 	upload(req, res, function(err) {
 		if (err) {
 			res.status(400).send('FAILED');

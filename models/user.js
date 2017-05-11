@@ -3,6 +3,7 @@ var router 		= express.Router();
 var fs			= require('fs');
 var path 		= require('path');
 var readline 	= require('readline');
+var UserSubLog 	= require('./user-submission-log')
 
 // Class User to store information of a user.
 class User {
@@ -30,6 +31,7 @@ User.Users = {};
 
 		// Create new instance of user and store it inside the dictionary.
 		User.Users[user[0]] = new User(user[0], user[2], user[1]);
+		UserSubLog.addUser(user[0]);
 	});
 })();
 
@@ -38,5 +40,4 @@ User.find = function(username) {
 	return (username in User.Users ? User.Users[username] : null);
 }
 
-// Return class User to the outside.
 module.exports = User;

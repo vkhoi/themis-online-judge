@@ -2,3 +2,4 @@ node_modules/
 uploads/
 dump.rdb
 data/*.db
+.DS_Store
