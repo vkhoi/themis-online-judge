@@ -51,7 +51,7 @@ function addSubmission(username, submissionName, fileContent) {
 	findUser(username, function(err, user) {
 		var beautifulName = beautifyFilename(submissionName);
 		UserSubLog.update({ _id: user._id }, {
-			$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: "-1"}
+			$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: -1}
 		}, {}, function(err, numAffected) {
 			if (err) {}
 			else {
@@ -102,10 +102,30 @@ function getScore(username, submissionName) {
 	});
 }
 
+// Function to get all data from database.
+function getAllUserSubLogScores() {
+	return new Promise(function(resolve, reject) {
+		UserSubLog.find({}, function(err, data) {
+			if (err) reject(Error("Could not retrieve all user's submission logs"));
+			else {
+				var res = [];
+				data.forEach(function(userSubLog) {
+					res.push({
+						username: userSubLog.username,
+						scores: userSubLog.scores
+					});
+				});
+				resolve(res);
+			}
+		});
+	});
+}
+
 module.exports = {
-	addUser: 		addUser,
-	addSubmission: 	addSubmission,
-	addScore: 		addScore,
-	getAllScore: 	getAllScore,
-	getScore: 		getScore
+	addUser: 					addUser,
+	addSubmission: 				addSubmission,
+	addScore: 					addScore,
+	getAllScore: 				getAllScore,
+	getScore: 					getScore,
+	getAllUserSubLogScores: 	getAllUserSubLogScores
 };

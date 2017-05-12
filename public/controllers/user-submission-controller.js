@@ -104,10 +104,3 @@ themisApp.controller('UserSubmissionController', ['$http', 'AuthService', 'Sessi
 		return vm.file.name;
 	}
 }]);
-
-themisApp.filter('submissionResultFilter', function() {
-	return function(input) {
-		if (input == "-1") return "Đang chấm";
-		return input;
-	}
-});

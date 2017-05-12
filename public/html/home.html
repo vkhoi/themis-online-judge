@@ -36,8 +36,8 @@
 				<tr ng-repeat="user in ScoreboardCtrl.scoreboard">
 					<td style="width: 10%;">{{ $index + 1 }}</td>
 					<td>{{ user.username }}</td>
-					<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score }}</td>
-					<td style="width: 10%;">{{ user.totalScore }}</td>
+					<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
+					<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
 				</tr>
 			</tbody>
 		</table>

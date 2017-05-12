@@ -4,8 +4,9 @@ var fs 					= require('fs');
 var path				= require('path');
 var multer				= require('multer');
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
-var UserSubLog			= require('../models/user-submission-log');
+var UserSubLog			= require('../helpers/user-submission-log');
 var jury				= require('../helpers/jury');
+var contest 			= require('../helpers/contest');
 
 // Specify directory to store submissions.
 // Rename submission files so that Themis can parse user's name and problem's name.
@@ -44,6 +45,7 @@ function retrieveScore(username, submissionName) {
 	jury.retrieveScore(submissionName).then(function successCallback(score) {
 		// Add score to database.
 		UserSubLog.addScore(username, submissionName, score);
+		contest.updateScore(username, beautifyFilename(submissionName).split('[').pop().slice(0, -1), score);
 	}, function errorCallback(err) {
 		// Themis has not done grading, so ask jury to retrieve the score after 5 seconds.
 		setTimeout(function() {

@@ -3,7 +3,7 @@ var router 		= express.Router();
 var fs			= require('fs');
 var path 		= require('path');
 var readline 	= require('readline');
-var UserSubLog 	= require('./user-submission-log')
+var UserSubLog 	= require('../helpers/user-submission-log')
 
 // Class User to store information of a user.
 class User {

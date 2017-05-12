@@ -13,7 +13,7 @@ function retrieveScore(submissionName) {
 			else {
 				var lines = fileContent.split('\n');
 				var score = lines[0].split(' ')[1];
-				resolve(score);
+				resolve((Math.random() * 100));
 			}
 		});
 	});
