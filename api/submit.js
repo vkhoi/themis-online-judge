@@ -25,6 +25,19 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage }).single('file');
 
+// Function to remove extension from submission's filename and append it
+// into the beginning of the name. (Ex: 123-[khoi][SEGMENT].cpp -> 123-cpp-[khoi][SEGMENT]).
+// This helps insert new submission into the database easier.
+function beautifyFilename(filename) {
+	var tokens = filename.split('.');
+	var tripped = tokens[0];
+	var ext = tokens[tokens.length - 1].toLowerCase();
+	tokens = tripped.split('-');
+	tokens.splice(1, 0, ext);
+	var newFilename = tokens.join('-');
+	return newFilename;
+}
+
 // Function to retrieve score for this username with this submission.
 function retrieveScore(username, submissionName) {
 	// Ask jury to retrieve the score.
@@ -63,7 +76,7 @@ router.post('/', [ensureAuthorized, upload], function(req, res) {
 			res.status(400).send('FAILED');
 			return;
 		}
-		res.send({ submissionName: req.file.filename });
+		res.send({ submissionName: beautifyFilename(req.file.filename) });
 	});
 });
 

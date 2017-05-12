@@ -62,7 +62,7 @@
 					<td class="col-sm-1">{{ HomeCtrl.submissionLogs.length - $index }}</td>
 					<td class="col-sm-2">{{ log.time }}</td>
 					<td class="col-sm-7">{{ log.problem }}</td>
-					<td class="col-sm-2 text-center">{{ log.score }}</td>
+					<td class="col-sm-2 text-center">{{ log.score | submissionResultFilter }}</td>
 				</tr>
 			</tbody>
 		</table>

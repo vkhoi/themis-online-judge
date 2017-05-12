@@ -51,7 +51,7 @@ function addSubmission(username, submissionName, fileContent) {
 	findUser(username, function(err, user) {
 		var beautifulName = beautifyFilename(submissionName);
 		UserSubLog.update({ _id: user._id }, {
-			$set: { [`submissions.${beautifulName}`]: fileContent}
+			$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: "-1"}
 		}, {}, function(err, numAffected) {
 			if (err) {}
 			else {
@@ -77,7 +77,7 @@ function addScore(username, submissionName, score) {
 }
 
 // Function to get all submissions and scores for a user.
-function getScore(username) {
+function getAllScore(username) {
 	return new Promise(function(resolve, reject) {
 		findUser(username, function(err, user) {
 			if (err) reject(Error('Could not retrieve scores'));
@@ -88,9 +88,24 @@ function getScore(username) {
 	});
 }
 
+// Function to get score for a submission of a user.
+function getScore(username, submissionName) {
+	return new Promise(function(resolve, reject) {
+		findUser(username, function(err, user) {
+			if (err) reject(Error('Could not retrieve scores'));
+			else {
+				setTimeout(function() {
+					resolve({[`${submissionName}`]: user.scores[submissionName]});
+				}, 3000);
+			}
+		});
+	});
+}
+
 module.exports = {
 	addUser: 		addUser,
 	addSubmission: 	addSubmission,
 	addScore: 		addScore,
+	getAllScore: 	getAllScore,
 	getScore: 		getScore
 };

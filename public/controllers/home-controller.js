@@ -21,6 +21,28 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 		return d.getFullYear() + "-" + padNumber(d.getDate(), 2) + "-" + padNumber(d.getMonth() + 1, 2) + " " + padNumber(d.getHours(), 2) + ":" + padNumber(d.getMinutes(), 2) + ":" + padNumber(d.getSeconds(), 2);
 	}
 
+	function askJuryForScore(submissionName) {
+		$http.post('/api/getSubmissionLogs', { username: vm.username, submissionName: submissionName }).then(function successCallback(res) {
+			var score = res.data.scores[submissionName];
+			if (score == "-1") {
+				setTimeout(function() {
+					askJuryForScore(submissionName);
+				}, 5000);
+				return;
+			}
+			for (var i = 0; i < vm.submissionLogs.length; i += 1) {
+				if (vm.submissionLogs[i].name == submissionName) {
+					vm.submissionLogs[i].score = score;
+					break;
+				}
+			}
+		}, function errorCallback(err) {
+			setTimeout(function() {
+				askJuryForScore(submissionName);
+			}, 5000);
+		});
+	}
+
 	function getSubmissionLogs() {
 		$http.post('/api/getSubmissionLogs', { username: vm.username} ).then(function successCallback(res) {
 			var scores = res.data.scores;
@@ -33,7 +55,8 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 				vm.submissionLogs.push({
 					time: parseInt(timeStamp),
 					problem: problem,
-					score: score
+					score: score,
+					name: key
 				});
 			});
 
@@ -43,6 +66,9 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 			var N = vm.submissionLogs.length;
 			for (var i = 0; i < N; i++) {
 				vm.submissionLogs[i].time = timeToDate(vm.submissionLogs[i].time);
+				if (vm.submissionLogs[i].score == "-1") {
+					askJuryForScore(vm.submissionLogs[i].name);
+				}
 			}
 		});
 	}
@@ -82,8 +108,10 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 			vm.submissionLogs.splice(0, 0, {
 				time: timeToDate(timeStamp),
 				problem: vm.selectedProblem,
-				score: 'Đang chấm'
+				score: '-1',
+				name: latestSubmission
 			});
+			askJuryForScore(latestSubmission);
 		});
 	}
 
@@ -92,3 +120,10 @@ themisApp.controller('HomeController', ['$scope', '$state', '$http', 'AuthServic
 		return vm.file.name;
 	}
 }]);
+
+themisApp.filter('submissionResultFilter', function() {
+	return function(input) {
+		if (input == "-1") return "Đang chấm";
+		return input;
+	}
+});
