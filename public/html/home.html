@@ -20,30 +20,49 @@
 			</ul>
 		</div>
 	</div>
-	<div id="scoreboardTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(0)">
-		Tab 0
+	<div id="scoreboardTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(0)" ng-controller="ScoreboardController as ScoreboardCtrl">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th style="width: 10%;">Xếp hạng</th>
+					<th>Tên thí sinh</th>
+					<th ng-repeat="problem in ScoreboardCtrl.problems" style="width: 10%;">
+						{{ problem }}
+					</th>
+					<th style="width: 10%;">Tổng điểm</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="user in ScoreboardCtrl.scoreboard">
+					<td style="width: 10%;">{{ $index + 1 }}</td>
+					<td>{{ user.username }}</td>
+					<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score }}</td>
+					<td style="width: 10%;">{{ user.totalScore }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
-	<div id="submissionTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(1)">
+	<div id="submissionTab" class="main-tab container" ng-hide="!HomeCtrl.isTabActive(1)" ng-controller="UserSubmissionController as UserSubCtrl">
 		<h3>Nộp bài</h3>
 		<form id="uploadSolution">
 			<div class="form-group row">
 				<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
 				<div class="col-sm-6">
-					<select id="problemName" class="form-control" ng-model="HomeCtrl.selectedProblem">
-						<option ng-repeat="p in HomeCtrl.problems track by $index">{{ p }}</option>
+					<select id="problemName" class="form-control" ng-model="UserSubCtrl.selectedProblem">
+						<option ng-repeat="p in UserSubCtrl.problems track by $index">{{ p }}</option>
 					</select>
 				</div>
 			</div>
 			<div class="form-group row">
 				<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file mã nguồn</label>
 				<div class="col-sm-4">
-					<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="HomeCtrl.file" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
-					<span>{{ HomeCtrl.getSolutionName() }}</span>
+					<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="UserSubCtrl.file" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
+					<span>{{ UserSubCtrl.getSolutionName() }}</span>
 				</div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 col-sm-offset-2">
-					<button class="btn btn-primary" type="submit" ng-click="HomeCtrl.submit()">Nộp bài</button>
+					<button class="btn btn-primary" type="submit" ng-click="UserSubCtrl.submit()">Nộp bài</button>
 				</div>
 			</div>
 		</form>
@@ -58,8 +77,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="log in HomeCtrl.submissionLogs">
-					<td class="col-sm-1">{{ HomeCtrl.submissionLogs.length - $index }}</td>
+				<tr ng-repeat="log in UserSubCtrl.submissionLogs">
+					<td class="col-sm-1">{{ UserSubCtrl.submissionLogs.length - $index }}</td>
 					<td class="col-sm-2">{{ log.time }}</td>
 					<td class="col-sm-7">{{ log.problem }}</td>
 					<td class="col-sm-2 text-center">{{ log.score | submissionResultFilter }}</td>
