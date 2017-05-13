@@ -1,7 +1,7 @@
 var path 		= require('path');
 var DataStore 	= require('nedb');
 var	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'),autoload: true });
-
+var config		= require('../config');
 // A UserSubLog instance has 2 fields:
 // 1. username: 	(String) username of the user.
 // 2. submissions:  (Dictionary) key: submission name with format <date>[username][problem]; value: content of source code.
@@ -94,9 +94,14 @@ function getScore(username, submissionName) {
 		findUser(username, function(err, user) {
 			if (err) reject(Error('Could not retrieve scores'));
 			else {
-				setTimeout(function() {
+				if (config.mode == "debug") {
+					setTimeout(function() {
+						resolve({[`${submissionName}`]: user.scores[submissionName]});
+					}, 3000);
+				}
+				else {
 					resolve({[`${submissionName}`]: user.scores[submissionName]});
-				}, 3000);
+				}
 			}
 		});
 	});
