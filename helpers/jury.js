@@ -9,7 +9,7 @@ function retrieveScore(submissionName) {
 		var filePath;
 		if (config.mode == "debug") filePath = path.join(process.cwd(), 'uploads', 'Logs', 'log-example1.txt');
 		else
-			filePath = path.join(process.cwd(), 'uploads', 'Logs', submissionName, '.log');
+			filePath = path.join(process.cwd(), 'uploads', 'Logs', submissionName + '.log');
 
 		fs.readFile(filePath, 'utf8', function(err, fileContent) {
 			if (err) {
