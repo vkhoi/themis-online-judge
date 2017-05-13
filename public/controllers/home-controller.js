@@ -119,6 +119,9 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 	}
 
 	vm.init = function() {
+		if ($state.current.name == "home") {
+			$state.go("home.scoreboard");
+		}
 		vm.username = Session.username;
 		vm.fileSubmit = null;
 		getProblemsAndScoreboard();

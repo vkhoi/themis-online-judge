@@ -23,8 +23,7 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			templateUrl: 'html/login.html'
 		})
 		.state('home', {
-			abstract: true,
-			url: '',
+			url: '/',
 			controller: 'HomeController',
 			controllerAs: 'HomeCtrl',
 			templateUrl: 'html/home.html',
@@ -33,11 +32,11 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			}
 		})
 			.state('home.scoreboard', {
-				url: '/scoreboard',
+				url: 'scoreboard',
 				templateUrl: 'html/scoreboard.html'
 			})
 			.state('home.submission', {
-				url: '/submission',
+				url: 'submission',
 				templateUrl: 'html/submission.html'
 			})
 
