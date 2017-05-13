@@ -23,7 +23,8 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			templateUrl: 'html/login.html'
 		})
 		.state('home', {
-			url: '/',
+			abstract: true,
+			url: '',
 			controller: 'HomeController',
 			controllerAs: 'HomeCtrl',
 			templateUrl: 'html/home.html',
@@ -31,6 +32,14 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
 			}
 		})
+			.state('home.scoreboard', {
+				url: '/scoreboard',
+				templateUrl: 'html/scoreboard.html'
+			})
+			.state('home.submission', {
+				url: '/submission',
+				templateUrl: 'html/submission.html'
+			})
 
 	$locationProvider.html5Mode(true);
 
@@ -73,7 +82,7 @@ themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {
 
 		return AuthService.isAuthenticated().then(function(isAuthenticated) {
 			if (isAuthenticated) {
-    			return trans.router.stateService.target('home');
+    			return trans.router.stateService.target('home.scoreboard');
 			}
 		});
 	});
