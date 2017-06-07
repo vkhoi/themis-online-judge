@@ -14,8 +14,10 @@
 	<div class="container">
 		<div class="row">
 			<ul class="nav nav-tabs" role="tablist">
-				<li ng-class="{active: HomeCtrl.isTabActive('home.scoreboard')}" ng-click="HomeCtrl.selectTab(0)"><a href="#">Bảng điểm</a></li>
-				<li ng-class="{active: HomeCtrl.isTabActive('home.submission')}" ng-click="HomeCtrl.selectTab(1)"><a href="#">Nộp bài</a></li>
+				<li ng-class="{active: HomeCtrl.isTabActive('home.admin')}" ng-click="HomeCtrl.selectTab(0)"><a href="#">Tạo kỳ thi</a></li>
+				<li ng-class="{active: HomeCtrl.isTabActive('home.problems')}" ng-click="HomeCtrl.selectTab(1)"><a href="#">Đề bài</a></li>
+				<li ng-class="{active: HomeCtrl.isTabActive('home.scoreboard')}" ng-click="HomeCtrl.selectTab(2)"><a href="#">Bảng điểm</a></li>
+				<li ng-class="{active: HomeCtrl.isTabActive('home.submission')}" ng-click="HomeCtrl.selectTab(3)"><a href="#">Nộp bài</a></li>
 			</ul>
 		</div>
 	</div>

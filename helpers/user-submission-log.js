@@ -2,7 +2,7 @@ var path 		= require('path');
 var DataStore 	= require('nedb');
 var	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'),autoload: true });
 var config		= require('../config');
-// A UserSubLog instance has 2 fields:
+// A UserSubLog instance has 3 fields:
 // 1. username: 	(String) username of the user.
 // 2. submissions:  (Dictionary) key: submission name with format <date>[username][problem]; value: content of source code.
 // 3. scores: 		(Dictionary) key: submission name; value: score. 

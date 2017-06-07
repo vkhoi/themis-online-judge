@@ -1,3 +1,4 @@
+
 themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Session', 'Upload', function($state, $http, AuthService, Session, Upload) {
 	var vm = this;
 
@@ -18,6 +19,23 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 			setTimeout(function() {
 				getScoreboard();
 			}, 10000);
+		});
+	}
+
+	function getProblemFiles() {
+		$http.post('/api/getProblemFiles').then(function successCallback(res) {
+			vm.problemFiles = [];
+			var problems = res.data.problems;
+			problems.forEach(function(problem) {
+				var elem = {
+					name: problem.problemName,
+					date: problem.date,
+					topic: problem.topic,
+					uploadUser: problem.username,
+					file: problem.file
+				};
+				vm.problemFiles.push(elem);
+			});
 		});
 	}
 
@@ -118,6 +136,21 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 		});
 	}
 
+	vm.uploadProblem = function() {
+		Upload.upload({
+			url: '/api/uploadProblem',
+			data: {
+				username: Session.username,
+				topic: vm.problemTopic,
+				file: vm.fileProblem
+			}
+		}).then(function successCallback(res) {
+			vm.fileProblem = null;
+		}, function errorCallback(err) {
+			console.log(err);
+		});
+	}
+
 	vm.init = function() {
 		if ($state.current.name == "home") {
 			$state.go("home.scoreboard");
@@ -126,6 +159,7 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 		vm.fileSubmit = null;
 		getProblemsAndScoreboard();
 		getSubmissionLogs();
+		getProblemFiles();
 	}
 	vm.init();
 
@@ -141,9 +175,15 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 
 	vm.selectTab = function(tabIndex) {
 		if (tabIndex == 0) {
-			$state.go('home.scoreboard');
+			$state.go('home.admin');
 		}
 		else if (tabIndex == 1) {
+			$state.go('home.problems');
+		}
+		else if (tabIndex == 2) {
+			$state.go('home.scoreboard');
+		}
+		else if (tabIndex == 3) {
 			$state.go('home.submission');
 		}
 		else {

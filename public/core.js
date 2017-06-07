@@ -31,6 +31,14 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
 			}
 		})
+			.state('home.admin', {
+				url: 'admin',
+				templateUrl: 'html/admin.html'
+			})
+			.state('home.problems', {
+				url: 'problems',
+				templateUrl: 'html/problems.html'
+			})
 			.state('home.scoreboard', {
 				url: 'scoreboard',
 				templateUrl: 'html/scoreboard.html'
