@@ -35,6 +35,7 @@ themisApp.controller('HomeController', ['$state', '$scope', '$http', 'AuthServic
 					uploadUser: problem.username,
 					file: problem.file
 				};
+				console.log(elem);
 				vm.problemFiles.push(elem);
 			});
 		});
@@ -144,7 +145,9 @@ themisApp.controller('HomeController', ['$state', '$scope', '$http', 'AuthServic
 		});
 	}
 
+	vm.uploading = false;
 	vm.uploadProblem = function() {
+		vm.uploading = true;
 		Upload.upload({
 			url: '/api/uploadProblem',
 			data: {
@@ -154,6 +157,8 @@ themisApp.controller('HomeController', ['$state', '$scope', '$http', 'AuthServic
 			}
 		}).then(function successCallback(res) {
 			vm.fileProblem = null;
+			vm.uploading = false;
+
 		}, function errorCallback(err) {
 			console.log(err);
 		});

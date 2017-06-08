@@ -2,13 +2,14 @@ var path 		= require('path');
 var DataStore 	= require('nedb');
 var	problemList	= new DataStore({ filename: path.join(process.cwd(), 'data/problems', 'problems.db'),autoload: true });
 var config		= require('../config');
+var moment 		= require('moment');
 
 // Function to insert a new problem into the database.
 function addProblem(username, problemName, topic, file) {
 	problemList.insert({
 		username: username,
 		problemName: problemName,
-		date: Date.now(),
+		date: moment().format("DD-MM-YYYY"),
 		topic: topic,
 		file: file
 	}, function(err, user) {
