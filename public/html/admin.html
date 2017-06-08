@@ -4,19 +4,19 @@
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Chủ đề</label>
 			<div class="col-sm-6">
-				<input class="form-control input-lg" id="inputlg" type="text" ng-model="HomeCtrl.problemTopic">
+				<input class="form-control input-lg" id="inputlg" type="text" ng-model="ContestCtrl.problemTopic">
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file đề bài</label>
 			<div class="col-sm-4">
-				<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="HomeCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
-				<span>{{ HomeCtrl.fileProblem.name | fileNameFilter }}</span>
+				<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="ContestCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
+				<span>{{ ContestCtrl.fileProblem.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
 			<div class="col-sm-2 col-sm-offset-2">
-				<button class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="HomeCtrl.uploadProblem()">Upload</button>
+				<button class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.uploadProblem()">Upload</button>
 			</div>
 		</div>
 	</form>

@@ -4,21 +4,21 @@
 		<div class="form-group row">
 			<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
 			<div class="col-sm-6">
-				<select id="problemName" class="form-control" ng-model="HomeCtrl.selectedProblem">
-					<option ng-repeat="p in HomeCtrl.problems track by $index">{{ p }}</option>
+				<select id="problemName" class="form-control" ng-model="ContestCtrl.selectedProblem">
+					<option ng-repeat="p in ContestCtrl.problems track by $index">{{ p }}</option>
 				</select>
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file mã nguồn</label>
 			<div class="col-sm-4">
-				<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="HomeCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
-				<span>{{ HomeCtrl.fileSubmit.name | fileNameFilter }}</span>
+				<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="ContestCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
+				<span>{{ ContestCtrl.fileSubmit.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
 			<div class="col-sm-2 col-sm-offset-2">
-				<button class="btn btn-primary" type="submit" ng-click="HomeCtrl.submit()">Nộp bài</button>
+				<button class="btn btn-primary" type="submit" ng-click="ContestCtrl.submit()">Nộp bài</button>
 			</div>
 		</div>
 	</form>
@@ -34,13 +34,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="log in HomeCtrl.submissionLogs">
-				<td class="col-sm-1">{{ HomeCtrl.submissionLogs.length - $index }}</td>
+			<tr ng-repeat="log in ContestCtrl.submissionLogs">
+				<td class="col-sm-1">{{ ContestCtrl.submissionLogs.length - $index }}</td>
 				<td class="col-sm-2">{{ log.time }}</td>
 				<td class="col-sm-6">{{ log.problem }}</td>
 				<td class="col-sm-2 text-center">{{ log.score | submissionResultFilter }}</td>
 				<td class="col-sm-1 text-center">
-					<i class="fa fa-file-o submission-details-btn" data-toggle="modal" data-target="#submissionDetails" ng-click="HomeCtrl.onSubmissionDetailsClick($index)"></i>
+					<i class="fa fa-file-o submission-details-btn" data-toggle="modal" data-target="#submissionDetails" ng-click="ContestCtrl.onSubmissionDetailsClick($index)"></i>
 				</td>
 			</tr>
 		</tbody>
@@ -54,7 +54,7 @@
 					<h4 class="modal-title">Chi tiết kết quả chấm</h4>
 				</div>
 				<div class="modal-body">
-					<pre>{{ HomeCtrl.submissionDetails }}</pre>
+					<pre>{{ ContestCtrl.submissionDetails }}</pre>
 				</div>
 			</div>
 		</div>

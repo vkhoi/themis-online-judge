@@ -1,0 +1,13 @@
+<div class="container">
+	<div class="row">
+		<ul class="nav nav-tabs" role="tablist">
+			<li ng-class="{active: ContestCtrl.isTabActive('home.contest.admin')}" ng-click="ContestCtrl.selectTab(0)"><a href="#">TẠO KÌ THI</a></li>
+			<li ng-class="{active: ContestCtrl.isTabActive('home.contest.problems')}" ng-click="ContestCtrl.selectTab(1)"><a href="#">ĐỀ BÀI</a></li>
+			<li ng-class="{active: ContestCtrl.isTabActive('home.contest.scoreboard')}" ng-click="ContestCtrl.selectTab(2)"><a href="#">BẢNG ĐIỂM</a></li>
+			<li ng-class="{active: ContestCtrl.isTabActive('home.contest.submission')}" ng-click="ContestCtrl.selectTab(3)"><a href="#">NỘP BÀI</a></li>
+		</ul>
+	</div>
+</div>
+
+<div ui-view>
+</div>

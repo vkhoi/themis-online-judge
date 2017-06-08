@@ -99,6 +99,9 @@ html {
 	cursor: pointer;
 	color: #ea5644;
 }
+#home-menu ul li.active {
+	color: #ea5644;
+}
 
 /*----------- NỘP BÀI -----------*/
 #submissionTab button {

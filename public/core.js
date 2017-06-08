@@ -27,26 +27,39 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			controller: 'HomeController',
 			controllerAs: 'HomeCtrl',
 			templateUrl: 'html/home.html',
-			data: {
-				authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
-			}
+			redirectTo: 'home.contest.scoreboard'
 		})
-			.state('home.admin', {
-				url: 'admin',
-				templateUrl: 'html/admin.html'
+			.state('home.posts', {
+				url: 'posts',
+				controller: 'PostsController',
+				controllerAs: 'PostsCtrl',
+				template: 'posts'
 			})
-			.state('home.problems', {
-				url: 'problems',
-				templateUrl: 'html/problems.html'
+			.state('home.contest', {
+				url: 'contest',
+				controller: 'ContestController',
+				controllerAs: 'ContestCtrl',
+				templateUrl: 'html/contest.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
+				}
 			})
-			.state('home.scoreboard', {
-				url: 'scoreboard',
-				templateUrl: 'html/scoreboard.html'
-			})
-			.state('home.submission', {
-				url: 'submission',
-				templateUrl: 'html/submission.html'
-			})
+				.state('home.contest.admin', {
+					url: '/admin',
+					templateUrl: 'html/admin.html'
+				})
+				.state('home.contest.problems', {
+					url: '/problems',
+					templateUrl: 'html/problems.html'
+				})
+				.state('home.contest.scoreboard', {
+					url: '/scoreboard',
+					templateUrl: 'html/scoreboard.html'
+				})
+				.state('home.contest.submission', {
+					url: '/submission',
+					templateUrl: 'html/submission.html'
+				})
 
 	$locationProvider.html5Mode(true);
 
@@ -89,7 +102,7 @@ themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {
 
 		return AuthService.isAuthenticated().then(function(isAuthenticated) {
 			if (isAuthenticated) {
-    			return trans.router.stateService.target('home.scoreboard');
+    			return trans.router.stateService.target('home.contest.scoreboard');
 			}
 		});
 	});

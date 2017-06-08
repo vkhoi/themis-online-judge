@@ -6,8 +6,8 @@
 		    </div>
 		    <div class="collapse navbar-collapse">
 		      	<ul class="nav navbar-nav navbar-right">
-		        	<li><p class="navbar-text">Xin chào, {{ HomeCtrl.username }}</p></li>
-		        	<li><button ng-click="HomeCtrl.logout()" class="btn btn-danger">Đăng xuất</button></li>
+		        	<li><p class="navbar-text">Xin chào, {{ ContestCtrl.username }}</p></li>
+		        	<li><button ng-click="ContestCtrl.logout()" class="btn btn-danger">Đăng xuất</button></li>
 		      	</ul>
 		    </div>
 	</nav> -->
@@ -23,31 +23,20 @@
 					<div id="home-menu">
 						<h3>Đội Tuyển Tin PTNK</h3>
 						<ul>
-							<li>TÀI LIỆU</li>
-							<li>LÀM BÀI</li>
+							<li ng-class="{active: HomeCtrl.isTabActive('home.posts')}" ng-click="HomeCtrl.selectTab(0)">TÀI LIỆU</li>
+							<li ng-class="{active: HomeCtrl.isTabActive('home.contest')}" ng-click="HomeCtrl.selectTab(1)">LÀM BÀI</li>
 						</ul>
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div style="float: right;">
-						<h3>Xin chào, {{ HomeCtrl.username }}</h3>
+						<h3>Xin chào, {{ ContestCtrl.username }}</h3>
 						<button ng-click="HomeCtrl.logout()" class="btn btn-danger" style="width: 100%;">Đăng xuất</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="container">
-		<div class="row">
-			<ul class="nav nav-tabs" role="tablist">
-				<li ng-class="{active: HomeCtrl.isTabActive('home.admin')}" ng-click="HomeCtrl.selectTab(0)"><a href="#">TẠO KÌ THI</a></li>
-				<li ng-class="{active: HomeCtrl.isTabActive('home.problems')}" ng-click="HomeCtrl.selectTab(1)"><a href="#">ĐỀ BÀI</a></li>
-				<li ng-class="{active: HomeCtrl.isTabActive('home.scoreboard')}" ng-click="HomeCtrl.selectTab(2)"><a href="#">BẢNG ĐIỂM</a></li>
-				<li ng-class="{active: HomeCtrl.isTabActive('home.submission')}" ng-click="HomeCtrl.selectTab(3)"><a href="#">NỘP BÀI</a></li>
-			</ul>
-		</div>
-	</div>
-
-	<div ui-view>
-	</div>
+	
+	<div ui-view></div>
 </div>
