@@ -88,6 +88,9 @@ html {
 	font-weight: 500;
 	padding-top: 1rem;
 	border-top: 5px solid #EFEFEF;
+
+	-webkit-transition: all 0.1s;
+    transition: all 0.1s;
 }
 #home-menu ul li:not(:first-child) {
 	margin-left: 3.125rem;

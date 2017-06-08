@@ -11,26 +11,28 @@
 		      	</ul>
 		    </div>
 	</nav> -->
-	<div class="container header" style="margin-bottom: 2rem;">
-		<div class="row">
-			<div class="col-sm-2 logo">
-				<div id="site-logo">
-					<img src="img/site-logo.png"></img>
+	<div>
+		<div class="container header" style="margin-bottom: 2rem;">
+			<div class="row">
+				<div class="col-sm-2 logo">
+					<div id="site-logo">
+						<img src="img/site-logo.png"></img>
+					</div>
 				</div>
-			</div>
-			<div class="col-sm-4">
-				<div id="home-menu">
-					<h3>Đội Tuyển Tin PTNK</h3>
-					<ul>
-						<li>TÀI LIỆU</li>
-						<li>LÀM BÀI</li>
-					</ul>
+				<div class="col-sm-4">
+					<div id="home-menu">
+						<h3>Đội Tuyển Tin PTNK</h3>
+						<ul>
+							<li>TÀI LIỆU</li>
+							<li>LÀM BÀI</li>
+						</ul>
+					</div>
 				</div>
-			</div>
-			<div class="col-sm-6">
-				<div style="float: right;">
-					<h3>Xin chào, {{ HomeCtrl.username }}</h3>
-					<button ng-click="HomeCtrl.logout()" class="btn btn-danger" style="width: 100%;">Đăng xuất</button>
+				<div class="col-sm-6">
+					<div style="float: right;">
+						<h3>Xin chào, {{ HomeCtrl.username }}</h3>
+						<button ng-click="HomeCtrl.logout()" class="btn btn-danger" style="width: 100%;">Đăng xuất</button>
+					</div>
 				</div>
 			</div>
 		</div>
