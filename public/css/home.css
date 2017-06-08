@@ -10,43 +10,99 @@ html {
 
 /*----------- NAVIGATION BAR -----------*/
 .nav-tabs {
-	border-bottom: 2px solid #DDD;
+	border: 1px solid rgb(185, 185, 185);
+	border-radius: 0.375rem;
 	margin-bottom: 1.5rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+.nav-tabs > li:first-child {
+	margin-left: 0.5rem;
+}
+.nav-tabs > li:not(:first-child) {
+	margin-left: 1rem;
 }
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
 	border-width: 0;
+ 	color: #000;
 }
 .nav-tabs > li > a {
 	border: none;
-	color: #666;
+	color: #000;
+	font-weight: 500;
 }
 .nav-tabs > li.active > a, .nav-tabs > li > a:hover { 
  	border: none; 
- 	color: #4285F4 !important; 
+ 	color: #000;
  	background: transparent; 
 }
 .nav-tabs > li > a::after { 
 	content: "";
-	background: #4285F4;
-	height: 2px;
+	background: #3B5998;
+	height: 3px;
 	position: absolute;
 	width: 100%;
 	left: 0px;
-	bottom: -1px;
+	bottom: 0px;
 	transition: all 250ms ease 0s;
 	transform: scale(0);
 }
 .nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after { 
 	transform: scale(1);
 }
+.nav > li > a {
+	padding: 10px 6px !important;
+}
 
 .navbar button {
 	margin-top: 8px;
 }
 
+#home-panel .header > .row .logo {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#site-logo {
+	margin-right: 2rem;
+	background-color: #1d4488;
+	width: 10.3125rem;
+}
+
+#site-logo img {
+	padding: 1.25rem;
+}
+
+#home-menu {
+}
+
+#home-menu ul {
+	padding-left: 0;
+	padding-top: 2rem;
+	list-style: none;
+}
+
+#home-menu ul li {
+	display: inline;
+	font-size: 1rem;
+	font-weight: 500;
+	padding-top: 1rem;
+	border-top: 5px solid #EFEFEF;
+}
+#home-menu ul li:not(:first-child) {
+	margin-left: 3.125rem;
+}
+#home-menu ul li:hover {
+	cursor: pointer;
+	color: #ea5644;
+}
+
 /*----------- NỘP BÀI -----------*/
 #submissionTab button {
 	width: 6rem;
+}
+#submissionTab button.close-dialog {
+	width: auto;
 }
 #uploadSolution {
 	margin-bottom: 3rem;
