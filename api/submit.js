@@ -42,10 +42,10 @@ function beautifyFilename(filename) {
 // Function to retrieve score for this username with this submission.
 function retrieveScore(username, submissionName) {
 	// Ask jury to retrieve the score.
-	jury.retrieveScore(submissionName).then(function successCallback(score) {
+	jury.retrieveResult(submissionName).then(function successCallback(res) {
 		// Add score to database.
-		UserSubLog.addScore(username, submissionName, score);
-		contest.updateScore(username, beautifyFilename(submissionName).split('[').pop().slice(0, -1), score);
+		UserSubLog.addScoreDetails(username, submissionName, res);
+		contest.updateScore(username, beautifyFilename(submissionName).split('[').pop().slice(0, -1), res.score);
 	}, function errorCallback(err) {
 		// Themis has not done grading, so ask jury to retrieve the score after 5 seconds.
 		setTimeout(function() {

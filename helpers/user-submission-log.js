@@ -17,7 +17,8 @@ function addUser(username) {
 			UserSubLog.insert({
 				username: username,
 				submissions: {},
-				scores: {}
+				scores: {},
+				details: {}
 			}, function(err, user) {
 				if (err) {}
 				else {
@@ -61,12 +62,13 @@ function addSubmission(username, submissionName, fileContent) {
 	});
 }
 
-// Function to add new score.
-function addScore(username, submissionName, score) {
+// Function to add new score and details.
+function addScoreDetails(username, submissionName, res) {
 	findUser(username, function(err, user) {
+		console.log(res);
 		var beautifulName = beautifyFilename(submissionName);
 		UserSubLog.update({ _id: user._id }, {
-			$set: { [`scores.${beautifulName}`]: score }
+			$set: { [`scores.${beautifulName}`]: res.score, [`details.${beautifulName}`]: res.details }
 		}, {}, function(err, numAffected) {
 			if (err) {}
 			else {
@@ -77,30 +79,58 @@ function addScore(username, submissionName, score) {
 }
 
 // Function to get all submissions and scores for a user.
-function getAllScore(username) {
+function getAllScoreDetails(username) {
 	return new Promise(function(resolve, reject) {
 		findUser(username, function(err, user) {
 			if (err) reject(Error('Could not retrieve scores'));
 			else {
-				resolve(user.scores);
+				resolve({
+					scores: user.scores,
+					details: user.details
+				});
 			}
 		});
 	});
 }
 
 // Function to get score for a submission of a user.
-function getScore(username, submissionName) {
+function getScoreDetails(username, submissionName) {
 	return new Promise(function(resolve, reject) {
 		findUser(username, function(err, user) {
 			if (err) reject(Error('Could not retrieve scores'));
 			else {
 				if (config.mode == "debug") {
 					setTimeout(function() {
-						resolve({[`${submissionName}`]: user.scores[submissionName]});
+						resolve({
+							scores: {[`${submissionName}`]: user.scores[submissionName]},
+							details: {[`${submissionName}`]: user.details[submissionName]}
+						});
 					}, 3000);
 				}
 				else {
-					resolve({[`${submissionName}`]: user.scores[submissionName]});
+					resolve({
+						scores: {[`${submissionName}`]: user.scores[submissionName]},
+						details: {[`${submissionName}`]: user.details[submissionName]}
+					});
+				}
+			}
+		});
+	});
+}
+
+// Function to get details for a submission of a user.
+function getDetails(username, submissionName) {
+	return new Promise(function(resolve, reject) {
+		findUser(username, function(err, user) {
+			if (err) reject(Error('Could not retrieve scores'));
+			else {
+				if (config.mode == "debug") {
+					setTimeout(function() {
+						resolve({[`${submissionName}`]: user.details[submissionName]});
+					}, 3000);
+				}
+				else {
+					resolve({[`${submissionName}`]: user.details[submissionName]});
 				}
 			}
 		});
@@ -129,8 +159,9 @@ function getAllUserSubLogScores() {
 module.exports = {
 	addUser: 					addUser,
 	addSubmission: 				addSubmission,
-	addScore: 					addScore,
-	getAllScore: 				getAllScore,
-	getScore: 					getScore,
+	addScoreDetails: 			addScoreDetails,
+	getAllScoreDetails: 		getAllScoreDetails,
+	getScoreDetails: 			getScoreDetails,
+	getDetails: 				getDetails,
 	getAllUserSubLogScores: 	getAllUserSubLogScores
 };

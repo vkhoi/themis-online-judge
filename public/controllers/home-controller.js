@@ -1,6 +1,7 @@
 
-themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Session', 'Upload', function($state, $http, AuthService, Session, Upload) {
+themisApp.controller('HomeController', ['$state', '$scope', '$http', 'AuthService', 'Session', 'Upload', function($state, $scope, $http, AuthService, Session, Upload) {
 	var vm = this;
+	vm.submissionDetails = "";
 
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
@@ -61,7 +62,9 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 
 	function askJuryForScore(submissionName) {
 		$http.post('/api/getSubmissionLogs', { username: Session.username, submissionName: submissionName }).then(function successCallback(res) {
+			console.log(res);
 			var score = res.data.scores[submissionName];
+			var details = res.data.details[submissionName];
 			if (score == "-1") {
 				setTimeout(function() {
 					askJuryForScore(submissionName);
@@ -71,6 +74,9 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 			for (var i = 0; i < vm.submissionLogs.length; i += 1) {
 				if (vm.submissionLogs[i].name == submissionName) {
 					vm.submissionLogs[i].score = score;
+					vm.submissionLogs[i].details = details;
+					if (!$scope.$$phase)
+						$scope.$apply()
 					break;
 				}
 			}
@@ -84,6 +90,7 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 	function getSubmissionLogs() {
 		$http.post('/api/getSubmissionLogs', { username: Session.username} ).then(function successCallback(res) {
 			var scores = res.data.scores;
+			var allDetails = res.data.details;
 			vm.submissionLogs = [];
 			Object.keys(scores).forEach(function(key) {
 				var timeStamp = key.split('-')[0];
@@ -95,7 +102,8 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 					time: parseInt(timeStamp),
 					problem: problem,
 					score: score,
-					name: key
+					name: key,
+					details: allDetails[key]
 				});
 			});
 
@@ -189,6 +197,10 @@ themisApp.controller('HomeController', ['$state', '$http', 'AuthService', 'Sessi
 		else {
 			$state.go('home.submission');
 		}
+	}
+
+	vm.onSubmissionDetailsClick = function(index) {
+		vm.submissionDetails = vm.submissionLogs[index].details;
 	}
 }]);
 

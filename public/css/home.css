@@ -51,3 +51,6 @@ html {
 #uploadSolution {
 	margin-bottom: 3rem;
 }
+#submissionTab .submission-details-btn {
+	cursor: pointer;
+}
