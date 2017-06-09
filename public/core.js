@@ -33,7 +33,7 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				url: 'posts',
 				controller: 'PostsController',
 				controllerAs: 'PostsCtrl',
-				template: 'posts'
+				templateUrl: 'html/posts.html'
 			})
 			.state('home.contest', {
 				url: 'contest',
