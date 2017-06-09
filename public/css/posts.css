@@ -1,8 +1,18 @@
 #site-posts .post {
 	font-size: 16px;
+	border-bottom: 1px solid #dddddd;
+	padding-bottom: 1rem;
+}
+#site-posts .post:not(:first-child) {
+	padding-top: 2rem;
 }
 
 #site-posts > .container > .row {
 	padding-top: 2rem;
 	border-top: 1px solid #dddddd;
+}
+
+#post-table-of-contents ol {
+	padding-left: 1.25rem;
+	color: #0275d8;
 }
