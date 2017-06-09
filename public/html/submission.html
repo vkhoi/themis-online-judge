@@ -1,6 +1,8 @@
 <div id="submissionTab" class="main-tab container">
-	<h3>Nộp bài</h3>
 	<form id="uploadSolution">
+		<div style="margin-bottom: 1rem;">
+			<h3>Nộp bài</h3>
+		</div>
 		<div class="form-group row">
 			<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
 			<div class="col-sm-6">
@@ -12,34 +14,36 @@
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file mã nguồn</label>
 			<div class="col-sm-4">
-				<button id="chooseFileButton" class="btn btn-default" ngf-select ng-model="ContestCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
+				<button id="chooseFileButton" type="button" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
 				<span>{{ ContestCtrl.fileSubmit.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-sm-offset-2">
+			<div class="col-sm-2 offset-sm-2">
 				<button class="btn btn-primary" type="submit" ng-click="ContestCtrl.submit()">Nộp bài</button>
 			</div>
 		</div>
 	</form>
-	<h3>Các lần bạn nộp</h3>
+	<div style="margin-bottom: 1rem;">
+		<h3>Các lần bạn nộp</h3>
+	</div>
 	<table class="table table-striped table-hover">
-		<thead>
+		<thead class="thead-inverse">
 			<tr>
-				<th class="col-sm-1">#</th>
-				<th class="col-sm-2">Vào lúc</th>
-				<th class="col-sm-6">Tên bài</th>
-				<th class="col-sm-2 text-center">Điểm</th>
-				<th class="col-sm-1 text-center">Chi tiết</th>
+				<th style="width: 10%;">#</th>
+				<th style="width: 20%;">Vào lúc</th>
+				<th style="width: 50%;">Tên bài</th>
+				<th class="text-center" style="width: 10%;">Điểm</th>
+				<th class="text-center" style="width: 10%;">Chi tiết</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="log in ContestCtrl.submissionLogs">
-				<td class="col-sm-1">{{ ContestCtrl.submissionLogs.length - $index }}</td>
-				<td class="col-sm-2">{{ log.time }}</td>
-				<td class="col-sm-6">{{ log.problem }}</td>
-				<td class="col-sm-2 text-center">{{ log.score | submissionResultFilter }}</td>
-				<td class="col-sm-1 text-center">
+				<td style="width: 10%;">{{ ContestCtrl.submissionLogs.length - $index }}</td>
+				<td style="width: 20%;">{{ log.time }}</td>
+				<td style="width: 50%;">{{ log.problem }}</td>
+				<td class="text-center" style="width: 10%;">{{ log.score | submissionResultFilter }}</td>
+				<td class="text-center" style="width: 10%;">
 					<i class="fa fa-file-o submission-details-btn" data-toggle="modal" data-target="#submissionDetails" ng-click="ContestCtrl.onSubmissionDetailsClick($index)"></i>
 				</td>
 			</tr>
@@ -50,8 +54,8 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close close-dialog" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Chi tiết kết quả chấm</h4>
+					<button type="button" class="close close-dialog" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				</div>
 				<div class="modal-body">
 					<pre>{{ ContestCtrl.submissionDetails }}</pre>

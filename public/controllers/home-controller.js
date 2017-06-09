@@ -1,5 +1,10 @@
-themisApp.controller('HomeController', ['$state', '$scope', 'AuthService', function($state, $scope, AuthService) {
+themisApp.controller('HomeController', ['$state', '$scope', 'AuthService', 'Session', function($state, $scope, AuthService, Session) {
 	var vm = this;
+
+	function init() {
+		vm.username = Session.username;
+	}
+	init();
 
 	vm.isTabActive = function(tabName) {
 		var stateName = $state.current.name;

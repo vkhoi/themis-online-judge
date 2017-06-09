@@ -8,56 +8,6 @@ html {
 	margin-bottom: 0;
 }
 
-/*----------- NAVIGATION BAR -----------*/
-.nav-tabs {
-	border: 1px solid rgb(185, 185, 185);
-	border-radius: 0.375rem;
-	margin-bottom: 1.5rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-}
-.nav-tabs > li:first-child {
-	margin-left: 0.5rem;
-}
-.nav-tabs > li:not(:first-child) {
-	margin-left: 1rem;
-}
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
-	border-width: 0;
- 	color: #000;
-}
-.nav-tabs > li > a {
-	border: none;
-	color: #000;
-	font-weight: 500;
-}
-.nav-tabs > li.active > a, .nav-tabs > li > a:hover { 
- 	border: none; 
- 	color: #000;
- 	background: transparent; 
-}
-.nav-tabs > li > a::after { 
-	content: "";
-	background: #3B5998;
-	height: 3px;
-	position: absolute;
-	width: 100%;
-	left: 0px;
-	bottom: 0px;
-	transition: all 250ms ease 0s;
-	transform: scale(0);
-}
-.nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after { 
-	transform: scale(1);
-}
-.nav > li > a {
-	padding: 10px 6px !important;
-}
-
-.navbar button {
-	margin-top: 8px;
-}
-
 #home-panel .header > .row .logo {
 	padding-left: 0;
 	padding-right: 0;
@@ -74,6 +24,7 @@ html {
 }
 
 #home-menu {
+	margin-top: 1.875rem;
 }
 
 #home-menu ul {
@@ -103,16 +54,4 @@ html {
 	color: #ea5644;
 }
 
-/*----------- NỘP BÀI -----------*/
-#submissionTab button {
-	width: 6rem;
-}
-#submissionTab button.close-dialog {
-	width: auto;
-}
-#uploadSolution {
-	margin-bottom: 3rem;
-}
-#submissionTab .submission-details-btn {
-	cursor: pointer;
-}
+

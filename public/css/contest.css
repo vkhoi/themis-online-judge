@@ -1,0 +1,32 @@
+#site-contest ul.navigation-bar {
+	padding: 1rem;
+	width: 100%;
+	border: 1px solid rgb(185, 185, 185);
+	margin-bottom: 2.5rem;
+}
+#site-contest ul.navigation-bar li {
+	display: inline;
+	cursor: pointer;
+	font-weight: 500;
+}
+#site-contest ul.navigation-bar li:not(:first-child) {
+	margin-left: 1rem;
+}
+#site-contest ul.navigation-bar li.active {
+	padding-bottom: 7px;
+	border-bottom: 3px solid #3b5998;
+}
+
+/*----------- NỘP BÀI -----------*/
+#submissionTab button {
+	width: 8rem;
+}
+#submissionTab button.close-dialog {
+	width: auto;
+}
+#uploadSolution {
+	margin-bottom: 3rem;
+}
+#submissionTab .submission-details-btn {
+	cursor: pointer;
+}
