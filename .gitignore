@@ -2,4 +2,5 @@ node_modules/
 uploads/
 dump.rdb
 data/*.db
+data/problems/
 .DS_Store

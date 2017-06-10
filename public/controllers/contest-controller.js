@@ -157,7 +157,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}).then(function successCallback(res) {
 			vm.fileProblem = null;
 			vm.uploading = false;
-
+			vm.problemTopic = "";
+			swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
+			getProblemFiles();
 		}, function errorCallback(err) {
 			console.log(err);
 		});
