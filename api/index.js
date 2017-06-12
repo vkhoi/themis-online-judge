@@ -12,5 +12,6 @@ router.use('/getScoreboard', require('./get-scoreboard'));
 router.use('/getProblems', require('./get-problems'));
 router.use('/getProblemFiles', require('./get-problem-files'));
 router.use('/uploadProblem', require('./upload-problem'));
+router.use('/posts', require('./posts'));
 
 module.exports = router;

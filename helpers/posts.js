@@ -1,0 +1,83 @@
+var path 		= require('path');
+var DataStore 	= require('nedb');
+var	Posts		= new DataStore({ filename: path.join(process.cwd(), 'data', 'posts.db'), autoload: true });
+// A post has 3 fields:
+// 1. title
+// 2. author
+// 3. content
+// 4. date
+
+// Function to insert a new post into the database.
+function addPost(post) {
+	return new Promise(function(resolve, reject) {
+		Posts.insert({
+			title: post.title,
+			author: post.author,
+			date: post.date,
+			content: post.content
+		}, function(err, user) {
+			if (err) {
+				reject(Error('Could not add new post'));
+			}
+			else {
+				resolve();
+			}
+		});
+	});
+}
+
+// Function to find a post with specific post's title and author.
+function findPost(title, author, callback) {
+	Posts.findOne({ title: title, author: author }, callback);
+}
+
+// Function to edit an existing post.
+function editPost(post) {
+	return new Promise(function(resolve, reject) {
+		findPost(post.title, post.author, function(err, oldPost) {
+			if (err || !oldPost) {
+				reject(Error('Could not find post to edit'));
+			}
+			else {
+				Posts.update({ _id: oldPost._id }, {
+					$set: { title: post.title, author: post.author, date: post.date, content: post.content }
+				}, {}, function(err, numAffected) {
+					if (err) {
+						reject(Error('Could not update post with new info'));
+					}
+					else {
+						resolve();
+					}
+				});
+			}
+		});
+	});
+}
+
+// Function to remove a post.
+function removePost(post) {
+	return new Promise(function(resolve, reject) {
+		findPost(post.title, post.author, function(err, oldPost) {
+			if (err || !oldPost) {
+				reject(Error('Could not find post to remove'));
+			}
+			else {
+				Posts.remove({ _id: oldPost._id }, {}, function(err, numRemoved) {
+					if (err) {
+						reject(Error('Could not remove post'));
+					}
+					else {
+						console.log(numRemoved);
+						resolve();
+					}
+				});
+			}
+		});
+	});
+}
+
+module.exports = {
+	addPost: 	addPost,
+	editPost: 	editPost,
+	removePost: removePost
+};
