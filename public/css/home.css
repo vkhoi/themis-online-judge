@@ -43,7 +43,11 @@ html {
 	-webkit-transition: all 0.1s;
     transition: all 0.1s;
 }
-#home-menu ul li:not(:first-child) {
+#home-menu ul a {
+	color: inherit;
+	text-decoration: none;
+}
+#home-menu ul a:not(:first-child) {
 	margin-left: 3.125rem;
 }
 #home-menu ul li:hover {
@@ -53,5 +57,3 @@ html {
 #home-menu ul li.active {
 	color: #ea5644;
 }
-
-

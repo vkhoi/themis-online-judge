@@ -6,6 +6,38 @@ var	Posts		= new DataStore({ filename: path.join(process.cwd(), 'data', 'posts.d
 // 2. author
 // 3. content
 // 4. date
+// 5. lastModified
+
+// Function to get all posts.
+function getAllPosts() {
+	return new Promise(function(resolve, reject) {
+		Posts.find({}, function(err, posts) {
+			if (err) {
+				reject(Error('Could not get all posts'));
+			}
+			else {
+				posts.sort(function(a, b) {
+					return a.date - b.date;
+				});
+				resolve(posts);
+			}
+		});
+	});
+}
+
+// Function to get a post with id.
+function getPostWithId(id) {
+	return new Promise(function(resolve, reject) {
+		Posts.findOne({ _id: id }, function(err, post) {
+			if (err || !post) {
+				reject(Error('Could not find post with this id'));
+			}
+			else {
+				resolve(post);
+			}
+		});
+	});
+}
 
 // Function to insert a new post into the database.
 function addPost(post) {
@@ -14,7 +46,8 @@ function addPost(post) {
 			title: post.title,
 			author: post.author,
 			date: post.date,
-			content: post.content
+			content: post.content,
+			lastModified: post.date
 		}, function(err, user) {
 			if (err) {
 				reject(Error('Could not add new post'));
@@ -34,13 +67,13 @@ function findPost(title, author, callback) {
 // Function to edit an existing post.
 function editPost(post) {
 	return new Promise(function(resolve, reject) {
-		findPost(post.title, post.author, function(err, oldPost) {
+		Posts.findOne({ _id: post._id }, function(err, oldPost) {
 			if (err || !oldPost) {
 				reject(Error('Could not find post to edit'));
 			}
 			else {
 				Posts.update({ _id: oldPost._id }, {
-					$set: { title: post.title, author: post.author, date: post.date, content: post.content }
+					$set: { title: post.title, lastModified: post.lastModified, content: post.content }
 				}, {}, function(err, numAffected) {
 					if (err) {
 						reject(Error('Could not update post with new info'));
@@ -57,7 +90,7 @@ function editPost(post) {
 // Function to remove a post.
 function removePost(post) {
 	return new Promise(function(resolve, reject) {
-		findPost(post.title, post.author, function(err, oldPost) {
+		Posts.findOne({ _id: post._id }, function(err, oldPost) {
 			if (err || !oldPost) {
 				reject(Error('Could not find post to remove'));
 			}
@@ -67,7 +100,6 @@ function removePost(post) {
 						reject(Error('Could not remove post'));
 					}
 					else {
-						console.log(numRemoved);
 						resolve();
 					}
 				});
@@ -77,7 +109,9 @@ function removePost(post) {
 }
 
 module.exports = {
-	addPost: 	addPost,
-	editPost: 	editPost,
-	removePost: removePost
+	getAllPosts: 	getAllPosts,
+	getPostWithId: 	getPostWithId,
+	addPost: 		addPost,
+	editPost: 		editPost,
+	removePost: 	removePost
 };

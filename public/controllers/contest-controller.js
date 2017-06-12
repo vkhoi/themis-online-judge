@@ -57,7 +57,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function timeToDate(timeStamp) {
 		var d = new Date(timeStamp);
-		return d.getFullYear() + "-" + padNumber(d.getDate(), 2) + "-" + padNumber(d.getMonth() + 1, 2) + " " + padNumber(d.getHours(), 2) + ":" + padNumber(d.getMinutes(), 2) + ":" + padNumber(d.getSeconds(), 2);
+		return padNumber(d.getDate(), 2) + "-" + padNumber(d.getMonth() + 1, 2) + "-" + d.getFullYear() + " " + padNumber(d.getHours(), 2) + ":" + padNumber(d.getMinutes(), 2) + ":" + padNumber(d.getSeconds(), 2);
 	}
 
 	function askJuryForScore(submissionName) {
@@ -76,7 +76,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					vm.submissionLogs[i].score = score;
 					vm.submissionLogs[i].details = details;
 					if (!$scope.$$phase)
-						$scope.$apply()
+						$scope.$apply();
 					break;
 				}
 			}

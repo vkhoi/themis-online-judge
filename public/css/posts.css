@@ -18,6 +18,9 @@
 }
 
 /*----------------------*/
+#posts-admin {
+	padding-bottom: 3rem;
+}
 #posts-admin > .row:first-child {
 	padding-top: 2rem;
 	border-top: 1px solid #dddddd;

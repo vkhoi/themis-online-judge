@@ -43,9 +43,15 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			})
 			.state('home.postsAdd', {
 				url: 'posts/admin/add',
-				controller: 'PostsAddController',
-				controllerAs: 'PostsAddCtrl',
-				templateUrl: 'html/posts-add.html'
+				controller: 'PostsAddEditController',
+				controllerAs: 'PostsAddEditCtrl',
+				templateUrl: 'html/posts-add-edit.html'
+			})
+			.state('home.postsEdit', {
+				url: 'posts/admin/edit/:id',
+				controller: 'PostsAddEditController',
+				controllerAs: 'PostsAddEditCtrl',
+				templateUrl: 'html/posts-add-edit.html'
 			})
 			.state('home.contest', {
 				url: 'contest',
