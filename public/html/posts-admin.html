@@ -1,0 +1,38 @@
+<div id="posts-admin" class="container">
+	<div class="row">
+		<h3 style="margin-bottom: 1rem; padding: 0.25rem;">Quản lý bài viết</h3>
+		<a style="margin-left: 0.5rem;">
+			<button id="add-new-post" type="button" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
+				Thêm bài mới
+			</button>
+		</a>
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th style="width: 5%;">#</th>
+					<th style="width: 40%;">Tên bài</th>
+					<th class="text-center" style="width: 20%;">Người đăng</th>
+					<th class="text-center" style="width: 20%;">Đăng ngày</th>
+					<th class="text-center" style="width: 15%;">Chỉnh sửa</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="post in PostsAdminCtrl.posts">
+					<td style="width: 5%;">{{ $index + 1 }}</td>
+					<td style="width: 40%;">{{ post.name }}</td>
+					<td class="text-center" style="width: 20%;">{{ post.author }}</td>
+					<td class="text-center" style="width: 20%;">{{ post.date }}</td>
+					<td class="text-center" style="width: 15%;">
+						<button type="button" class="btn btn-info">
+							<i class="fa fa-edit"></i>
+						</button>
+						<button type="button" class="btn btn-danger">
+							<i class="fa fa-trash"></i>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

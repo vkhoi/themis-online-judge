@@ -16,3 +16,12 @@
 	padding-left: 1.25rem;
 	color: #0275d8;
 }
+
+/*----------------------*/
+#posts-admin > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}
+#add-new-post {
+	/*max-height: 3rem;*/
+}

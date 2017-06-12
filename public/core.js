@@ -30,10 +30,16 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			redirectTo: 'home.contest.scoreboard'
 		})
 			.state('home.posts', {
-				url: 'posts',
+				url: 'posts/all',
 				controller: 'PostsController',
 				controllerAs: 'PostsCtrl',
 				templateUrl: 'html/posts.html'
+			})
+			.state('home.postsAdmin', {
+				url: 'posts/admin',
+				controller: 'PostsAdminController',
+				controllerAs: 'PostsAdminCtrl',
+				templateUrl: 'html/posts-admin.html'
 			})
 			.state('home.contest', {
 				url: 'contest',
