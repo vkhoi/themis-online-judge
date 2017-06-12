@@ -13,7 +13,7 @@
 		<tbody>
 			<tr ng-repeat="problem in ContestCtrl.problemFiles">
 				<td style="width: 10%;">{{ $index + 1 }}</td>
-				<td>{{ problem.name }}</td>
+				<td><a href="{{problem.file}}" target="_blank">{{ problem.name }}</a></td>
 				<td style="width: 10%;">{{ problem.date }}</td>
 				<td style="width: 10%;">{{ problem.topic }}</td>
 				<td style="width: 10%;">{{ problem.uploadUser }}</td>
