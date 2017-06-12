@@ -1,4 +1,4 @@
-var themisApp = angular.module('themisApp', ['ui.router', 'ngStorage', 'ngFileUpload']);
+var themisApp = angular.module('themisApp', ['ui.router', 'ngStorage', 'ngFileUpload', 'textAngular']);
 
 themisApp.constant('AUTH_EVENTS', {
 	loginSuccess: 'auth-login-success',
@@ -40,6 +40,12 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				controller: 'PostsAdminController',
 				controllerAs: 'PostsAdminCtrl',
 				templateUrl: 'html/posts-admin.html'
+			})
+			.state('home.postsAdd', {
+				url: 'posts/admin/add',
+				controller: 'PostsAddController',
+				controllerAs: 'PostsAddCtrl',
+				templateUrl: 'html/posts-add.html'
 			})
 			.state('home.contest', {
 				url: 'contest',
@@ -88,6 +94,11 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 		};
 	}]);
 	$httpProvider.interceptors.push('AuthInterceptor');
+
+	$provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) { 
+        taOptions.toolbar = [['h1', 'h2', 'h3', 'h4', 'p'], ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo'], ['justifyLeft', 'justifyCenter', 'justifyRight']];
+        return taOptions;
+    }]);
 });
 
 themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {

@@ -19,6 +19,7 @@
     "ng-file-upload": "^12.2.13",
     "ngstorage": "^0.3.11",
     "redis": "^2.7.1",
-    "sweetalert": "^1.1.3"
+    "sweetalert": "^1.1.3",
+    "textangular": "^1.5.16"
   }
 }

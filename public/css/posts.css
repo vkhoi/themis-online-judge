@@ -25,3 +25,30 @@
 #add-new-post {
 	/*max-height: 3rem;*/
 }
+
+/*----------------------*/
+#posts-add {
+	padding-bottom: 3rem;
+}
+#posts-add > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}
+#post-content div.ta-editor {
+	height: 25rem;
+}
+#post-content button {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+}
+#post-content button:hover {
+	background-color: #ccc;
+}
+#post-content button.active {
+	background-color: #e6e6e6;
+	border-color: #adadad;
+}
+#post-content div[contenteditable="true"] {
+	outline: none;
+}
