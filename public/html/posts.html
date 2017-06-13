@@ -21,9 +21,11 @@
 					</div>
 					<div class="card-block">
 						<ol>
-							<li><a href="#">Quy hoạch động</a></li>
-							<li><a href="#">Interval Tree</a></li>
-							<li><a href="#">Luồng cực đại</a></li>
+							<li ng-repeat="post in PostsCtrl.posts">
+								<a ui-sref="home.postDetail({ id: post._id })">
+									{{ post.title }}
+								</a>
+							</li>
 						</ol>
 					</div>
 				</div>
