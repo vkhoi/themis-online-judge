@@ -1,0 +1,19 @@
+<div id="post-detail" class="container">
+	<div class="row" style="margin-bottom: 1rem;">
+		<a ui-sref="home.posts">
+			<button type="button" class="btn btn-secondary">
+				<i class="fa fa-long-arrow-left"></i>
+				Trở lại
+			</button>
+		</a>
+	</div>
+	<div class="row">
+		<h1>{{ PostDetailCtrl.title }}</h1>
+	</div>
+	<div class="row">
+		<p><em>Đăng bởi {{ PostDetailCtrl.author }}, vào ngày {{ PostDetailCtrl.date }}</em></p>
+	</div>
+	<div class="row">
+		<p ng-bind-html="PostDetailCtrl.content | unsafe"></p>
+	</div>
+</div>

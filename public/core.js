@@ -35,23 +35,29 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				controllerAs: 'PostsCtrl',
 				templateUrl: 'html/posts.html'
 			})
+			.state('home.postDetail', {
+				url: 'posts/detail/:id',
+				controller: 'PostDetailController',
+				controllerAs: 'PostDetailCtrl',
+				templateUrl: 'html/post-detail.html'
+			})
 			.state('home.postsAdmin', {
 				url: 'posts/admin',
 				controller: 'PostsAdminController',
 				controllerAs: 'PostsAdminCtrl',
 				templateUrl: 'html/posts-admin.html'
 			})
-			.state('home.postsAdd', {
+			.state('home.postAdd', {
 				url: 'posts/admin/add',
 				controller: 'PostsAddEditController',
 				controllerAs: 'PostsAddEditCtrl',
-				templateUrl: 'html/posts-add-edit.html'
+				templateUrl: 'html/post-add-edit.html'
 			})
-			.state('home.postsEdit', {
+			.state('home.postEdit', {
 				url: 'posts/admin/edit/:id',
 				controller: 'PostsAddEditController',
 				controllerAs: 'PostsAddEditCtrl',
-				templateUrl: 'html/posts-add-edit.html'
+				templateUrl: 'html/post-add-edit.html'
 			})
 			.state('home.contest', {
 				url: 'contest',

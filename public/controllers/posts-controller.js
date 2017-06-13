@@ -28,9 +28,3 @@ themisApp.controller('PostsController', ['$state', '$scope', '$http', function($
 	}
 	init();
 }]);
-
-themisApp.filter('unsafe', function($sce) {
-	return function(val) {
-		return $sce.trustAsHtml(val);
-	}
-});

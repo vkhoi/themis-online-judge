@@ -5,8 +5,7 @@
 				<div class="post" ng-repeat="post in PostsCtrl.posts">
 					<h3>{{ post.title }}</h3>
 					<p><em>Đăng bởi {{ post.author }}, vào ngày {{ post.date }}</em></p>
-					<!-- <p ng-bind-html="post.content | unsafe"><a href="#"> Xem thêm</a></p> -->
-					<p>{{ post.shorttext }}<a href="#"> Xem thêm</a></p>
+					<p>{{ post.shorttext }}<a ui-sref="home.postDetail({ id: post._id })"> Xem thêm</a></p>
 				</div>
 			</div>
 			<div class="col-sm-4 offset-sm-1">

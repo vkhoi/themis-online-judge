@@ -13,7 +13,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 	var titleLostFocus = false;
 
 	function init() {
-		if ($state.current.name == "home.postsAdd") {
+		if ($state.current.name == "home.postAdd") {
 			isAdd = true;
 			vm.pageName = "Thêm bài viết mới";
 			vm.addEditBtnName = "Thêm bài";
@@ -22,7 +22,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 			isAdd = false;
 			vm.pageName = "Chỉnh sửa bài viết";
 			vm.addEditBtnName = "Chỉnh sửa";
-				$http.post('/api/posts/getPost', { id: $state.params.id }).then(function successCallback(res) {
+			$http.post('/api/posts/getPost', { id: $state.params.id }).then(function successCallback(res) {
 				vm.title = res.data.title;
 				vm.shorttext = res.data.shorttext;
 				vm.content = res.data.content;

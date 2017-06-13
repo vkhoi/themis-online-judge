@@ -58,3 +58,12 @@
 #post-content div[contenteditable="true"] {
 	outline: none;
 }
+
+/*----------------------*/
+#post-detail {
+	padding-bottom: 3rem;
+}
+#post-detail > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}
