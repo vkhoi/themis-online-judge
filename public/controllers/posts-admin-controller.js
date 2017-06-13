@@ -15,12 +15,13 @@ themisApp.controller('PostsAdminController', ['$state', '$scope', '$http', funct
 	}
 
 	function init() {
-		$http.get('/api/posts/getAllPosts').then(function successCallback(res) {
+		$http.get('/api/posts/getAllPosts?noContent=true').then(function successCallback(res) {
 			vm.posts = res.data;
 			vm.posts.forEach(function(post) {
 				post.date = timeToDate(post.date);
 			});
 		}, function errorCallback(err) {
+			console.log(err);
 		});
 	}
 	init();

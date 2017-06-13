@@ -4,12 +4,13 @@ var	Posts		= new DataStore({ filename: path.join(process.cwd(), 'data', 'posts.d
 // A post has 3 fields:
 // 1. title
 // 2. author
-// 3. content
-// 4. date
-// 5. lastModified
+// 3. shorttext
+// 4. content
+// 5. date
+// 6. lastModified
 
 // Function to get all posts.
-function getAllPosts() {
+function getAllPosts(noContent) {
 	return new Promise(function(resolve, reject) {
 		Posts.find({}, function(err, posts) {
 			if (err) {
@@ -19,7 +20,20 @@ function getAllPosts() {
 				posts.sort(function(a, b) {
 					return a.date - b.date;
 				});
-				resolve(posts);
+				if (noContent == "true") {
+					var res = [];
+					for (var i = 0; i < posts.length; i+=1) {
+						res.push({
+							_id: posts[i]._id,
+							title: posts[i].title,
+							author: posts[i].author,
+							date: posts[i].date
+						});
+					}
+					resolve(res);
+				}
+				else
+					resolve(posts);
 			}
 		});
 	});
@@ -46,6 +60,7 @@ function addPost(post) {
 			title: post.title,
 			author: post.author,
 			date: post.date,
+			shorttext: post.shorttext,
 			content: post.content,
 			lastModified: post.date
 		}, function(err, user) {
@@ -73,7 +88,7 @@ function editPost(post) {
 			}
 			else {
 				Posts.update({ _id: oldPost._id }, {
-					$set: { title: post.title, lastModified: post.lastModified, content: post.content }
+					$set: { title: post.title, lastModified: post.lastModified, shorttext: post.shorttext, content: post.content }
 				}, {}, function(err, numAffected) {
 					if (err) {
 						reject(Error('Could not update post with new info'));

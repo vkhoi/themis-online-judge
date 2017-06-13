@@ -2,9 +2,13 @@ var express 			= require('express');
 var router 				= express.Router();
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
 var Posts				= require('../helpers/posts.js');
+var url 				= require('url');
 
 router.get('/getAllPosts', [ensureAuthorized], function(req, res) {
-	Posts.getAllPosts().then(function successCallback(posts) {
+	var queryObject = url.parse(req.url, true).query;
+	var noContent = queryObject['noContent'];
+
+	Posts.getAllPosts(noContent).then(function successCallback(posts) {
 		res.send(posts);
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
@@ -31,9 +35,10 @@ router.post('/getPost', [ensureAuthorized], function(req, res) {
 router.post('/add', [ensureAuthorized], function(req, res) {
 	var title = req.body.title;
 	var author = req.body.author;
+	var shorttext = req.body.shorttext;
 	var content = req.body.content;
 
-	Posts.addPost({ title: title, author: author, date: Date.now(), content: content }).then(function successCallback() {
+	Posts.addPost({ title: title, author: author, date: Date.now(), shorttext: shorttext, content: content }).then(function successCallback() {
 		res.send({ status: 'SUCCESS' });
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
@@ -46,9 +51,10 @@ router.post('/add', [ensureAuthorized], function(req, res) {
 router.post('/edit', [ensureAuthorized], function(req, res) {
 	var id = req.body.id;
 	var title = req.body.title;
+	var shorttext = req.body.shorttext;
 	var content = req.body.content;
 
-	Posts.editPost({ _id: id, title: title, lastModified: Date.now(), content: content }).then(function successCallback() {
+	Posts.editPost({ _id: id, title: title, lastModified: Date.now(), shorttext: shorttext, content: content }).then(function successCallback() {
 		res.send({ status: 'SUCCESS' });
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());

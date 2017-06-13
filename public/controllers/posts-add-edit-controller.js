@@ -5,6 +5,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 	vm.addEditBtnName = "";
 
 	vm.title = "";
+	vm.shorttext = "";
 	vm.content = "";
 	vm.author = "";
 
@@ -23,6 +24,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 			vm.addEditBtnName = "Chỉnh sửa";
 				$http.post('/api/posts/getPost', { id: $state.params.id }).then(function successCallback(res) {
 				vm.title = res.data.title;
+				vm.shorttext = res.data.shorttext;
 				vm.content = res.data.content;
 				vm.author = res.data.author;
 			}, function errorCallback(err) {
@@ -61,7 +63,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 			});
 		}
 		else if (isAdd) {
-			$http.post('/api/posts/add', { title: vm.title, author: Session.username, content: vm.content }).then(function successCallback(res) {
+			$http.post('/api/posts/add', { title: vm.title, author: Session.username, shorttext: vm.shorttext, content: vm.content }).then(function successCallback(res) {
 				swal({
 					title: "Thành công!",
 					text: "Bài mới đã được thêm vào!",
@@ -79,7 +81,7 @@ themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Se
 			});
 		}
 		else {
-			$http.post('/api/posts/edit', { id: $state.params.id, title: vm.title, content: vm.content }).then(function successCallback(res) {
+			$http.post('/api/posts/edit', { id: $state.params.id, title: vm.title, shorttext: vm.shorttext, content: vm.content }).then(function successCallback(res) {
 				swal({
 					title: "Thành công!",
 					text: "Bài viết đã được chỉnh sửa!",
