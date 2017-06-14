@@ -22,7 +22,6 @@ themisApp.factory('AuthService', ['$http', '$localStorage', '$timeout', 'Session
 		return $http
 			.post('/api/logout', { token: $localStorage.token })
 			.then(function successCallback(res) {
-				console.log(res);
 				Session.destroy();
 				delete $localStorage.token;
 			});
@@ -69,6 +68,10 @@ themisApp.factory('AuthService', ['$http', '$localStorage', '$timeout', 'Session
     	}
     	return authorizedRoles.indexOf(Session.userRole) !== -1;
   	};
+
+  	authService.resetAuthentication = function() {
+  		Session.destroy();
+  	}
 
 	return authService;
 }]);

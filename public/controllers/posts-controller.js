@@ -1,4 +1,4 @@
-themisApp.controller('PostsController', ['$state', '$scope', '$http', function($state, $scope, $http) {
+themisApp.controller('PostsController', ['$state', '$scope', '$http', 'AuthService', function($state, $scope, $http, AuthService) {
 
 	var vm = this;
 	vm.posts = [];
@@ -17,13 +17,16 @@ themisApp.controller('PostsController', ['$state', '$scope', '$http', function($
 
 	function init() {
 		$http.get('/api/posts/getAllPosts').then(function successCallback(res) {
-			console.log(res);
 			vm.posts = res.data;
 			vm.posts.forEach(function(post) {
 				post.date = timeToDate(post.date);
 			});
 		}, function errorCallback(err) {
 			console.log(err);
+			if (err.status == 403) {
+				AuthService.resetAuthentication();
+				$state.go('login');
+			}
 		});
 	}
 	init();

@@ -78,7 +78,7 @@ router.post('/', function(req, res) {
 
 			// Set token along with an expiration time.
 			redisClient.set(token, username);
-			redisClient.expire(token, '3600');
+			redisClient.expire(token, '10800');
 
 			// Response with user's information and token.
 			res.json({ 
