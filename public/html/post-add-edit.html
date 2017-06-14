@@ -8,20 +8,20 @@
 		</a>
 	</div>
 	<div class="row">
-		<h3>{{ PostsAddEditCtrl.pageName }}</h3>
+		<h3>{{ PostAddEditCtrl.pageName }}</h3>
 	</div>
-	<div class="form-group" ng-class="{'has-danger': PostsAddEditCtrl.isTitleEmpty() }">
+	<div class="form-group" ng-class="{'has-danger': PostAddEditCtrl.isTitleEmpty() }">
 	    <label for="post-name">Tên bài</label>
-    	<input type="text" class="form-control form-control-danger" id="post-name" ng-model="PostsAddEditCtrl.title" required ng-blur="PostsAddEditCtrl.titleLostFocus()">
-    	<div class="form-control-feedback" ng-show="PostsAddEditCtrl.isTitleEmpty()">Tên bài không được rỗng.</div>
+    	<input type="text" class="form-control form-control-danger" id="post-name" ng-model="PostAddEditCtrl.title" required ng-blur="PostAddEditCtrl.titleLostFocus()">
+    	<div class="form-control-feedback" ng-show="PostAddEditCtrl.isTitleEmpty()">Tên bài không được rỗng.</div>
   	</div>
   	<div class="form-group">
 	    <label for="post-short-text">Nội dung giới thiệu (vắn tắt)</label>
-	    <textarea id="post-short-text" class="form-control" rows="3" ng-model="PostsAddEditCtrl.shorttext"></textarea>
+	    <textarea id="post-short-text" class="form-control" rows="3" ng-model="PostAddEditCtrl.shorttext"></textarea>
   	</div>
   	<div class="form-group">
 	    <label for="post-content">Nội dung đầy đủ</label>
-		<div text-angular id="post-content" spellcheck="false" ng-model="PostsAddEditCtrl.content"></div>
+		<div text-angular id="post-content" spellcheck="false" ng-model="PostAddEditCtrl.content"></div>
   	</div>
-  	<button type="button" class="btn btn-primary" ng-click="PostsAddEditCtrl.addEditPost()">{{ PostsAddEditCtrl.addEditBtnName }}</button>
+  	<button type="button" class="btn btn-primary" ng-click="PostAddEditCtrl.addEditPost()">{{ PostAddEditCtrl.addEditBtnName }}</button>
 </div>

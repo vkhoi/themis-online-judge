@@ -1,7 +1,7 @@
 var path 		= require('path');
 var DataStore 	= require('nedb');
 var	Posts		= new DataStore({ filename: path.join(process.cwd(), 'data', 'posts.db'), autoload: true });
-// A post has 3 fields:
+// A post has 6 fields:
 // 1. title
 // 2. author
 // 3. shorttext

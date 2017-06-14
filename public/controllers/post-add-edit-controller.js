@@ -1,4 +1,4 @@
-themisApp.controller('PostsAddEditController', ['$state', '$scope', '$http', 'Session', function($state, $scope, $http, Session) {
+themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Session', function($state, $scope, $http, Session) {
 	var vm = this;
 
 	vm.pageName = "";

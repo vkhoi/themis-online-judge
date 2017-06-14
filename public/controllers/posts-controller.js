@@ -22,7 +22,6 @@ themisApp.controller('PostsController', ['$state', '$scope', '$http', 'AuthServi
 				post.date = timeToDate(post.date);
 			});
 		}, function errorCallback(err) {
-			console.log(err);
 			if (err.status == 403) {
 				AuthService.resetAuthentication();
 				$state.go('login');

@@ -1,0 +1,15 @@
+#site-members {
+	padding-bottom: 3rem;
+}
+#site-members > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}
+#site-members table a {
+	text-decoration: none;
+}
+
+#member-add-edit > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}

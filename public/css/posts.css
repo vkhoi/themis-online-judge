@@ -28,8 +28,8 @@
 	padding-top: 2rem;
 	border-top: 1px solid #dddddd;
 }
-#add-new-post {
-	/*max-height: 3rem;*/
+#posts-admin table a {
+	text-decoration: none;
 }
 
 /*----------------------*/

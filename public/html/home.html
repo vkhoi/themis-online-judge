@@ -1,16 +1,4 @@
 <div id="home-panel">
-	<!-- <nav class="navbar">
-	  	<div class="container-fluid">
-		    <div class="navbar-header">
-		    	<a class="navbar-brand" href="#">Đội Tuyển Tin PTNK</a>
-		    </div>
-		    <div class="collapse navbar-collapse">
-		      	<ul class="nav navbar-nav navbar-right">
-		        	<li><p class="navbar-text">Xin chào, {{ ContestCtrl.username }}</p></li>
-		        	<li><button ng-click="ContestCtrl.logout()" class="btn btn-danger">Đăng xuất</button></li>
-		      	</ul>
-		    </div>
-	</nav> -->
 	<div>
 		<div class="container header" style="margin-bottom: 2rem;">
 			<div class="row">
@@ -19,16 +7,17 @@
 						<img src="img/site-logo.png"></img>
 					</div>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-5">
 					<div id="home-menu">
 						<h3>Đội Tuyển Tin PTNK</h3>
 						<ul>
 							<a ui-sref="home.posts"><li ng-class="{active: HomeCtrl.isTabActive('home.post')}">TÀI LIỆU</li></a>
 							<a ui-sref="home.contest.scoreboard"><li ng-class="{active: HomeCtrl.isTabActive('home.contest')}">LÀM BÀI</li></a>
+							<a ui-sref="home.members"><li ng-class="{active: HomeCtrl.isTabActive('home.members')}">THÀNH VIÊN</li></a>
 						</ul>
 					</div>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-5">
 					<div style="float: right; margin-top: 1.875rem;">
 						<h3>Xin chào, {{ HomeCtrl.username }}</h3>
 						<button ng-click="HomeCtrl.logout()" class="btn btn-danger" style="width: 100%;">Đăng xuất</button>

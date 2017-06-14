@@ -49,14 +49,14 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			})
 			.state('home.postAdd', {
 				url: 'posts/admin/add',
-				controller: 'PostsAddEditController',
-				controllerAs: 'PostsAddEditCtrl',
+				controller: 'PostAddEditController',
+				controllerAs: 'PostAddEditCtrl',
 				templateUrl: 'html/post-add-edit.html'
 			})
 			.state('home.postEdit', {
 				url: 'posts/admin/edit/:id',
-				controller: 'PostsAddEditController',
-				controllerAs: 'PostsAddEditCtrl',
+				controller: 'PostAddEditController',
+				controllerAs: 'PostAddEditCtrl',
 				templateUrl: 'html/post-add-edit.html'
 			})
 			.state('home.contest', {
@@ -84,6 +84,24 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 					url: '/submission',
 					templateUrl: 'html/submission.html'
 				})
+			.state('home.members', {
+				url: 'members',
+				controller: 'MembersController',
+				controllerAs: 'MembersCtrl',
+				templateUrl: 'html/members.html'
+			})
+			.state('home.memberEdit', {
+				url: 'members/edit/:username',
+				controller: 'MemberAddEditController',
+				controllerAs: 'MemberAddEditCtrl',
+				templateUrl: 'html/member-add-edit.html'
+			})
+			.state('home.memberAdd', {
+				url: 'members/add',
+				controller: 'MemberAddEditController',
+				controllerAs: 'MemberAddEditCtrl',
+				templateUrl: 'html/member-add-edit.html'
+			})
 
 	$locationProvider.html5Mode(true);
 

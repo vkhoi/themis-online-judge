@@ -1,0 +1,45 @@
+<div id="member-add-edit" class="container">
+	<div class="row" style="margin-bottom: 1rem;">
+		<a ui-sref="home.members">
+			<button type="button" class="btn btn-secondary">
+				<i class="fa fa-long-arrow-left"></i>
+				Trở lại
+			</button>
+		</a>
+	</div>
+	<div class="row" style="margin-bottom: 1rem;">
+		<h3>{{ MemberAddEditCtrl.pageName }}</h3>
+	</div>
+	<div class="form-group row">
+	  	<label for="member-username" class="col-2 col-form-label">Tên tài khoản</label>
+	  	<div class="col-10">
+	   		<input class="form-control" type="text" value="Artisanal kale" id="member-username" ng-model="MemberAddEditCtrl.username">
+	  	</div>
+	</div>
+	<div class="form-group row">
+	  	<label for="member-password" class="col-2 col-form-label">Mật khẩu</label>
+	  	<div class="col-10">
+	   		<input class="form-control" type="password" value="Artisanal kale" id="member-password" ng-model="MemberAddEditCtrl.password">
+	  	</div>
+	</div>
+	<div class="form-group row">
+	  	<label for="member-name" class="col-2 col-form-label">Họ và tên</label>
+	  	<div class="col-10">
+	   		<input class="form-control" type="text" value="Artisanal kale" id="member-name" ng-model="MemberAddEditCtrl.name">
+	  	</div>
+	</div>
+	<div class="form-group row">
+	  	<label for="member-role" class="col-2 col-form-label">Quyền hạn</label>
+	  	<div class="col-10">
+	  		<select id="member-role" class="form-control" ng-model="MemberAddEditCtrl.role">
+	  			<option>admin</option>
+	  			<option>contestant</option>
+	  		</select>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="button" class="btn btn-primary" ng-click="MemberAddEditCtrl.addEditMember()">{{ MemberAddEditCtrl.addEditBtnName }}</button>
+		</div>
+	</div>
+</div>
