@@ -5,17 +5,11 @@ var config		= require('../config');
 var moment 		= require('moment');
 
 // Function to insert a new problem into the database.
-function addProblem(username, problemName, topic, file) {
-	problemList.insert({
-		username: username,
-		problemName: problemName,
-		date: moment().format("DD-MM-YYYY"),
-		topic: topic,
-		file: file
-	}, function(err, user) {
+function addProblem(newProblem) {
+	problemList.insert(newProblem, function(err, user) {
 		if (err) {}
 		else {
-			console.log('added', username, problemName);
+			console.log('added', newProblem.uploadUser, newProblem.problemName);
 		}
 	});
 }
@@ -27,14 +21,8 @@ function getAllProblems() {
 			if (err) reject(Error("Could not retrieve all problems"));
 			else {
 				var res = [];
-				data.forEach(function(problemList) {
-					res.push({
-						username: problemList.username,
-						problemName: problemList.problemName,
-						topic: problemList.topic,
-						date: problemList.date,
-						file: problemList.file
-					});
+				data.forEach(function(problem) {
+					res.push(problem);
 				});
 				resolve(res);
 			}

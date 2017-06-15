@@ -1,6 +1,8 @@
 themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthService', 'Session', 'Upload', function($state, $scope, $http, AuthService, Session, Upload) {
 	var vm = this;
 	vm.submissionDetails = "";
+	vm.startTime = "";
+	vm.endTime = "";
 
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
@@ -29,10 +31,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			problems.forEach(function(problem) {
 				var elem = {
 					name: problem.problemName,
-					date: problem.date,
+					duration: problem.duration,
 					topic: problem.topic,
-					uploadUser: problem.username,
-					file: problem.file
+					uploadUser: problem.uploadUser,
+					file: problem.file,
+					startTime: problem.startTime,
+					endTime: problem.endTime
 				};
 				console.log(elem);
 				vm.problemFiles.push(elem);
@@ -150,14 +154,18 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		Upload.upload({
 			url: '/api/uploadProblem',
 			data: {
-				username: Session.username,
+				uploadUser: Session.username,
 				topic: vm.problemTopic,
-				file: vm.fileProblem
+				file: vm.fileProblem,
+				startTime: vm.startTime,
+				endTime: vm.endTime,
 			}
 		}).then(function successCallback(res) {
 			vm.fileProblem = null;
 			vm.uploading = false;
 			vm.problemTopic = "";
+			vm.startTime = "";
+			vm.endTime = "";
 			swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
 			getProblemFiles();
 		}, function errorCallback(err) {

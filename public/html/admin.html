@@ -9,14 +9,36 @@
 		</div>
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file đề bài</label>
-			<div class="col-sm-4">
+			<div class="col-sm-6">
 				<button id="chooseFileButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
 				<span>{{ ContestCtrl.fileProblem.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
+			<label for="setStartTime" class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
+			<div class="col-sm-6">
+				<div class="input-group" moment-picker="ContestCtrl.startTime" format="DD/MM/YYYY, HH:mm" locale="vi">
+				    <span class="input-group-addon">
+				        <i class="fa fa-clock-o"></i>
+				    </span>
+				    <input class="form-control" ng-model="ContestCtrl.startTime">
+				</div>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="setEndTime" class="col-sm-2 col-form-label">Thời gian kết thúc</label>
+			<div class="col-sm-6">
+				<div class="input-group" moment-picker="ContestCtrl.endTime" format="DD/MM/YYYY, HH:mm" locale="vi">
+				    <span class="input-group-addon">
+				        <i class="fa fa-clock-o"></i>
+				    </span>
+				    <input class="form-control" ng-model="ContestCtrl.endTime">
+				</div>
+			</div>
+		</div>
+		<div class="form-group row">
 			<div class="col-sm-2 offset-sm-2">
-				<button class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.uploadProblem()">Upload</button>
+				<button class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.uploadProblem()">Tạo kỳ thi</button>
 			</div>
 		</div>
 	</form>

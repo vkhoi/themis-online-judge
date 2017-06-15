@@ -3,7 +3,8 @@ var router 				= express.Router();
 var path				= require('path');
 var multer				= require('multer');
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
-var problemList 		= require('../helpers/upload-problem')
+var problemList 		= require('../helpers/upload-problem');
+var dateTimeCvt			= require('../helpers/datetime-converter');
 
 // Specify directory to store submissions.
 // Rename submission files so that Themis can parse user's name and problem's name.
@@ -19,13 +20,16 @@ var upload = multer({ storage: storage }).single('file');
 // Type: POST.
 router.post('/', [ensureAuthorized, upload], function(req, res) {
 	// Get problem file's content and store it in database.
-	var username = req.body.username;
-	var problemName = req.file.originalname;
-	var topic = req.body.topic;
-	var filePath = path.join('data/problems', req.file.filename);
-
-
-	problemList.addProblem(username, problemName, topic, filePath)
+	var newProblem = {
+		problemName: req.file.originalname,
+		uploadUser: req.body.uploadUser,
+		topic: req.body.topic,
+		filePath: path.join('data/problems', req.file.filename),
+		startTime: req.body.startTime,
+		endTime: req.body.endTime,
+		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime)
+	};
+	problemList.addProblem(newProblem);
 
 	upload(req, res, function(err) {
 		if (err) {

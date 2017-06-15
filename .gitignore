@@ -3,4 +3,5 @@ uploads/
 dump.rdb
 data/*.db
 data/problems/
+public/data/problems/
 .DS_Store
