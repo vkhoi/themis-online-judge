@@ -1,4 +1,4 @@
-themisApp.controller('PostsController', ['$state', '$scope', '$http', 'AuthService', function($state, $scope, $http, AuthService) {
+themisApp.controller('PostsController', ['$state', '$scope', '$http', 'AuthService', 'Session', function($state, $scope, $http, AuthService, Session) {
 
 	var vm = this;
 	vm.posts = [];
@@ -29,4 +29,8 @@ themisApp.controller('PostsController', ['$state', '$scope', '$http', 'AuthServi
 		});
 	}
 	init();
+
+	vm.isAdmin = function() {
+		return Session.userRole == "admin";
+	}
 }]);

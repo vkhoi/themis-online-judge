@@ -63,6 +63,8 @@ themisApp.factory('AuthService', ['$http', '$localStorage', '$timeout', 'Session
 	// Check if session is authorized for an operation.
 	// The operation is only allowed for roles that are stored in array authorizedRoles.
 	authService.isAuthorized = function(authorizedRoles) {
+		if (!authorizedRoles)
+			return true;
     	if (!angular.isArray(authorizedRoles)) {
       		authorizedRoles = [authorizedRoles];
     	}

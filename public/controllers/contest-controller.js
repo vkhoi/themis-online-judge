@@ -211,6 +211,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.onSubmissionDetailsClick = function(index) {
 		vm.submissionDetails = vm.submissionLogs[index].details;
 	}
+
+	vm.isAdmin = function() {
+		return Session.userRole == "admin";
+	}
 }]);
 
 themisApp.filter('submissionResultFilter', function() {

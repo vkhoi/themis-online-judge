@@ -25,4 +25,8 @@ themisApp.controller('HomeController', ['$state', '$scope', 'AuthService', 'Sess
 			$state.go('login');
 		});
 	}
+
+	vm.isAdmin = function() {
+		return Session.userRole == "admin";
+	}
 }]);

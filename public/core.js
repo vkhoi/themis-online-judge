@@ -45,32 +45,45 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				url: 'posts/admin',
 				controller: 'PostsAdminController',
 				controllerAs: 'PostsAdminCtrl',
-				templateUrl: 'html/posts-admin.html'
+				templateUrl: 'html/posts-admin.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.posts'
+				}
 			})
 			.state('home.postAdd', {
 				url: 'posts/admin/add',
 				controller: 'PostAddEditController',
 				controllerAs: 'PostAddEditCtrl',
-				templateUrl: 'html/post-add-edit.html'
+				templateUrl: 'html/post-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.posts'
+				}
 			})
 			.state('home.postEdit', {
 				url: 'posts/admin/edit/:id',
 				controller: 'PostAddEditController',
 				controllerAs: 'PostAddEditCtrl',
-				templateUrl: 'html/post-add-edit.html'
+				templateUrl: 'html/post-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.posts'
+				}
 			})
 			.state('home.contest', {
 				url: 'contest',
 				controller: 'ContestController',
 				controllerAs: 'ContestCtrl',
-				templateUrl: 'html/contest.html',
-				data: {
-					authorizedRoles: [USER_ROLES.admin, USER_ROLES.contestant]
-				}
+				templateUrl: 'html/contest.html'
 			})
 				.state('home.contest.admin', {
 					url: '/admin',
-					templateUrl: 'html/admin.html'
+					templateUrl: 'html/admin.html',
+					data: {
+						authorizedRoles: [USER_ROLES.admin],
+						redirectTo: 'home.contest.scoreboard'
+					}
 				})
 				.state('home.contest.problems', {
 					url: '/problems',
@@ -88,19 +101,31 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				url: 'members',
 				controller: 'MembersController',
 				controllerAs: 'MembersCtrl',
-				templateUrl: 'html/members.html'
+				templateUrl: 'html/members.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
 			})
 			.state('home.memberEdit', {
 				url: 'members/edit/:username',
 				controller: 'MemberAddEditController',
 				controllerAs: 'MemberAddEditCtrl',
-				templateUrl: 'html/member-add-edit.html'
+				templateUrl: 'html/member-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
 			})
 			.state('home.memberAdd', {
 				url: 'members/add',
 				controller: 'MemberAddEditController',
 				controllerAs: 'MemberAddEditCtrl',
-				templateUrl: 'html/member-add-edit.html'
+				templateUrl: 'html/member-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
 			})
 
 	$locationProvider.html5Mode(true);
@@ -131,15 +156,21 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
     }]);
 });
 
-themisApp.run(function($transitions, $rootScope, AUTH_EVENTS) {
+themisApp.run(function($transitions, $rootScope, $q, AUTH_EVENTS) {
 	$transitions.onStart({ to: 'home.**'}, function(trans) {
-		// var authorizedRoles = trans.to().data.authorizedRoles;
 		var AuthService = trans.injector().get('AuthService');
 
 		return AuthService.isAuthenticated().then(function(isAuthenticated) {
 			if (!isAuthenticated) {
 				$rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
     			return trans.router.stateService.target('login');
+			}
+			if (trans.to().data) {
+				var authorizedRoles = trans.to().data.authorizedRoles;
+				if (!AuthService.isAuthorized(authorizedRoles)) {
+					var redirectTo = trans.to().data.redirectTo;
+					return trans.router.stateService.target(redirectTo);
+				}
 			}
 		});
 	});
