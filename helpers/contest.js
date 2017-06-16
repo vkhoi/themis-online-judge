@@ -83,8 +83,23 @@ function getScoreboard() {
 	return res;
 }
 
+function addUser(username) {
+	scores[username] = {
+		total: 0
+	};
+	problems.forEach(function(problem) {
+		scores[username][problem] = 0;
+	});
+}
+
+function removeUser(username) {
+	delete scores[username];
+}
+
 module.exports = {
 	getProblems: 	getProblems,
 	updateScore: 	updateScore,
-	getScoreboard: 	getScoreboard
+	getScoreboard: 	getScoreboard,
+	addUser: 		addUser,
+	removeUser:  	removeUser
 };

@@ -3,7 +3,7 @@ var router 		= express.Router();
 var jwt			= require('jsonwebtoken');
 var config 		= require('../config');
 var redis		= require('redis');
-var User 		= require('../models/user');
+var Users 		= require('../helpers/users');
 
 var redisClient = redis.createClient();
 
@@ -34,26 +34,21 @@ router.post('/', function(req, res) {
 				var username = reply, userRole;
 
 				// Find the user with this username.
-				var user = User.find(username);
-
-				// Check if user exists.
-				if (user) {
-					// Respond with user's information and token.
+				Users.getUserWithUsername(username).then(function successCallback(user) {
 					res.json({
 						user: {
-							username: username,
-							userRole: userRole,
+							username: user.username,
+							userRole: user.role,
 							token: token
 						}
 					});
-				}
-				else {
+				}, function errorCallback(err) {
 					// User not exists.
 					var message = {};
 					message.status = 'FAILED';
 					message.description = 'Account does not exist';
 					res.status(401).send(message);
-				}
+				});
 			}
 			else {
 				// Token not exists in Redis -> must have been expired.
@@ -68,8 +63,7 @@ router.post('/', function(req, res) {
 
 	// Log in using username+password.
 	// Find user with this username.
-	var user = User.find(username);
-	if (user) {
+	Users.getUserWithUsername(username).then(function successCallback(user) {
 		// User exists. Check password.
 		if (user.password == password) {
 			// Password is correct.
@@ -84,26 +78,29 @@ router.post('/', function(req, res) {
 			res.json({ 
 				user: { 
 					username: username,
-					userRole: user.userRole,
+					userRole: user.role,
 					token: token
 				}
 			});
-			return;
 		}
-	}
-
-	// Failed response message.
-	var message = {};
-	message.status = 'FAILED';
-
-	// Notify why it fails.
-	if (!user)
+		else {
+			// Failed response message.
+			var message = {};
+			message.status = 'FAILED';
+			message.description = 'Password is incorrect';
+			
+			// Unauthorized request -> exit code = 401.
+			res.status(401).send(message);
+		}
+	}, function errorCallback(err) {
+		// Failed response message.
+		var message = {};
+		message.status = 'FAILED';
 		message.description = 'Account does not exist';
-	else
-		message.description = 'Password is incorrect';
 
-	// Unauthorized request -> exit code = 401.
-	res.status(401).send(message);
+		// Unauthorized request -> exit code = 401.
+		res.status(401).send(message);
+	});
 });
 
 module.exports = router;

@@ -29,6 +29,23 @@ function addUser(username) {
 	});
 }
 
+// Function to remove a user.
+function removeUser(username) {
+	UserSubLog.findOne({ username: username }, function(err, _user) {
+		if (err || !_user) {
+		}
+		else {
+			UserSubLog.remove({ username: username }, {}, function(err, numRemoved) {
+				if (err) {
+				}
+				else {
+					console.log('removed', username);
+				}
+			});
+		}
+	});
+}
+
 // Function to find a user with specific username.
 function findUser(username, callback) {
 	UserSubLog.findOne({ username: username }, callback);
@@ -82,7 +99,7 @@ function addScoreDetails(username, submissionName, res) {
 function getAllScoreDetails(username) {
 	return new Promise(function(resolve, reject) {
 		findUser(username, function(err, user) {
-			if (err) reject(Error('Could not retrieve scores'));
+			if (err || !user) reject(Error('Could not retrieve scores'));
 			else {
 				resolve({
 					scores: user.scores,
@@ -158,6 +175,7 @@ function getAllUserSubLogScores() {
 
 module.exports = {
 	addUser: 					addUser,
+	removeUser: 				removeUser,
 	addSubmission: 				addSubmission,
 	addScoreDetails: 			addScoreDetails,
 	getAllScoreDetails: 		getAllScoreDetails,

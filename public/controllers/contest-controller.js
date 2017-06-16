@@ -3,6 +3,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.submissionDetails = "";
 	vm.startTime = "";
 	vm.endTime = "";
+	vm.submissionLogs = [];
 
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
