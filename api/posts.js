@@ -1,6 +1,7 @@
 var express 			= require('express');
 var router 				= express.Router();
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
+var ensureAdmin 		= require('../helpers/ensure-admin');
 var Posts				= require('../helpers/posts.js');
 var url 				= require('url');
 
@@ -32,7 +33,7 @@ router.post('/getPost', [ensureAuthorized], function(req, res) {
 // Name: Add new post.
 // Type: POST.
 // Data: title, author, content.
-router.post('/add', [ensureAuthorized], function(req, res) {
+router.post('/add', [ensureAdmin], function(req, res) {
 	var title = req.body.title;
 	var author = req.body.author;
 	var shorttext = req.body.shorttext;
@@ -48,7 +49,7 @@ router.post('/add', [ensureAuthorized], function(req, res) {
 // Name: Edit post.
 // Type: POST.
 // Data: id.
-router.post('/edit', [ensureAuthorized], function(req, res) {
+router.post('/edit', [ensureAdmin], function(req, res) {
 	var id = req.body.id;
 	var title = req.body.title;
 	var shorttext = req.body.shorttext;
@@ -64,7 +65,7 @@ router.post('/edit', [ensureAuthorized], function(req, res) {
 // Name: Remove post.
 // Type: POST.
 // Data: title, author.
-router.post('/remove', [ensureAuthorized], function(req, res) {
+router.post('/remove', [ensureAdmin], function(req, res) {
 	var id = req.body.id;
 
 	Posts.removePost({ _id: id }).then(function successCallback() {

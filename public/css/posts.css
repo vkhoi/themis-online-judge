@@ -31,6 +31,9 @@
 #posts-admin table a {
 	text-decoration: none;
 }
+#posts-admin table td {
+	vertical-align: middle;
+}
 
 /*----------------------*/
 #posts-add {

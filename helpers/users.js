@@ -55,6 +55,23 @@ function getUserWithUsername(username) {
 	});
 }
 
+// Function to check if a user is admin.
+function isAdminUser(username) {
+	return new Promise(function(resolve, reject) {
+		Users.findOne({ username: username }, function(err, user) {
+			if (err || !user) {
+				reject(Error('Could not find user'));
+			}
+			else {
+				if (user.role == "admin")
+					resolve(true);
+				else
+					resolve(false);
+			}
+		});
+	});
+}
+
 // Function to add a new user.
 function addUser(user) {
 	return new Promise(function(resolve, reject) {
@@ -153,6 +170,7 @@ module.exports = {
 	getAllUsers: 			getAllUsers,
 	getUserWithUsername: 	getUserWithUsername,
 	addUser: 				addUser,
+	isAdminUser: 			isAdminUser,
 	editUser: 				editUser,
 	removeUser: 			removeUser
 };

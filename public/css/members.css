@@ -8,6 +8,9 @@
 #site-members table a {
 	text-decoration: none;
 }
+#site-members table td {
+	vertical-align: middle;
+}
 
 #member-add-edit > .row:first-child {
 	padding-top: 2rem;
