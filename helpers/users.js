@@ -43,6 +43,7 @@ function getUserWithUsername(username) {
 			else {
 				var res = {
 					username: user.username,
+					password: user.password,
 					name: user.name,
 					role: user.role
 				}
@@ -90,10 +91,31 @@ function editUser(user) {
 			}
 			else {
 				Users.update({ username: user.username }, {
-					$set: { name: user.name, password: user.password, role: user.role }
+					$set: { password: user.password, name: user.name, role: user.role }
 				}, {}, function(err, numAffected) {
 					if (err) {
 						reject(Error('Could not update user with new info'));
+					}
+					else {
+						resolve();
+					}
+				});
+			}
+		});
+	});
+}
+
+// Function to remove a user.
+function removeUser(user) {
+	return new Promise(function(resolve, reject) {
+		Users.findOne({ username: user.username }, function(err, _user) {
+			if (err || !_user) {
+				reject(Error('Could not find user to remove'));
+			}
+			else {
+				Users.remove({ username: user.username }, {}, function(err, numRemoved) {
+					if (err) {
+						reject(Error('Could not remove user'));
 					}
 					else {
 						resolve();
@@ -108,5 +130,6 @@ module.exports = {
 	getAllUsers: 			getAllUsers,
 	getUserWithUsername: 	getUserWithUsername,
 	addUser: 				addUser,
-	editUser: 				editUser
+	editUser: 				editUser,
+	removeUser: 			removeUser
 };

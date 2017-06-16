@@ -13,7 +13,7 @@
 	<div class="form-group row">
 	  	<label for="member-username" class="col-2 col-form-label">Tên tài khoản</label>
 	  	<div class="col-10">
-	   		<input class="form-control" type="text" value="Artisanal kale" id="member-username" ng-model="MemberAddEditCtrl.username">
+	   		<input class="form-control" type="text" value="Artisanal kale" id="member-username" ng-model="MemberAddEditCtrl.username" ng-disabled="{{ MemberAddEditCtrl.isUsernameDisabled }}">
 	  	</div>
 	</div>
 	<div class="form-group row">
