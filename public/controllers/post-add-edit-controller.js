@@ -1,4 +1,4 @@
-themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Session', 'Upload', function($state, $scope, $http, Session, Upload) {
+themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$location', 'Session', 'Upload', function($state, $scope, $http, $location, Session, Upload) {
 	var vm = this;
 
 	vm.pageName = "";
@@ -132,5 +132,17 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 				});
 			}
 		}
+	}
+
+	vm.getImageUrl = function(src) {
+		var host = $location.host();
+		var port = $location.port();
+		if (port != 80)
+			host += ":" + port.toString();
+		return "http://" + host + "/data/images/" + src;
+	}
+
+	vm.removeImage = function(index) {
+		vm.images.splice(index, 1);
 	}
 }]);

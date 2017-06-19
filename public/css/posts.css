@@ -60,6 +60,30 @@
 	height: 12.5rem;
 	margin: auto;
 	margin-top: 1.25rem;
+	position: relative;
+}
+#posts-add .image-url {
+	position: absolute;
+	bottom: 0;
+	/*background-color: black;*/
+	width: 100%;
+	color: white;
+	display: none;
+}
+#posts-add .image-thumbnail:hover .image-url {
+	display: block;
+}
+#posts-add .image-removal {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 32px;
+	width: 32px;
+	padding: 0;
+	display: none;
+}
+#posts-add .image-thumbnail:hover .image-removal {
+	display: block;
 }
 #posts-add .btn-upload-image {
 	margin-top: 1.25rem;

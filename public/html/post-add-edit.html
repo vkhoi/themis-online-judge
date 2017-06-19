@@ -23,7 +23,15 @@
   		<label><strong>Thêm hình ảnh đính kèm vào bài viết</strong></label>
 	  	<div class="row">
 	  		<div class="col-sm-3" ng-repeat="image in PostAddEditCtrl.images">
-	  			<div class="image-thumbnail" style="background-image: url({{ '/data/images/' + image.src }})"></div>
+	  			<div class="image-thumbnail">
+	  				<div style="background-size: cover; background-image: url({{ '/data/images/' + image.src }}); width: 100%; height: 100%;"></div>
+	  				<div class="image-url">
+	  					<input type="text" class="form-control" readonly ng-value="PostAddEditCtrl.getImageUrl(image.src)" select-on-click/>
+	  				</div>
+	  				<button type="button" class="btn btn-danger image-removal" ng-click="PostAddEditCtrl.removeImage($index)">
+	  					<i class="fa fa-close"></i>
+	  				</button>
+	  			</div>
 	  		</div>
 	  		<div class="col-sm-3 btn-upload-image">
 	  			<div ngf-select="PostAddEditCtrl.uploadFiles($files, 0)" class="drop-box" ngf-multiple="true" ngf-accept="'image/*'" ngf-max-size="8MB"><i class="fa fa-plus"></i></div>
