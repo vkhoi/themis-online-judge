@@ -11,6 +11,12 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH
 			$state.go('home.contest.problems');
 		}, function() {
 			console.log('Login Controller', 'login failed');
+			swal({
+				title: "Không thể đăng nhập!",
+				text: "Mật khẩu không đúng hoặc tài khoản này không tồn tại.",
+				type: "error",
+				confirmButtonText: "Đóng"
+			});
 		});
 	}
 }]);
