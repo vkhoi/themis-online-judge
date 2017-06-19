@@ -1,4 +1,4 @@
-themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Session', function($state, $scope, $http, Session) {
+themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Session', 'Upload', function($state, $scope, $http, Session, Upload) {
 	var vm = this;
 
 	vm.pageName = "";
@@ -8,6 +8,9 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 	vm.shorttext = "";
 	vm.content = "";
 	vm.author = "";
+
+	vm.images = [];
+	// vm.images = [{ src: "https://media-public.fcbarcelona.com/20157/0/document_thumbnail/20197/212/212/4183252/1.0-9/4183252.jpg" }, {src: "https://s-media-cache-ak0.pinimg.com/736x/0a/ff/28/0aff28930a87f7274bf8b57fdb30a6f3.jpg"}, { src: "https://media-public.fcbarcelona.com/20157/0/document_thumbnail/20197/212/212/4183252/1.0-9/4183252.jpg" }, {src: "https://s-media-cache-ak0.pinimg.com/736x/0a/ff/28/0aff28930a87f7274bf8b57fdb30a6f3.jpg"}, { src: "https://media-public.fcbarcelona.com/20157/0/document_thumbnail/20197/212/212/4183252/1.0-9/4183252.jpg" }, {src: "https://s-media-cache-ak0.pinimg.com/736x/0a/ff/28/0aff28930a87f7274bf8b57fdb30a6f3.jpg"}, { src: "https://media-public.fcbarcelona.com/20157/0/document_thumbnail/20197/212/212/4183252/1.0-9/4183252.jpg" }, {src: "https://s-media-cache-ak0.pinimg.com/736x/0a/ff/28/0aff28930a87f7274bf8b57fdb30a6f3.jpg"}];
 
 	var isAdd = true;
 	var titleLostFocus = false;
@@ -27,6 +30,9 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 				vm.shorttext = res.data.shorttext;
 				vm.content = res.data.content;
 				vm.author = res.data.author;
+				vm.images = res.data.images;
+				if (!vm.images)
+					vm.images = [];
 			}, function errorCallback(err) {
 				swal({
 					title: "Lỗi!",
@@ -63,7 +69,7 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 			});
 		}
 		else if (isAdd) {
-			$http.post('/api/posts/add', { title: vm.title, author: Session.username, shorttext: vm.shorttext, content: vm.content }).then(function successCallback(res) {
+			$http.post('/api/posts/add', { title: vm.title, author: Session.username, shorttext: vm.shorttext, content: vm.content, images: vm.images }).then(function successCallback(res) {
 				swal({
 					title: "Thành công!",
 					text: "Bài mới đã được thêm vào!",
@@ -81,7 +87,7 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 			});
 		}
 		else {
-			$http.post('/api/posts/edit', { id: $state.params.id, title: vm.title, shorttext: vm.shorttext, content: vm.content }).then(function successCallback(res) {
+			$http.post('/api/posts/edit', { id: $state.params.id, title: vm.title, shorttext: vm.shorttext, content: vm.content, images: vm.images }).then(function successCallback(res) {
 				swal({
 					title: "Thành công!",
 					text: "Bài viết đã được chỉnh sửa!",
@@ -97,6 +103,34 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', 'Ses
 					confirmButtonText: "Đóng"
 				});
 			});
+		}
+	}
+
+	function getImage(file) {
+		var type = getType(file.type);
+		if (type == "image")
+			return file.url;
+		return '/images/no-thumbnail.gif';
+	}
+
+	vm.uploadFiles = function(files, idx) {
+		var numFiles = 0;
+		if (files && files.length) {
+    		// NProgress.start();
+			for (var i = 0; i < files.length; i++) {
+				Upload.upload({
+					url: '/api/uploadImage', 
+					data: { file: files[i] }
+				}).then(function (resp) {
+					console.log(resp);
+					vm.images.push({ src: resp.data.imageName });
+				}, function (resp) {
+				    console.log('Error status: ' + resp.status);
+				    // NProgress.done();
+				}, function (evt) {
+					console.log('uploading');
+				});
+			}
 		}
 	}
 }]);

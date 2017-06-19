@@ -151,7 +151,7 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 	$httpProvider.interceptors.push('AuthInterceptor');
 
 	$provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) { 
-        taOptions.toolbar = [['h1', 'h2', 'h3', 'h4', 'p'], ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo'], ['justifyLeft', 'justifyCenter', 'justifyRight']];
+        taOptions.toolbar = [['h1', 'h2', 'h3', 'h4', 'p'], ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo'], ['justifyLeft', 'justifyCenter', 'justifyRight'], ['insertImage']];
         return taOptions;
     }]);
 });

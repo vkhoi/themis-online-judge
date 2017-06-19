@@ -11,16 +11,27 @@
 		<h3>{{ PostAddEditCtrl.pageName }}</h3>
 	</div>
 	<div class="form-group" ng-class="{'has-danger': PostAddEditCtrl.isTitleEmpty() }">
-	    <label for="post-name">Tên bài</label>
+	    <label for="post-name"><strong>Tên bài</strong></label>
     	<input type="text" class="form-control form-control-danger" id="post-name" ng-model="PostAddEditCtrl.title" required ng-blur="PostAddEditCtrl.titleLostFocus()">
     	<div class="form-control-feedback" ng-show="PostAddEditCtrl.isTitleEmpty()">Tên bài không được rỗng.</div>
   	</div>
   	<div class="form-group">
-	    <label for="post-short-text">Nội dung giới thiệu (vắn tắt)</label>
-	    <textarea id="post-short-text" class="form-control" rows="3" ng-model="PostAddEditCtrl.shorttext"></textarea>
+	    <label for="post-short-text"><strong>Nội dung giới thiệu (vắn tắt)</strong></label>
+	    <textarea id="post-short-text" class="form-control" rows="4" ng-model="PostAddEditCtrl.shorttext"></textarea>
   	</div>
   	<div class="form-group">
-	    <label for="post-content">Nội dung đầy đủ</label>
+  		<label><strong>Thêm hình ảnh đính kèm vào bài viết</strong></label>
+	  	<div class="row">
+	  		<div class="col-sm-3" ng-repeat="image in PostAddEditCtrl.images">
+	  			<div class="image-thumbnail" style="background-image: url({{ '/data/images/' + image.src }})"></div>
+	  		</div>
+	  		<div class="col-sm-3 btn-upload-image">
+	  			<div ngf-select="PostAddEditCtrl.uploadFiles($files, 0)" class="drop-box" ngf-multiple="true" ngf-accept="'image/*'" ngf-max-size="8MB"><i class="fa fa-plus"></i></div>
+	  		</div>
+	  	</div>
+	</div>
+  	<div class="form-group">
+	    <label for="post-content"><strong>Nội dung đầy đủ</strong></label>
 		<div text-angular id="post-content" spellcheck="false" ng-model="PostAddEditCtrl.content"></div>
   	</div>
   	<button type="button" class="btn btn-primary" ng-click="PostAddEditCtrl.addEditPost()">{{ PostAddEditCtrl.addEditBtnName }}</button>

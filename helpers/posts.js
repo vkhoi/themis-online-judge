@@ -8,6 +8,7 @@ var	Posts		= new DataStore({ filename: path.join(process.cwd(), 'data', 'posts.d
 // 4. content
 // 5. date
 // 6. lastModified
+// 7. images
 
 // Function to get all posts.
 function getAllPosts(noContent) {
@@ -27,7 +28,8 @@ function getAllPosts(noContent) {
 							_id: posts[i]._id,
 							title: posts[i].title,
 							author: posts[i].author,
-							date: posts[i].date
+							date: posts[i].date,
+							images: posts[i].images
 						});
 					}
 					resolve(res);
@@ -62,7 +64,8 @@ function addPost(post) {
 			date: post.date,
 			shorttext: post.shorttext,
 			content: post.content,
-			lastModified: post.date
+			lastModified: post.date,
+			images: post.images
 		}, function(err, user) {
 			if (err) {
 				reject(Error('Could not add new post'));
@@ -88,7 +91,7 @@ function editPost(post) {
 			}
 			else {
 				Posts.update({ _id: oldPost._id }, {
-					$set: { title: post.title, lastModified: post.lastModified, shorttext: post.shorttext, content: post.content }
+					$set: { title: post.title, lastModified: post.lastModified, shorttext: post.shorttext, content: post.content, images: post.images }
 				}, {}, function(err, numAffected) {
 					if (err) {
 						reject(Error('Could not update post with new info'));

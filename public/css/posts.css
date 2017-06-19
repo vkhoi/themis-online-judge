@@ -43,6 +43,27 @@
 	padding-top: 2rem;
 	border-top: 1px solid #dddddd;
 }
+#posts-add .drop-box {
+	background: #F8F8F8;
+    border: 5px dashed #DDD;
+    height: 12.5rem;
+    text-align: center;
+    padding-top: 1.5625rem;
+}
+#posts-add .drop-box i {
+	font-size: 2rem;
+	padding: 3.5rem;
+}
+#posts-add .image-thumbnail {
+	background-size: cover;
+	width: 15.625rem;
+	height: 12.5rem;
+	margin: auto;
+	margin-top: 1.25rem;
+}
+#posts-add .btn-upload-image {
+	margin-top: 1.25rem;
+}
 #post-content div.ta-editor {
 	height: 25rem;
 }

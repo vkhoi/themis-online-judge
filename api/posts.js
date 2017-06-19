@@ -32,14 +32,15 @@ router.post('/getPost', [ensureAuthorized], function(req, res) {
 
 // Name: Add new post.
 // Type: POST.
-// Data: title, author, content.
+// Data: title, author, shorttext, content, images.
 router.post('/add', [ensureAdmin], function(req, res) {
 	var title = req.body.title;
 	var author = req.body.author;
 	var shorttext = req.body.shorttext;
 	var content = req.body.content;
+	var images = req.body.images;
 
-	Posts.addPost({ title: title, author: author, date: Date.now(), shorttext: shorttext, content: content }).then(function successCallback() {
+	Posts.addPost({ title: title, author: author, date: Date.now(), shorttext: shorttext, content: content, images: images }).then(function successCallback() {
 		res.send({ status: 'SUCCESS' });
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
@@ -48,14 +49,15 @@ router.post('/add', [ensureAdmin], function(req, res) {
 
 // Name: Edit post.
 // Type: POST.
-// Data: id.
+// Data: id, title, shorttext, content, images.
 router.post('/edit', [ensureAdmin], function(req, res) {
 	var id = req.body.id;
 	var title = req.body.title;
 	var shorttext = req.body.shorttext;
 	var content = req.body.content;
+	var images = req.body.images;
 
-	Posts.editPost({ _id: id, title: title, lastModified: Date.now(), shorttext: shorttext, content: content }).then(function successCallback() {
+	Posts.editPost({ _id: id, title: title, lastModified: Date.now(), shorttext: shorttext, content: content, images: images }).then(function successCallback() {
 		res.send({ status: 'SUCCESS' });
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
