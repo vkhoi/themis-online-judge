@@ -1,8 +1,6 @@
 themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthService', 'Session', 'Upload', function($state, $scope, $http, AuthService, Session, Upload) {
 	var vm = this;
 	vm.submissionDetails = "";
-	vm.startTime = "";
-	vm.endTime = "";
 	vm.submissionLogs = [];
 
 	function getScoreboard() {
@@ -25,7 +23,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	function getProblemFiles() {
+	vm.getProblemFiles = function() {
 		$http.post('/api/getProblemFiles').then(function successCallback(res) {
 			vm.problemFiles = [];
 			var problems = res.data.problems;
@@ -149,40 +147,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	vm.uploading = false;
-	vm.uploadProblem = function() {
-		if (vm.fileProblem == null || vm.problemTopic == "" || vm.startTime == "" || vm.endTime == "") {
-			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề và chọn file đề bài.", "warning");
-			return;
-		}
-		else if (isValidTime(vm.startTime, vm.endTime) == false) {
-			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
-			return;
-		}
-		vm.uploading = true;
-		Upload.upload({
-			url: '/api/uploadProblem',
-			data: {
-				uploadUser: Session.username,
-				topic: vm.problemTopic,
-				file: vm.fileProblem,
-				startTime: vm.startTime,
-				endTime: vm.endTime,
-			}
-		}).then(function successCallback(res) {
-			vm.fileProblem = null;
-			vm.uploading = false;
-			vm.problemTopic = "";
-			vm.startTime = "";
-			vm.endTime = "";
-			swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
-			getProblemFiles();
-		}, function errorCallback(err) {
-			console.log(err);
-		});
-	}
-
-	vm.init = function() {
+	function init() {
 		if ($state.current.name == "home") {
 			$state.go("home.scoreboard");
 		}
@@ -190,9 +155,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		vm.fileSubmit = null;
 		getProblemsAndScoreboard();
 		getSubmissionLogs();
-		getProblemFiles();
+		vm.getProblemFiles();
 	}
-	vm.init();
+	init();
 
 	vm.isTabActive = function(tabName) {
 		return $state.current.name == tabName;
@@ -224,16 +189,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		return Session.userRole == "admin";
 	}
 }]);
-
-function isValidTime(startTime, endTime) {
-	var start = moment(startTime, "HH:mm, DD/MM/YYYY");
-	var end = moment(endTime, "HH:mm, DD/MM/YYYY");
-	if (end.isBefore(start)) 
-		return false;
-	if (start.isBefore(moment()))
-		return false;
-	return true;
-}
 
 themisApp.filter('submissionResultFilter', function() {
 	return function(input) {

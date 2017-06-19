@@ -10,7 +10,7 @@ var dateTimeCvt			= require('../helpers/datetime-converter');
 // Rename submission files so that Themis can parse user's name and problem's name.
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, './public/data/problems');
+		cb(null, './public/data/contest');
 	},
 });
 
@@ -24,7 +24,7 @@ router.post('/', [ensureAuthorized, upload], function(req, res) {
 		problemName: req.file.originalname,
 		uploadUser: req.body.uploadUser,
 		topic: req.body.topic,
-		filePath: path.join('data/problems', req.file.filename),
+		filePath: path.join('data/contest', req.file.filename),
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime)

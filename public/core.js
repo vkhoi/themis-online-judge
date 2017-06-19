@@ -79,6 +79,8 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 			})
 				.state('home.contest.admin', {
 					url: '/admin',
+					controller: 'ContestAdminController',
+					controllerAs: 'ContestAdminCtrl',
 					templateUrl: 'html/admin.html',
 					data: {
 						authorizedRoles: [USER_ROLES.admin],
