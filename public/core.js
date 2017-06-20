@@ -1,4 +1,4 @@
-var themisApp = angular.module('themisApp', ['ui.router', 'ngStorage', 'ngFileUpload', 'textAngular', 'moment-picker']);
+var themisApp = angular.module('themisApp', ['ui.router', 'ngStorage', 'ngFileUpload', 'textAngular', 'moment-picker', 'timer']);
 
 themisApp.constant('AUTH_EVENTS', {
 	loginSuccess: 'auth-login-success',
