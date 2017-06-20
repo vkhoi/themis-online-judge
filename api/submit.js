@@ -67,10 +67,12 @@ router.post('/', [ensureAuthorized, upload], function(req, res) {
 			return;
 		}
 		// Insert source code into user's submission log.
-		UserSubLog.addSubmission(username, req.file.filename, fileContent);
-
-		// Ask jury to retrieve score from Themis.
-		retrieveScore(username, req.file.filename);
+		UserSubLog.addSubmission(username, req.file.filename, fileContent).then(function successCallback() {
+			// Ask jury to retrieve score from Themis.
+			retrieveScore(username, req.file.filename);
+		}, function errorCallback(err) {
+			console.log(err.toString());
+		});
 	});
 
 	upload(req, res, function(err) {

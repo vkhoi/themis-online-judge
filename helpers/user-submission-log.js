@@ -9,23 +9,31 @@ var config		= require('../config');
 
 // Function to insert a new user into the database.
 function addUser(username) {
-	UserSubLog.findOne({ username: username }, function(err, user) {
-		if (err) {}
-		else if (user) {
-		}
-		else {
-			UserSubLog.insert({
-				username: username,
-				submissions: {},
-				scores: {},
-				details: {}
-			}, function(err, user) {
-				if (err) {}
-				else {
-					console.log('added', username);
-				}
-			});
-		}
+	return new Promise(function(resolve, reject) {
+		UserSubLog.findOne({ username: username }, function(err, user) {
+			if (err) {
+				reject(Error("Unable to find user with username"));
+			}
+			else if (user) {
+				reject(Error("User exists"));
+			}
+			else {
+				UserSubLog.insert({
+					username: username,
+					submissions: {},
+					scores: {},
+					details: {}
+				}, function(err, user) {
+					if (err) {
+						reject(Error("Unable to add user"));
+					}
+					else {
+						console.log('added', username);
+						resolve(user);
+					}
+				});
+			}
+		});
 	});
 }
 
@@ -66,14 +74,40 @@ function beautifyFilename(filename) {
 
 // Function to add new submission.
 function addSubmission(username, submissionName, fileContent) {
-	findUser(username, function(err, user) {
-		var beautifulName = beautifyFilename(submissionName);
-		UserSubLog.update({ _id: user._id }, {
-			$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: -1}
-		}, {}, function(err, numAffected) {
-			if (err) {}
+	return new Promise(function(resolve, reject) {
+		UserSubLog.findOne({ username: username }, function(err, user) {
+			if (!user) {
+				addUser(username).then(function successCallback(user) {
+					var beautifulName = beautifyFilename(submissionName);
+					UserSubLog.update({ _id: user._id }, {
+						$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: -1}
+					}, {}, function(err, numAffected) {
+						if (err) {
+							reject(Error("Unable to update submission for user"));
+						}
+						else {
+							console.log('added submission', beautifulName);
+							resolve();
+						}
+					});
+				}, function errorCallback(err) {
+					console.log(err.toString());
+					reject(Error("Unable to add new user"));
+				});
+			}
 			else {
-				console.log('added submission', beautifulName);
+				var beautifulName = beautifyFilename(submissionName);
+				UserSubLog.update({ _id: user._id }, {
+					$set: { [`submissions.${beautifulName}`]: fileContent, [`scores.${beautifulName}`]: -1}
+				}, {}, function(err, numAffected) {
+					if (err) {
+						reject(Error("Unable to update submission for user"));
+					}
+					else {
+						console.log('added submission', beautifulName);
+						resolve();
+					}
+				});
 			}
 		});
 	});
@@ -82,7 +116,6 @@ function addSubmission(username, submissionName, fileContent) {
 // Function to add new score and details.
 function addScoreDetails(username, submissionName, res) {
 	findUser(username, function(err, user) {
-		console.log(res);
 		var beautifulName = beautifyFilename(submissionName);
 		UserSubLog.update({ _id: user._id }, {
 			$set: { [`scores.${beautifulName}`]: res.score, [`details.${beautifulName}`]: res.details }

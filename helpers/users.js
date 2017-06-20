@@ -1,7 +1,7 @@
 var path 		= require('path');
 var DataStore 	= require('nedb');
 var UserSubLog 	= require('./user-submission-log');
-var scoreboard		= require('./scoreboard');
+var scoreboard	= require('./scoreboard');
 var	Users		= new DataStore({ filename: path.join(process.cwd(), 'data', 'accounts.db'), autoload: true, timestampData: true });
 // A user has 3 fields:
 // 1. username
@@ -93,8 +93,6 @@ function addUser(user) {
 						reject(Error('Could not add new user'));
 					}
 					else {
-						UserSubLog.addUser(user.username);
-						scoreboard.addUser(user.username);
 						resolve();
 					}
 				});
@@ -153,18 +151,18 @@ function removeUser(user) {
 	Users.findOne({ username: "admin" }, function(err, user) {
 		if (!user) {
 			addUser({ username: "admin", password: "123", name: "Admin", role: "admin" });
-			UserSubLog.addUser("admin");
+			// UserSubLog.addUser("admin");
 		}
 	});
 })();
 
-(function addUserSubmissionLog() {
-	Users.find({}, function(err, users) {
-		users.forEach(function(user) {
-			UserSubLog.addUser(user.username);
-		});
-	});
-})();
+// (function addUserSubmissionLog() {
+// 	Users.find({}, function(err, users) {
+// 		users.forEach(function(user) {
+// 			UserSubLog.addUser(user.username);
+// 		});
+// 	});
+// })();
 
 module.exports = {
 	getAllUsers: 			getAllUsers,
