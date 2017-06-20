@@ -2,7 +2,7 @@ node_modules/
 uploads/
 dump.rdb
 data/*.db
+data/contests/
 data/problems/
-public/data/problems/
-public/data/images/
+public/data/
 .DS_Store

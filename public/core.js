@@ -87,9 +87,9 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 						redirectTo: 'home.contest.scoreboard'
 					}
 				})
-				.state('home.contest.problems', {
-					url: '/problems',
-					templateUrl: 'html/problems.html'
+				.state('home.contest.all', {
+					url: '/all',
+					templateUrl: 'html/all-contests.html'
 				})
 				.state('home.contest.scoreboard', {
 					url: '/scoreboard',

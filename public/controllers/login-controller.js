@@ -8,7 +8,7 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH
 
 	vm.login = function(credentials) {
 		AuthService.login(credentials).then(function(user) {
-			$state.go('home.contest.problems');
+			$state.go('home.contest.all');
 		}, function() {
 			console.log('Login Controller', 'login failed');
 			swal({

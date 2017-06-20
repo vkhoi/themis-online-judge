@@ -1,4 +1,4 @@
-<div id="problemsTab" class="main-tab container">
+<div id="all-contests-tab" class="main-tab container">
 	<h3>Danh sách đề bài</h3>
 	<table class="table table-striped table-hover">
 		<thead>
@@ -12,13 +12,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="problem in ContestCtrl.problemFiles">
+			<tr ng-repeat="contest in ContestCtrl.contests">
 				<td style="width: 5%;">{{ $index + 1 }}</td>
-				<td><a href="{{problem.file}}" target="_blank">{{ problem.name }}</a></td>
-				<td style="width: 15%;">{{ problem.startTime }}</td>
-				<td style="width: 15%;">{{ problem.duration }}</td>
-				<td style="width: 15%;">{{ problem.topic }}</td>
-				<td style="width: 15%;">{{ problem.uploadUser }}</td>
+				<td><a href="{{contest.filePath}}" target="_blank">{{ contest.name }}</a></td>
+				<td style="width: 15%;">{{ contest.startTime }}</td>
+				<td style="width: 15%;">{{ contest.duration }}</td>
+				<td style="width: 15%;">{{ contest.topic }}</td>
+				<td style="width: 15%;">{{ contest.setter }}</td>
 			</tr>
 		</tbody>
 	</table>

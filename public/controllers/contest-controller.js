@@ -3,6 +3,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.submissionDetails = "";
 	vm.submissionLogs = [];
 
+	vm.contests = [];
+
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -23,22 +25,21 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	vm.getProblemFiles = function() {
-		$http.post('/api/getProblemFiles').then(function successCallback(res) {
-			vm.problemFiles = [];
-			var problems = res.data.problems;
-			problems.forEach(function(problem) {
+	vm.getContests = function() {
+		$http.get('/api/contest/all').then(function successCallback(res) {
+			vm.contests = [];
+			var contests = res.data.contests;
+			contests.forEach(function(contest) {
 				var elem = {
-					name: problem.problemName,
-					duration: problem.duration,
-					topic: problem.topic,
-					uploadUser: problem.uploadUser,
-					file: problem.file,
-					startTime: problem.startTime,
-					endTime: problem.endTime
+					setter: contest.setter,
+					name: contest.name,
+					topic: contest.topic,
+					startTime: contest.startTime,
+					endTime: contest.endTime,
+					duration: contest.duration,
+					filePath: contest.filePath
 				};
-				console.log(elem);
-				vm.problemFiles.push(elem);
+				vm.contests.push(elem);
 			});
 		});
 	}
@@ -65,7 +66,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function askJuryForScore(submissionName) {
 		$http.post('/api/getSubmissionLogs', { username: Session.username, submissionName: submissionName }).then(function successCallback(res) {
-			console.log(res);
 			var score = res.data.scores[submissionName];
 			var details = res.data.details[submissionName];
 			if (score == "-1") {
@@ -155,7 +155,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		vm.fileSubmit = null;
 		getProblemsAndScoreboard();
 		getSubmissionLogs();
-		vm.getProblemFiles();
+		vm.getContests();
 	}
 	init();
 
@@ -168,7 +168,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			$state.go('home.contest.admin');
 		}
 		else if (tabIndex == 1) {
-			$state.go('home.contest.problems');
+			$state.go('home.contest.all');
 		}
 		else if (tabIndex == 2) {
 			$state.go('home.contest.scoreboard');

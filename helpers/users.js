@@ -1,7 +1,7 @@
 var path 		= require('path');
 var DataStore 	= require('nedb');
 var UserSubLog 	= require('./user-submission-log');
-var Contest		= require('./contest');
+var scoreboard		= require('./scoreboard');
 var	Users		= new DataStore({ filename: path.join(process.cwd(), 'data', 'accounts.db'), autoload: true, timestampData: true });
 // A user has 3 fields:
 // 1. username
@@ -94,7 +94,7 @@ function addUser(user) {
 					}
 					else {
 						UserSubLog.addUser(user.username);
-						Contest.addUser(user.username);
+						scoreboard.addUser(user.username);
 						resolve();
 					}
 				});
@@ -140,7 +140,7 @@ function removeUser(user) {
 					}
 					else {
 						UserSubLog.removeUser(user.username);
-						Contest.removeUser(user.username);
+						scoreboard.removeUser(user.username);
 						resolve();
 					}
 				});

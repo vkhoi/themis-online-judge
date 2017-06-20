@@ -1,13 +1,13 @@
 var express 			= require('express');
 var router 				= express.Router();
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
-var contest 			= require('../helpers/contest');
+var scoreboard 			= require('../helpers/scoreboard');
 
 // Name: Get scoreboard.
 // Type: POST.
 router.post('/', [], function(req, res) {
-	var scoreboard = contest.getScoreboard();
-	res.send(scoreboard);
+	var data = scoreboard.getScoreboard();
+	res.send(data);
 });
 
 module.exports = router;

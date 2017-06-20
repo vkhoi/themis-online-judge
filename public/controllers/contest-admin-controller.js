@@ -26,10 +26,11 @@ themisApp.controller('ContestAdminController', ['$state', '$scope', '$http', 'Au
 			return;
 		}
 		vm.uploading = true;
+		console.log('ahihi');
 		Upload.upload({
-			url: '/api/uploadProblem',
+			url: '/api/contest/create',
 			data: {
-				uploadUser: Session.username,
+				setter: Session.username,
 				name: vm.contestName,
 				topic: vm.contestTopic,
 				file: vm.fileProblem,
@@ -44,7 +45,7 @@ themisApp.controller('ContestAdminController', ['$state', '$scope', '$http', 'Au
 			vm.startTime = "";
 			vm.endTime = "";
 			swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
-			$scope.$parent.ContestCtrl.getProblemFiles();
+			$scope.$parent.ContestCtrl.getContests();
 		}, function errorCallback(err) {
 			console.log(err);
 		});
