@@ -45,9 +45,9 @@
 		<div class="form-group row">
 			<label for="chooseTestButton" class="col-sm-2 col-form-label">Up test</label>
 			<div class="col-sm-6">
-				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestAdminCtrl.testData" name="file" ngf-pattern="'.rar,.zip'" ngf-accept="'.rar,.zip'" ngf-max-size="100MB">Chọn file</button>
-				<span>{{ ContestCtrl.testData | fileNameFilter }}</span>
-				<p><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>
+				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestAdminCtrl.fileTest" name="file" ngf-pattern="'.rar,.zip'" ngf-accept="'.rar,.zip'" ngf-max-size="100MB">Chọn file (*.zip, *.rar)</button>
+				<span>{{ ContestAdminCtrl.fileTest.name | fileNameFilter }}</span>
+				<p style="margin-top: 1rem;"><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>
 				<ol>
 					<li>Thư mục test phải có cấu trúc thỏa mãn yêu cầu của phần mềm chấm Themis. Mỗi bài tập sẽ có 1 thư mục riêng để chứa tất cả file test cho bài tập đó, và thư mục này sẽ được đặt tên là tên của bài tập đó. Mỗi bài tập có bao nhiêu test, thì thư mục của bài tập đó sẽ chứa bấy nhiêu thư mục con tương ứng với từng test. Mỗi thư mục con ứng với từng test đó sẽ chứa 2 file duy nhất: 1 file input và 1 file output.</li>
 					<li>Sau khi đã tạo xong thư mục test cho kì thi, ta nén thư mục đó lại và upload bằng nút ở trên. Lưu ý: hãy nén trực tiếp từ thư mục test này, đừng bỏ nó vào 1 thư mục khác xong rồi mới nén.</li>
