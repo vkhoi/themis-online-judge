@@ -3,6 +3,13 @@ var DataStore 	= require('nedb');
 var	Contests	= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'),autoload: true });
 var config 		= require('../config');
 var exec		= require('child_process').exec;
+var schedule 	= require('node-schedule');
+var moment 		= require('moment');
+
+// redis to store only 1 key-value pair: contest - id.
+var redis		= require('redis');
+var redisClient = redis.createClient();
+
 // A contest has 3 fields:
 // 1. setter
 // 2. name
@@ -145,11 +152,50 @@ function removeThemisTestFolder() {
 	});
 }
 
+// Function to schedule the start of a contest.
+function scheduleContestStart(t, contestId) {
+	var startMoment = moment(t, "HH:mm, DD/MM/YYYY");
+	var startTime = startMoment.toDate();
+	schedule.scheduleJob(startTime, function() {
+		redisClient.set("contest", contestId);
+	});
+}
+
+// Function to schedule the end of a contest.
+function scheduleContestEnd(t) {
+	var endMoment = moment(t, "HH:mm, DD/MM/YYYY");
+	var endTime = endMoment.toDate();
+	schedule.scheduleJob(endTime, function() {
+		redisClient.del("contest", function(err, reply) {
+		});
+	});
+}
+
+// Function to get current contest's id.
+function getCurrentContestId() {
+	return new Promise(function(resolve, reject) {
+		redisClient.get("contest", function(err, reply) {
+			if (err) {
+				reject(Error("Unable to get current contest's id"));
+			}
+			else if (reply) {
+				resolve(reply);
+			}
+			else {
+				resolve(-1);
+			}
+		});
+	});
+}
+
 module.exports = {
 	addContest: 				addContest,
 	getAllContests: 			getAllContests,
 	getContest: 				getContest,
 	uncompressFileTest: 		uncompressFileTest,
 	moveTestFolders: 			moveTestFolders,
-	removeThemisTestFolder: 	removeThemisTestFolder
+	removeThemisTestFolder: 	removeThemisTestFolder,
+	scheduleContestStart: 		scheduleContestStart,
+	scheduleContestEnd: 		scheduleContestEnd,
+	getCurrentContestId: 		getCurrentContestId
 };

@@ -38,6 +38,8 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	Contests.addContest(newContest).then(function successCallback(contestId) {
 		id = contestId;
 
+		Contests.scheduleContest(req.body.startTime, contestId);
+
 		upload(req, res, function(err) {
 			if (err) {
 				res.status(400).send('FAILED');
