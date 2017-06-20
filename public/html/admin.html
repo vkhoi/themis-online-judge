@@ -4,49 +4,49 @@
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Tên kì thi</label>
 			<div class="col-sm-6">
-				<input class="form-control input-lg" id="contest-name" type="text" ng-model="ContestAdminCtrl.contestName">
+				<input class="form-control input-lg" id="contest-name" type="text" ng-model="ContestCtrl.contestName">
 			</div>
 		</div>
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Chủ đề</label>
 			<div class="col-sm-6">
-				<input class="form-control input-lg" id="inputlg" type="text" ng-model="ContestAdminCtrl.contestTopic">
+				<input class="form-control input-lg" id="inputlg" type="text" ng-model="ContestCtrl.contestTopic">
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file đề bài</label>
 			<div class="col-sm-6">
-				<button id="chooseFileButton" class="btn btn-secondary" ngf-select ng-model="ContestAdminCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
-				<span>{{ ContestAdminCtrl.fileProblem.name | fileNameFilter }}</span>
+				<button id="chooseFileButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
+				<span>{{ ContestCtrl.fileProblem.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="setStartTime" class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
 			<div class="col-sm-6">
-				<div class="input-group" moment-picker="ContestAdminCtrl.startTime" format="HH:mm, DD/MM/YYYY" locale="vi">
+				<div class="input-group" moment-picker="ContestCtrl.startTime" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
 				        <i class="fa fa-clock-o"></i>
 				    </span>
-				    <input class="form-control" ng-model="ContestAdminCtrl.startTime">
+				    <input class="form-control" ng-model="ContestCtrl.startTime">
 				</div>
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="setEndTime" class="col-sm-2 col-form-label">Thời gian kết thúc</label>
 			<div class="col-sm-6">
-				<div class="input-group" moment-picker="ContestAdminCtrl.endTime" format="HH:mm, DD/MM/YYYY" locale="vi">
+				<div class="input-group" moment-picker="ContestCtrl.endTime" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
 				        <i class="fa fa-clock-o"></i>
 				    </span>
-				    <input class="form-control" ng-model="ContestAdminCtrl.endTime">
+				    <input class="form-control" ng-model="ContestCtrl.endTime">
 				</div>
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="chooseTestButton" class="col-sm-2 col-form-label">Up test</label>
 			<div class="col-sm-6">
-				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestAdminCtrl.fileTest" name="file" ngf-pattern="'.rar,.zip'" ngf-accept="'.rar,.zip'" ngf-max-size="100MB">Chọn file (*.zip, *.rar)</button>
-				<span>{{ ContestAdminCtrl.fileTest.name | fileNameFilter }}</span>
+				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.rar,.zip'" ngf-accept="'.rar,.zip'" ngf-max-size="100MB">Chọn file (*.zip, *.rar)</button>
+				<span>{{ ContestCtrl.fileTest.name | fileNameFilter }}</span>
 				<p style="margin-top: 1rem;"><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>
 				<ol>
 					<li>Thư mục test phải có cấu trúc thỏa mãn yêu cầu của phần mềm chấm Themis. Mỗi bài tập sẽ có 1 thư mục riêng để chứa tất cả file test cho bài tập đó, và thư mục này sẽ được đặt tên là tên của bài tập đó. Mỗi bài tập có bao nhiêu test, thì thư mục của bài tập đó sẽ chứa bấy nhiêu thư mục con tương ứng với từng test. Mỗi thư mục con ứng với từng test đó sẽ chứa 2 file duy nhất: 1 file input và 1 file output.</li>
@@ -56,7 +56,7 @@
 		</div>
 		<div class="form-group row">
 			<div class="col-sm-2 offset-sm-2">
-				<button id="creatContestButton" class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestAdminCtrl.uploadProblem()">Tạo kỳ thi</button>
+				<button id="creatContestButton" class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.uploadProblem()">Tạo kỳ thi</button>
 			</div>
 		</div>
 	</form>

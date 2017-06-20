@@ -5,6 +5,15 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.contests = [];
 
+	// For admin to create contest.
+	vm.contestName = "";
+	vm.contestTopic = "";
+	vm.startTime = "";
+	vm.endTime = "";
+	vm.fileProblem = null;
+	vm.fileTest = null;
+	vm.uploading = false;
+
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -25,7 +34,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	vm.getContests = function() {
+	function getContests() {
 		$http.get('/api/contest/all').then(function successCallback(res) {
 			vm.contests = [];
 			var contests = res.data.contests;
@@ -155,7 +164,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		vm.fileSubmit = null;
 		getProblemsAndScoreboard();
 		getSubmissionLogs();
-		vm.getContests();
+		getContests();
 	}
 	init();
 
@@ -187,6 +196,63 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.isAdmin = function() {
 		return Session.userRole == "admin";
+	}
+
+	function isValidTime(startTime, endTime) {
+		var start = moment(startTime, "HH:mm, DD/MM/YYYY");
+		var end = moment(endTime, "HH:mm, DD/MM/YYYY");
+		if (end.isBefore(start)) 
+			return false;
+		if (start.isBefore(moment()))
+			return false;
+		return true;
+	}
+
+	vm.uploadProblem = function() {
+		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "") {
+			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, file đề bài, và file test.", "warning");
+			return;
+		}
+		else if (isValidTime(vm.startTime, vm.endTime) == false) {
+			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
+			return;
+		}
+		vm.uploading = true;
+		console.log(vm.fileTest);
+		Upload.upload({
+			url: '/api/contest/create',
+			data: {
+				setter: Session.username,
+				name: vm.contestName,
+				topic: vm.contestTopic,
+				file: vm.fileProblem,
+				startTime: vm.startTime,
+				endTime: vm.endTime
+			}
+		}).then(function successCallback(res) {
+			var id = res.data.id;
+			Upload.upload({
+				url: '/api/contest/addTest',
+				data: {
+					id: id,
+					file: vm.fileTest
+				}
+			}).then(function successCallback(res) {
+				// vm.fileProblem = null;
+				// vm.fileTest = null
+				// vm.uploading = false;
+				// vm.contestName = "";
+				// vm.contestTopic = "";
+				// vm.startTime = "";
+				// vm.endTime = "";
+				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
+				getContests();
+			}, function errorCallback(err) {
+				console.log(err);
+			});
+		}, function errorCallback(err) {
+			console.log(err);
+		});
 	}
 }]);
 
