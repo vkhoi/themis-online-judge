@@ -34,6 +34,32 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
+	function getProblemStatus(startTime, endTime) {
+		var start = moment(startTime, "HH:mm, DD/MM/YYYY");
+		var end = moment(endTime, "HH:mm, DD/MM/YYYY");
+		if (end < moment()) {
+			return {
+				isStarted: true,
+				isEnded: true,
+				timeLeft: 0
+			}
+		}
+		else if (start < moment()) {
+			return {
+				isStarted: true,
+				isEnded: false,
+				timeLeft: end - moment()
+			}
+		}
+		else {
+			return {
+				isStarted: false,
+				isEnded: false,
+				timeLeft: start - moment()
+			}
+		}
+	}
+
 	function getContests() {
 		$http.get('/api/contest/all').then(function successCallback(res) {
 			vm.contests = [];
@@ -43,10 +69,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					setter: contest.setter,
 					name: contest.name,
 					topic: contest.topic,
+					uploadUser: contest.uploadUser,
 					startTime: contest.startTime,
 					endTime: contest.endTime,
 					duration: contest.duration,
-					filePath: contest.filePath
+					filePath: contest.filePath,
+					status: getProblemStatus(contest.startTime, contest.endTime)
 				};
 				vm.contests.push(elem);
 			});
