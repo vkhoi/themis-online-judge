@@ -1,5 +1,5 @@
 <div id="scoreboardTab" class="main-tab container">
-	<table class="table table-bordered table-hover">
+	<table class="table table-bordered table-hover" ng-show="ContestCtrl.contestExists">
 		<thead>
 			<tr>
 				<th style="width: 10%;">Xếp hạng</th>
@@ -19,4 +19,5 @@
 			</tr>
 		</tbody>
 	</table>
+	<h5 ng-show="!ContestCtrl.contestExists">Đang không có kì thi nào diễn ra</h5>
 </div>

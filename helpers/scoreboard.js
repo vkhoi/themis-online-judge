@@ -2,6 +2,7 @@ var fs 			= require('fs');
 var path		= require('path');
 var readline 	= require('readline');
 var UserSubLog	= require('../helpers/user-submission-log');
+var Contests 	= require('./contests');
 
 var problems = [];
 var scores = {};
@@ -66,21 +67,35 @@ function getProblems() {
 }
 
 function getScoreboard() {
-	var res = [];
-	Object.keys(scores).forEach(function(username) {
-		var elem = {
-			username: username,
-			total: scores[username].total
-		};
-		problems.forEach(function(problem) {
-			elem[problem] = scores[username][problem];
+	var res = {
+		contestExists: true,
+		scoreboard: []
+	};
+	return new Promise(function(resolve, reject) {
+		Contests.getCurrentContestId().then(function successCallback(result) {
+			if (result == -1) {
+				res.contestExists = false;
+			}
+			else {
+				Object.keys(scores).forEach(function(username) {
+					var elem = {
+						username: username,
+						total: scores[username].total
+					};
+					problems.forEach(function(problem) {
+						elem[problem] = scores[username][problem];
+					});
+					res.scoreboard.push(elem);
+				});
+				res.scoreboard.sort(function(a, b) {
+					return b.total - a.total;
+				});
+			}
+			resolve(res);
+		}, function errorCallback(err) {
+			reject(Error("Unable to get current contest's scoreboard"));
 		});
-		res.push(elem);
 	});
-	res.sort(function(a, b) {
-		return b.total - a.total;
-	});
-	return res;
 }
 
 function removeUser(username) {

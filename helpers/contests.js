@@ -167,6 +167,7 @@ function scheduleContestEnd(t) {
 	var endTime = endMoment.toDate();
 	schedule.scheduleJob(endTime, function() {
 		redisClient.del("contest", function(err, reply) {
+			console.log('delete contest', reply);
 		});
 	});
 }

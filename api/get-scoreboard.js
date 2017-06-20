@@ -6,8 +6,11 @@ var scoreboard 			= require('../helpers/scoreboard');
 // Name: Get scoreboard.
 // Type: POST.
 router.post('/', [], function(req, res) {
-	var data = scoreboard.getScoreboard();
-	res.send(data);
+	scoreboard.getScoreboard().then(function successCallback(data) {
+		res.send(data);
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
 });
 
 module.exports = router;
