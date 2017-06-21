@@ -54,7 +54,7 @@
 		<div class="form-group row">
 			<label for="chooseTestButton" class="col-sm-2 col-form-label">Up test</label>
 			<div class="col-sm-6">
-				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.rar,.zip'" ngf-accept="'.rar,.zip'" ngf-max-size="100MB">Chọn file (*.zip, *.rar)</button>
+				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-accept="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
 				<span>{{ ContestCtrl.fileTest.name | fileNameFilter }}</span>
 				<p style="margin-top: 1rem;"><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>
 				<ol>

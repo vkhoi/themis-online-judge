@@ -1,17 +1,18 @@
-var path 		= require('path');
-var DataStore 	= require('nedb');
-var	Contests	= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'),autoload: true });
-var config 		= require('../config');
-var exec		= require('child_process').exec;
-var schedule 	= require('node-schedule');
-var moment 		= require('moment');
-var UserSubLog	= require('../helpers/user-submission-log');
-var scoreboard 	= require('../helpers/scoreboard');
-var fse 		= require('fs-extra');
+const path 			= require('path');
+const DataStore 	= require('nedb');
+const Contests		= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'),autoload: true });
+const config 		= require('../config');
+const exec			= require('child_process').exec;
+const schedule 		= require('node-schedule');
+const moment 		= require('moment');
+const UserSubLog	= require('../helpers/user-submission-log');
+const scoreboard 	= require('../helpers/scoreboard');
+const fse 			= require('fs-extra');
+const extract 		= require('extract-zip')
 
 // redis to store only 1 key-value pair: contest - id.
-var redis		= require('redis');
-var redisClient = redis.createClient();
+const redis			= require('redis');
+const redisClient 	= redis.createClient();
 
 // A contest has 3 fields:
 // 1. setter
@@ -23,7 +24,7 @@ var redisClient = redis.createClient();
 // 7. filePath
 // 8. problemNames
 
-var testDir 	= 'data/contests/tests';
+const testDir 		= 'data/contests/tests';
 
 // Function to insert a new problem into the database.
 function addContest(newContest) {
@@ -58,6 +59,7 @@ function getAllContests() {
 				let res = [];
 				data.forEach(function(contest) {
 					let elem = {
+						_id: contest._id,
 						setter: contest.setter,
 						name: contest.name,
 						topic: contest.topic,
@@ -105,35 +107,32 @@ function getExtension(filename) {
 function uncompressFileTest(fileTestName) {
 	return new Promise(function(resolve, reject) {
 		var fileTestPath = path.join(testDir, fileTestName);
-		if (config.OS == 'mac') {
-			var ext = getExtension(fileTestName);
-			var command = '';
-			if (ext == 'zip') command = 'unzip ' + fileTestPath + ' -d ' + testDir;
-			else command = 'unrar x ' + fileTestPath + ' ' + testDir;
-			console.log(command);
-			exec(command, function(err, stdout, stderr) {
-				if (err) {
-					console.log(err);
-					reject(Error(err.toString()));
-				}
-				else {
-					console.log('unzip SUCCESS');
-					exec('rm -r ' + testDir + '/__MACOSX', function(err) {
-						if (err) {
-							console.log(err);
-							reject(Error(err.toString()));
-						}
-						else {
-							console.log('remove __MACOSX SUCCESS');
-							resolve();
-						}
-					});
-				}
-			});
-		}
-		else {
-
-		}
+		// var ext = getExtension(fileTestName);
+		// var command = '';
+		// if (ext == 'zip') command = 'unzip ' + fileTestPath + ' -d ' + testDir;
+		// else command = 'unrar x ' + fileTestPath + ' ' + testDir;
+		// console.log(command);
+		// exec(command, function(err, stdout, stderr) {
+		extract(fileTestPath, { dir: path.join(process.cwd(), testDir) }, function(err) {
+			if (err) {
+				console.log(err);
+				reject(Error(err.toString()));
+			}
+			else {
+				console.log('unzip SUCCESS');
+				fse.remove(testDir + '/__MACOSX', function(err) {
+					if (err) {
+						console.log(err.toString());
+						reject(Error(err.toString()));
+					}
+					else {
+						console.log('remove __MACOSX SUCCESS');
+						resolve();
+					}
+				});
+				resolve();
+			}
+		});
 	});
 }
 
@@ -143,36 +142,31 @@ function moveTestFolders(fileTestName) {
 		var pos = fileTestName.indexOf('.');
 		if (pos == -1) reject(Error('Invalid file test name'));
 		fileTestName = fileTestName.slice(0, pos);
-		if (config.OS == 'mac') {
-			exec('mv ' + testDir + '/' + fileTestName + ' ' + 'data/contests/Tasks', function(err) {
-				if (err) {
-					console.log(err.toString());
-					reject(Error(err.toString()));
-				}
-				else {
-					console.log('move test folder to TASKS SUCCESS');
-					resolve();
-				}
-			});
-		}
-		else {
-
-		}
+		fse.move(testDir + '/' + fileTestName, 'data/contests/Tasks', { overwrite: true }, function(err) {
+			if (err) {
+				console.log(err.toString());
+				reject(Error(err.toString()));
+			}
+			else {
+				console.log('move test folder to TASKS SUCCESS');
+				resolve();
+			}
+		});
 	});
 }
 
 // Function to clear contents of Themis's test folder.
 function removeThemisTestFolder() {
 	return new Promise(function(resolve, reject) {
-		if (config.OS == 'mac') {
-			exec('rm -r data/contests/Tasks', function(err) {
+		fse.remove('data/contests/Tasks', function(err) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
 				console.log('remove folder Tasks SUCCESS');
 				resolve();
-			});
-		}
-		else {
-
-		}
+			}
+		});
 	});
 }
 
