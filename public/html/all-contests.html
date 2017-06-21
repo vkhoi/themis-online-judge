@@ -16,7 +16,8 @@
 				<td style="width: 5%;">{{ $index + 1 }}</td>
 				<td>
 					<div>
-						<a href="{{contest.filePath}}" target="_blank">{{ contest.name }}</a>
+						<a href="{{contest.filePath}}" target="_blank" ng-show="contest.filePath != -1">{{ contest.name }}</a>
+						<span ng-show="contest.filePath == -1">{{ contest.name }}</span>
 						<br/>
 						<i style="font-size: 80%;">Người ra đề: {{ contest.setter }}</i>
 					</div>

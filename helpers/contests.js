@@ -49,13 +49,32 @@ function addContest(newContest) {
 	});
 }
 
-// Function to get all problems from database.
+// Function to get all contests from database.
 function getAllContests() {
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
 			if (err) reject(Error("Could not retrieve all contests"));
 			else {
-				resolve(data);
+				let res = [];
+				data.forEach(function(contest) {
+					let elem = {
+						setter: contest.setter,
+						name: contest.name,
+						topic: contest.topic,
+						startTime: contest.startTime,
+						endTime: contest.endTime,
+						duration: contest.duration,
+						problemNames: contest.problemNames
+					};
+					if (moment(elem.startTime, "HH:mm, DD/MM/YYYY") < moment()) {
+						elem.filePath = contest.filePath;
+					}
+					else {
+						elem.filePath = -1;
+					}
+					res.push(elem);
+				});
+				resolve(res);
 			}
 		});
 	});
@@ -127,7 +146,7 @@ function moveTestFolders(fileTestName) {
 		if (config.OS == 'mac') {
 			exec('mv ' + testDir + '/' + fileTestName + ' ' + 'data/contests/Tasks', function(err) {
 				if (err) {
-					console.log(err);
+					console.log(err.toString());
 					reject(Error(err.toString()));
 				}
 				else {
@@ -242,7 +261,6 @@ function getContestProblemNames(id) {
 function getCurrentContestScoreboard() {
 	return new Promise(function(resolve, reject) {
 		getCurrentContestId().then(function successCallback(contestId) {
-			console.log(contestId);
 			if (contestId == -1) {
 				let res = {
 					contestExists: false,

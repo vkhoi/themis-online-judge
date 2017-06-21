@@ -1,12 +1,11 @@
-var express 			= require('express');
-var router 				= express.Router();
-var path				= require('path');
-var multer				= require('multer');
-var ensureAdmin 		= require('../helpers/ensure-admin');
-var Contests 			= require('../helpers/contests');
-var dateTimeCvt			= require('../helpers/datetime-converter');
-
-var testDir 			= 'data/contests/tests';
+const express 		= require('express');
+const router 		= express.Router();
+const path			= require('path');
+const multer		= require('multer');
+const ensureAdmin 	= require('../helpers/ensure-admin');
+const Contests 		= require('../helpers/contests');
+const dateTimeCvt	= require('../helpers/datetime-converter');
+const testDir 		= 'data/contests/tests';
 
 // Specify directory to store problem statements of contests.
 var storage = multer.diskStorage({
@@ -25,7 +24,7 @@ var upload = multer({ storage: storage }).single('file');
 // Type: POST.
 // Data: setter, name, topic, file, startTime, endTime.
 router.post('/create', [ensureAdmin, upload], function(req, res) {
-	var newContest = {
+	let newContest = {
 		setter: req.body.setter,
 		name: req.body.name,
 		topic: req.body.topic,
@@ -36,7 +35,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		problemNames: req.body.problemNames
 	};
 	
-	var id = null;
+	let id = null;
 	Contests.addContest(newContest).then(function successCallback(contestId) {
 		id = contestId;
 
@@ -59,7 +58,7 @@ var storageTest = multer.diskStorage({
 		cb(null, testDir);
 	},
 	filename: function(req, file, cb) {
-		var originalName = file.originalname;
+		let originalName = file.originalname;
 		cb(null, Date.now() + '-' + originalName);
 	}
 });
@@ -69,9 +68,9 @@ var uploadTest = multer({ storage: storageTest }).single('file');
 // Type: POST.
 // Data: id of contest.
 router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
-	var id = req.body.id;
-	var fileTestName = req.file.filename;
-	var originalName = req.file.originalname;
+	let id = req.body.id;
+	let fileTestName = req.file.filename;
+	let originalName = req.file.originalname;
 	Contests.getContest(id).then(function successCallback(contest) {
 		Contests.uncompressFileTest(fileTestName).then(function successCallback() {
 			Contests.removeThemisTestFolder().then(function successCallback() {
