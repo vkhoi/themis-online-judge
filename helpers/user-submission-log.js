@@ -1,6 +1,6 @@
 var path 		= require('path');
 var DataStore 	= require('nedb');
-var	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'),autoload: true });
+var	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'), autoload: true });
 var config		= require('../config');
 // A UserSubLog instance has 3 fields:
 // 1. username: 	(String) username of the user.
@@ -206,6 +206,23 @@ function getAllUserSubLogScores() {
 	});
 }
 
+// Function to clear all submission logs (to prepare for a new contest).
+function clearAllSubmissions() {
+	return new Promise(function(resolve, reject) {
+		UserSubLog.remove({}, { multi: true }, function(err, numRemoved) {
+			if (err) {
+				reject(Error("Unable to clear all submissions"));
+			}
+			else {
+				UserSubLog.loadDatabase(function(err) {
+					// reload database to "really" clear all the contents.
+					// (due to nedb).
+				});
+			}
+		});
+	});
+}
+
 module.exports = {
 	addUser: 					addUser,
 	removeUser: 				removeUser,
@@ -214,5 +231,6 @@ module.exports = {
 	getAllScoreDetails: 		getAllScoreDetails,
 	getScoreDetails: 			getScoreDetails,
 	getDetails: 				getDetails,
-	getAllUserSubLogScores: 	getAllUserSubLogScores
+	getAllUserSubLogScores: 	getAllUserSubLogScores,
+	clearAllSubmissions: 		clearAllSubmissions
 };

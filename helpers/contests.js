@@ -5,6 +5,7 @@ var config 		= require('../config');
 var exec		= require('child_process').exec;
 var schedule 	= require('node-schedule');
 var moment 		= require('moment');
+var UserSubLog	= require('../helpers/user-submission-log');
 
 // redis to store only 1 key-value pair: contest - id.
 var redis		= require('redis');
@@ -18,6 +19,7 @@ var redisClient = redis.createClient();
 // 5. endTime
 // 6. duration
 // 7. filePath
+// 8. problemNames
 
 var testDir 	= 'data/contests/tests';
 
@@ -31,7 +33,8 @@ function addContest(newContest) {
 			startTime: newContest.startTime,
 			endTime: newContest.endTime,
 			duration: newContest.duration,
-			filePath: newContest.filePath
+			filePath: newContest.filePath,
+			problemNames: newContest.problemNames
 		}, function(err, contest) {
 			if (err) {
 				reject(Error("Could not add new contest"));
@@ -169,6 +172,10 @@ function scheduleContestEnd(t) {
 		redisClient.del("contest", function(err, reply) {
 			console.log('delete contest', reply);
 		});
+		UserSubLog.clearAllSubmissions().then(function successCallback() {
+		}, function errorCallback(err) {
+			console.log(err.toString());
+		});
 	});
 }
 
@@ -189,6 +196,23 @@ function getCurrentContestId() {
 	});
 }
 
+// Function to get contest's problem names.
+function getContestProblemNames(id) {
+	return new Promise(function(resolve, reject) {
+		Contests.findOne({ _id: id }, function(err, contest) {
+			if (err) {
+				reject(Error("Could not retrieve contest with id"));
+			}
+			else if (!contest) {
+				resolve([]);
+			}
+			else {
+				resolve(contest.problemNames);
+			}
+		});
+	});
+}
+
 module.exports = {
 	addContest: 				addContest,
 	getAllContests: 			getAllContests,
@@ -198,5 +222,6 @@ module.exports = {
 	removeThemisTestFolder: 	removeThemisTestFolder,
 	scheduleContestStart: 		scheduleContestStart,
 	scheduleContestEnd: 		scheduleContestEnd,
-	getCurrentContestId: 		getCurrentContestId
+	getCurrentContestId: 		getCurrentContestId,
+	getContestProblemNames: 	getContestProblemNames
 };

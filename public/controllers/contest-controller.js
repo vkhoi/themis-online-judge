@@ -10,6 +10,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	// For admin to create contest.
 	vm.contestName = "";
 	vm.contestTopic = "";
+	vm.problemNames = [];
+	vm.problemNamesString = "";
 	vm.startTime = "";
 	vm.endTime = "";
 	vm.fileProblem = null;
@@ -241,7 +243,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		return true;
 	}
 
-	vm.uploadProblem = function() {
+	vm.createContest = function() {
 		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "") {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, file đề bài, và file test.", "warning");
 			return;
@@ -259,6 +261,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				name: vm.contestName,
 				topic: vm.contestTopic,
 				file: vm.fileProblem,
+				problemNames: vm.problemNames,
 				startTime: vm.startTime,
 				endTime: vm.endTime
 			}
@@ -285,6 +288,35 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			});
 		}, function errorCallback(err) {
 			console.log(err);
+		});
+	}
+
+	function trimString(s) {
+		if (s == " ") return "";
+		while (s.length > 0 && s[0] == ' ')
+			s = s.slice(1, s.length);
+		while (s.length > 0 && s[s.length-1] == ' ')
+			s = s.slice(0, -1);
+		return s;
+	}
+
+	function beautifyString(s) {
+		s = trimString(s);
+		var res = "";
+		for (var i = 0; i < s.length; i++)
+			if (i == 0 || s[i] != ' ' || s[i-1] != ' ')
+				res += s[i];
+		return res;
+	}
+
+	vm.problemNamesChanged = function() {
+		var s = beautifyString(vm.problemNamesString);
+		var a = s.split(",");
+		vm.problemNames = [];
+		a.forEach(function(problemName) {
+			name = trimString(problemName);
+			if (name.length > 0)
+				vm.problemNames.push(name);
 		});
 	}
 }]);

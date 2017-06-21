@@ -6,8 +6,11 @@ var scoreboard 			= require('../helpers/scoreboard');
 // Name: Get problems' names.
 // Type: POST.
 router.post('/', [], function(req, res) {
-	var problems = scoreboard.getProblems();
-	res.send({ problems: problems });
+	scoreboard.getProblemNames().then(function successCallback(names) {
+		res.send({ problems: names });
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
 });
 
 module.exports = router;

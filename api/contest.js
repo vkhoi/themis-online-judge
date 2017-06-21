@@ -32,8 +32,11 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
-		filePath: path.join('data/contests', req.file.filename)
+		filePath: path.join('data/contests', req.file.filename),
+		problemNames: req.body.problemNames
 	};
+	console.log(newContest);
+	
 	var id = null;
 	Contests.addContest(newContest).then(function successCallback(contestId) {
 		id = contestId;

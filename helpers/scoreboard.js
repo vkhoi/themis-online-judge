@@ -7,17 +7,20 @@ var Contests 	= require('./contests');
 var problems = [];
 var scores = {};
 
-// Function to read all problem names from data/problems.txt.
-(function readAllProblems() {
-	var lineReader = readline.createInterface({
-		input: fs.createReadStream(path.join(process.cwd(), 'data', 'problems.txt'))
+function getProblemNames() {
+	return new Promise(function(resolve, reject) {
+		Contests.getCurrentContestId().then(function successCallback(contestId) {
+			Contests.getContestProblemNames(contestId).then(function successCallback(names) {
+				resolve(names);
+				problems = names;
+			}, function errorCallback(err) {
+				reject(Error("Unable to get problem names of current contest"));
+			});
+		}, function errorCallback(err) {
+			reject(Error("Unable to get current contest's id"));
+		});
 	});
-
-	// Read line by line.
-	lineReader.on('line', function(line) {
-		problems.push(line);
-	});
-})();
+}
 
 function updateScore(username, problem, newScore) {
 	if (!scores[username]) {
@@ -62,10 +65,6 @@ function updateScore(username, problem, newScore) {
 	});
 })();
 
-function getProblems() {
-	return problems;
-}
-
 function getScoreboard() {
 	var res = {
 		contestExists: true,
@@ -73,6 +72,7 @@ function getScoreboard() {
 	};
 	return new Promise(function(resolve, reject) {
 		Contests.getCurrentContestId().then(function successCallback(result) {
+			console.log(result);
 			if (result == -1) {
 				res.contestExists = false;
 			}
@@ -103,8 +103,8 @@ function removeUser(username) {
 }
 
 module.exports = {
-	getProblems: 	getProblems,
-	updateScore: 	updateScore,
-	getScoreboard: 	getScoreboard,
-	removeUser:  	removeUser
+	getProblemNames: 	getProblemNames,
+	updateScore: 		updateScore,
+	getScoreboard: 		getScoreboard,
+	removeUser:  		removeUser
 };
