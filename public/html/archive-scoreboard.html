@@ -1,0 +1,30 @@
+<div id="archive-scoreboard" class="main-tab container">
+	<div style="margin-bottom: 1rem;">
+		<a ui-sref="home.contest.all">
+			<button type="button" class="btn btn-secondary">
+				<i class="fa fa-long-arrow-left"></i>
+				Trở lại
+			</button>
+		</a>
+	</div>
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th style="width: 10%;">Xếp hạng</th>
+				<th>Tên thí sinh</th>
+				<th ng-repeat="problem in ContestArchiveScoreboardCtrl.problems" style="width: 10%;">
+					{{ problem }}
+				</th>
+				<th style="width: 10%;">Tổng điểm</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="user in ContestArchiveScoreboardCtrl.scoreboard">
+				<td style="width: 10%;">{{ $index + 1 }}</td>
+				<td>{{ user.username }}</td>
+				<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
+				<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

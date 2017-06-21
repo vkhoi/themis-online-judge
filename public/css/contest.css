@@ -1,3 +1,6 @@
+#site-contest {
+	padding-bottom: 4rem;
+}
 #site-contest ul.navigation-bar {
 	padding: 1rem;
 	width: 100%;
@@ -32,9 +35,6 @@
 	cursor: pointer;
 }
 /*------------ QUẢN LÝ KÌ THI ------------*/
-#adminTab {
-	padding-bottom: 4rem;
-}
 #adminTab .problem-name {
 	display: inline-block;
 	padding: 4px;

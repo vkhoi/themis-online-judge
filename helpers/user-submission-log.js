@@ -2,6 +2,7 @@ var path 		= require('path');
 var DataStore 	= require('nedb');
 var	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'user-sub-log.db'), autoload: true });
 var config		= require('../config');
+var fse 		= require('fs-extra');
 // A UserSubLog instance has 3 fields:
 // 1. username: 	(String) username of the user.
 // 2. submissions:  (Dictionary) key: submission name with format <date>[username][problem]; value: content of source code.
@@ -116,15 +117,38 @@ function addSubmission(username, submissionName, fileContent) {
 // Function to add new score and details.
 function addScoreDetails(username, submissionName, res) {
 	findUser(username, function(err, user) {
-		var beautifulName = beautifyFilename(submissionName);
-		UserSubLog.update({ _id: user._id }, {
-			$set: { [`scores.${beautifulName}`]: res.score, [`details.${beautifulName}`]: res.details }
-		}, {}, function(err, numAffected) {
-			if (err) {}
-			else {
-				console.log('added score for submission', beautifulName);
+		if (err) {
+			console.log(err.toString());
+		}
+		else {
+			if (!user) {
+				addUser(username).then(function successCallback(user) {
+					var beautifulName = beautifyFilename(submissionName);
+					UserSubLog.update({ _id: user._id }, {
+						$set: { [`scores.${beautifulName}`]: res.score, [`details.${beautifulName}`]: res.details }
+					}, {}, function(err, numAffected) {
+						if (err) {}
+						else {
+							console.log('added score for submission', beautifulName);
+						}
+					});
+				}, function errorCallback(err) {
+					console.log(err.toString());
+					reject(Error("Unable to add new user"));
+				});
 			}
-		});
+			else {
+				var beautifulName = beautifyFilename(submissionName);
+				UserSubLog.update({ _id: user._id }, {
+					$set: { [`scores.${beautifulName}`]: res.score, [`details.${beautifulName}`]: res.details }
+				}, {}, function(err, numAffected) {
+					if (err) {}
+					else {
+						console.log('added score for submission', beautifulName);
+					}
+				});
+			}
+		}
 	});
 }
 
@@ -147,7 +171,7 @@ function getAllScoreDetails(username) {
 function getScoreDetails(username, submissionName) {
 	return new Promise(function(resolve, reject) {
 		findUser(username, function(err, user) {
-			if (err) reject(Error('Could not retrieve scores'));
+			if (err || !user) reject(Error('Could not retrieve scores'));
 			else {
 				if (config.mode == "debug") {
 					setTimeout(function() {
@@ -206,6 +230,21 @@ function getAllUserSubLogScores() {
 	});
 }
 
+// Function to copy /data/user-sub-log.db to /data/contests/archive.
+// The copy will be appended with the contestId at the beginning of its filename.
+function copyUserSubLog(contestId) {
+	return new Promise(function(resolve, reject) {
+		fse.copy('data/user-sub-log.db', 'data/contests/archive/' + contestId + '-user-sub-log.db', function(err) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
+				resolve();
+			}
+		});
+	});
+}
+
 // Function to clear all submission logs (to prepare for a new contest).
 function clearAllSubmissions() {
 	return new Promise(function(resolve, reject) {
@@ -232,5 +271,6 @@ module.exports = {
 	getScoreDetails: 			getScoreDetails,
 	getDetails: 				getDetails,
 	getAllUserSubLogScores: 	getAllUserSubLogScores,
+	copyUserSubLog: 			copyUserSubLog,
 	clearAllSubmissions: 		clearAllSubmissions
 };

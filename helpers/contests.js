@@ -6,6 +6,8 @@ var exec		= require('child_process').exec;
 var schedule 	= require('node-schedule');
 var moment 		= require('moment');
 var UserSubLog	= require('../helpers/user-submission-log');
+var scoreboard 	= require('../helpers/scoreboard');
+var fse 		= require('fs-extra');
 
 // redis to store only 1 key-value pair: contest - id.
 var redis		= require('redis');
@@ -166,15 +168,38 @@ function scheduleContestStart(t, contestId) {
 
 // Function to schedule the end of a contest.
 function scheduleContestEnd(t) {
-	var endMoment = moment(t, "HH:mm, DD/MM/YYYY");
-	var endTime = endMoment.toDate();
+	let endMoment = moment(t, "HH:mm, DD/MM/YYYY");
+	let endTime = endMoment.toDate();
 	schedule.scheduleJob(endTime, function() {
-		redisClient.del("contest", function(err, reply) {
-			console.log('delete contest', reply);
-		});
-		UserSubLog.clearAllSubmissions().then(function successCallback() {
-		}, function errorCallback(err) {
-			console.log(err.toString());
+		getCurrentContestId().then(function successCallback(contestId) {
+			getContest(contestId).then(function successCallback(contest) {
+				// This will make client unable to see scoreboard and make submission.
+				redisClient.del("contest", function(err, reply) {
+					console.log('delete contest', reply);
+				});
+				// Only stop contest 5 minutes after actual endTime. This is because
+				// there might be some submissions that were submitted near the end
+				// of the contest and have not been graded.
+				setTimeout(function() {
+					let sb = scoreboard.getScoreboard(contest.problemNames);
+					fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
+						if (err)
+							console.log(err.toString());
+					});
+					scoreboard.stopContest();
+					UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
+						UserSubLog.clearAllSubmissions().then(function successCallback() {
+						}, function errorCallback(err) {
+							console.log(err.toString());
+						});
+					}, function errorCallback(err) {
+						console.log(err.toString());
+					});
+				}, 1000);
+			}, function errorCallback(err) {
+				if (err)
+					console.log(err.toString());
+			});
 		});
 	});
 }
@@ -213,15 +238,58 @@ function getContestProblemNames(id) {
 	});
 }
 
+// Function to get contest's scoreboard.
+function getCurrentContestScoreboard() {
+	return new Promise(function(resolve, reject) {
+		getCurrentContestId().then(function successCallback(contestId) {
+			console.log(contestId);
+			if (contestId == -1) {
+				let res = {
+					contestExists: false,
+					scoreboard: []
+				}
+				resolve(res);
+			}
+			else {
+				getContestProblemNames(contestId).then(function successCallback(names) {
+					let res = scoreboard.getScoreboard(names);
+					resolve(res);
+				}, function errorCallback(err) {
+					reject(Error(err.toString()));
+				});
+			}
+		}, function errorCallback(err) {
+			console.log(err.toString());
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+// Function to get archived scoreboard.
+function getArchivedScoreboard(contestId) {
+	return new Promise(function(resolve, reject) {
+		fse.readJson('data/contests/archive/' + contestId + '-scoreboard.json', function(err, res) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
+				resolve(res);
+			}
+		});
+	});
+}
+
 module.exports = {
-	addContest: 				addContest,
-	getAllContests: 			getAllContests,
-	getContest: 				getContest,
-	uncompressFileTest: 		uncompressFileTest,
-	moveTestFolders: 			moveTestFolders,
-	removeThemisTestFolder: 	removeThemisTestFolder,
-	scheduleContestStart: 		scheduleContestStart,
-	scheduleContestEnd: 		scheduleContestEnd,
-	getCurrentContestId: 		getCurrentContestId,
-	getContestProblemNames: 	getContestProblemNames
+	addContest: 					addContest,
+	getAllContests: 				getAllContests,
+	getContest: 					getContest,
+	uncompressFileTest: 			uncompressFileTest,
+	moveTestFolders: 				moveTestFolders,
+	removeThemisTestFolder: 		removeThemisTestFolder,
+	scheduleContestStart: 			scheduleContestStart,
+	scheduleContestEnd: 			scheduleContestEnd,
+	getCurrentContestId: 			getCurrentContestId,
+	getContestProblemNames: 		getContestProblemNames,
+	getCurrentContestScoreboard: 	getCurrentContestScoreboard,
+	getArchivedScoreboard: 			getArchivedScoreboard
 };

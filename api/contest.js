@@ -35,7 +35,6 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		filePath: path.join('data/contests', req.file.filename),
 		problemNames: req.body.problemNames
 	};
-	console.log(newContest);
 	
 	var id = null;
 	Contests.addContest(newContest).then(function successCallback(contestId) {

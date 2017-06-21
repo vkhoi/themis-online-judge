@@ -97,6 +97,12 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 					url: '/submission',
 					templateUrl: 'html/submission.html'
 				})
+				.state('home.contest.archiveScoreboard', {
+					url: '/archive/scoreboard/:id',
+					controller: 'ContestArchiveScoreboardController',
+					controllerAs: 'ContestArchiveScoreboardCtrl',
+					templateUrl: 'html/archive-scoreboard.html'
+				})
 			.state('home.members', {
 				url: 'members',
 				controller: 'MembersController',

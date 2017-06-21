@@ -73,6 +73,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			var contests = res.data.contests;
 			contests.forEach(function(contest) {
 				var elem = {
+					id: contest._id,
 					setter: contest.setter,
 					name: contest.name,
 					topic: contest.topic,
@@ -244,8 +245,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.createContest = function() {
-		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "") {
-			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, file đề bài, và file test.", "warning");
+		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "" || vm.problemNames.length == 0) {
+			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập, file đề bài, và file test.", "warning");
 			return;
 		}
 		else if (isValidTime(vm.startTime, vm.endTime) == false) {
