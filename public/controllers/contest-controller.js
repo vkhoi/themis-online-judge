@@ -116,7 +116,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	var countdown = function() {
-		if (vm.runningContest.status.timeLeft>0) {
+		if (vm.runningContest.status.timeLeft > 0) {
 			vm.runningContest.status.timeLeft-=1000;
 			$timeout(countdown, 1000);
 		}
