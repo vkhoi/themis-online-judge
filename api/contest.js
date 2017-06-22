@@ -1,11 +1,13 @@
-const express 		= require('express');
-const router 		= express.Router();
-const path			= require('path');
-const multer		= require('multer');
-const ensureAdmin 	= require('../helpers/ensure-admin');
-const Contests 		= require('../helpers/contests');
-const dateTimeCvt	= require('../helpers/datetime-converter');
-const testDir 		= 'data/contests/tests';
+const express 			= require('express');
+const router 			= express.Router();
+const path				= require('path');
+const multer			= require('multer');
+const ensureAdmin 		= require('../helpers/ensure-admin');
+const ensureAuthorized 	= require('../helpers/ensure-authorized');
+const Contests 			= require('../helpers/contests');
+const dateTimeCvt		= require('../helpers/datetime-converter');
+const testDir 			= 'data/contests/tests';
+const moment 			= require('moment');
 
 // Specify directory to store problem statements of contests.
 var storage = multer.diskStorage({
@@ -34,6 +36,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		filePath: path.join('data/contests', req.file.filename),
 		problemNames: req.body.problemNames
 	};
+	// console.log(newContest);
 	
 	let id = null;
 	Contests.addContest(newContest).then(function successCallback(contestId) {
@@ -49,6 +52,8 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 			}
 			res.send({ status: 'SUCCESS', id: id });
 		});
+	}, function errorCallback(err) {
+		res.send({ status: 'FAILED' });
 	});
 });
 
@@ -99,6 +104,49 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 router.get('/all', [], function(req, res) {
 	Contests.getAllContests().then(function successCallback(contests){
 		res.send({ contests: contests });
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
+});
+
+// Name: Get pending contest.
+// Type: GET.
+router.get('/pendingContest', [ensureAdmin], function(req, res) {
+	Contests.getPendingContest().then(function successCallback(contest) {
+		res.send({ contest: contest });
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
+});
+
+// Name: Edit contest's info.
+// Type: POST.
+router.post('/edit', [ensureAdmin], function(req, res) {
+	let contest = {
+		id: req.body.id,
+		name: req.body.name,
+		topic: req.body.topic,
+		startTime: req.body.startTime,
+		endTime: req.body.endTime,
+		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
+		problemNames: req.body.problemNames
+	};
+	Contests.editContest(contest).then(function successCallback(result) {
+		res.send({ status: "SUCCESS "});
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
+});
+
+// Name: Edit problem file.
+// Type: POST.
+router.post('/editProblemFile', [ensureAdmin, upload], function(req, res) {
+	let contest = {
+		id: req.body.id,
+		filePath: path.join('data/contests', req.file.filename)
+	};
+	Contests.editContestProblemFile(contest).then(function successCallback(result) {
+		res.send({ status: "SUCCESS", filePath: contest.filePath });
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
 	});

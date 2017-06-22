@@ -5,7 +5,7 @@ var Contests 			= require('../helpers/contests');
 
 // Name: Get problems' names.
 // Type: POST.
-router.post('/', [], function(req, res) {
+router.post('/', [ensureAuthorized], function(req, res) {
 	let id = req.body.id;
 
 	if (id) {

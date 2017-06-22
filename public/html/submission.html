@@ -1,5 +1,5 @@
 <div id="submissionTab" class="main-tab container">
-	<div ng-show="ContestCtrl.contestExists">
+	<div ng-show="ContestCtrl.contestGoingOn">
 		<form id="uploadSolution">
 			<div style="margin-bottom: 1rem;">
 				<h3>Nộp bài</h3>
@@ -65,5 +65,5 @@
 			</div>
 		</div>
 	</div>
-	<h5 ng-show="!ContestCtrl.contestExists">Đang không có kì thi nào diễn ra</h5>
+	<h5 ng-show="!ContestCtrl.contestGoingOn">Đang không có kì thi nào diễn ra</h5>
 </div>

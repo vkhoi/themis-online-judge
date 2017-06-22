@@ -1,6 +1,6 @@
 const path 			= require('path');
 const DataStore 	= require('nedb');
-const Contests		= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'),autoload: true });
+const Contests		= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'), autoload: true });
 const config 		= require('../config');
 const exec			= require('child_process').exec;
 const schedule 		= require('node-schedule');
@@ -26,27 +26,45 @@ const redisClient 	= redis.createClient();
 
 const testDir 		= 'data/contests/tests';
 
-// Function to insert a new problem into the database.
+// Function to create a new contest into the database.
 function addContest(newContest) {
 	return new Promise(function(resolve, reject) {
-		Contests.insert({
-			setter: newContest.setter,
-			name: newContest.name,
-			topic: newContest.topic,
-			startTime: newContest.startTime,
-			endTime: newContest.endTime,
-			duration: newContest.duration,
-			filePath: newContest.filePath,
-			problemNames: newContest.problemNames
-		}, function(err, contest) {
-			if (err) {
-				reject(Error("Could not add new contest"));
+		getAllContests().then(function successCallback(allContests) {
+			let ok = true;
+			for (let i = 0; i < allContests.length; i += 1) {
+				if (moment(allContests[i].endTime, "HH:mm, DD/MM/YYYY") >= moment()) {
+					ok = false;
+					break;
+				}
+			}
+			if (ok) {
+				Contests.insert({
+					setter: newContest.setter,
+					name: newContest.name,
+					topic: newContest.topic,
+					startTime: newContest.startTime,
+					endTime: newContest.endTime,
+					duration: newContest.duration,
+					filePath: newContest.filePath,
+					problemNames: newContest.problemNames
+				}, function(err, contest) {
+					if (err) {
+						reject(Error("Could not add new contest"));
+					}
+					else {
+						console.log('added', contest);
+						redisClient.set("pendingContest", contest._id);
+						resolve(contest._id);
+					}
+				});
 			}
 			else {
-				console.log('added', contest);
-				resolve(contest._id);
+				reject(Error("There's already a contest going to occur"));
 			}
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
 		});
+		
 	});
 }
 
@@ -75,6 +93,9 @@ function getAllContests() {
 						elem.filePath = -1;
 					}
 					res.push(elem);
+				});
+				res.sort(function(a, b) {
+					return moment(a.startTime, "HH:mm, DD/MM/YYYY") < moment(b.startTime, "HH:mm, DD/MM/YYYY");
 				});
 				resolve(res);
 			}
@@ -190,6 +211,8 @@ function scheduleContestEnd(t) {
 				redisClient.del("contest", function(err, reply) {
 					console.log('delete contest', reply);
 				});
+				redisClient.del("pendingContest", function(err, reply) {
+				});
 				// Only stop contest 5 minutes after actual endTime. This is because
 				// there might be some submissions that were submitted near the end
 				// of the contest and have not been graded.
@@ -291,6 +314,101 @@ function getArchivedScoreboard(contestId) {
 	});
 }
 
+// Function to get the pending contest's id.
+function getPendingContestId() {
+	return new Promise(function(resolve, reject) {
+		redisClient.get("pendingContest", function(err, reply) {
+			if (err) {
+				reject(Error("Unable to get pending contest's id"));
+			}
+			else if (reply) {
+				resolve(reply);
+			}
+			else {
+				resolve(-1);
+			}
+		});
+	});
+}
+
+// Function to get the pending contest.
+function getPendingContest() {
+	return new Promise(function(resolve, reject) {
+		getPendingContestId().then(function successCallback(id) {
+			Contests.findOne({ _id: id }, function(err, contest) {
+			if (err) {
+				reject(Error("Could not retrieve contest with id"));
+			}
+			else if (!contest) {
+				resolve(-1);
+			}
+			else {
+				resolve(contest);
+			}
+		});
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+// Function to edit the pending contest.
+function editContest(contest) {
+	return new Promise(function(resolve, reject) {
+		getContest(contest.id).then(function successCallback(_contest) {
+			if (!_contest) {
+				reject(Error("Could not find this contest in database"));
+			}
+			else {
+				Contests.update({ _id: contest.id }, {
+					$set: {
+						name: contest.name,
+						topic: contest.topic,
+						problemNames: contest.problemNames
+					}
+				}, {}, function(err, numAffected) {
+					if (err) {
+						reject(Error("Could not update contest's info"));
+					}
+					else {
+						resolve();
+					}
+				});
+			}
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+// Function to edit contest's problem file.
+function editContestProblemFile(contest) {
+	return new Promise(function(resolve, reject) {
+		getContest(contest.id).then(function successCallback(_contest) {
+			if (!_contest) {
+				reject(Error("Could not find this contest in database"));
+			}
+			else {
+				Contests.update({ _id: contest.id }, {
+					$set: {
+						filePath: contest.filePath
+					}
+				}, {}, function(err, numAffected) {
+					if (err) {
+						reject(Error("Could not update contest's problem file"));
+					}
+					else {
+						resolve();
+					}
+				});
+			}
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -303,5 +421,9 @@ module.exports = {
 	getCurrentContestId: 			getCurrentContestId,
 	getContestProblemNames: 		getContestProblemNames,
 	getCurrentContestScoreboard: 	getCurrentContestScoreboard,
-	getArchivedScoreboard: 			getArchivedScoreboard
+	getArchivedScoreboard: 			getArchivedScoreboard,
+	getPendingContest: 				getPendingContest,
+	getPendingContestId: 			getPendingContestId,
+	editContest: 					editContest,
+	editContestProblemFile: 		editContestProblemFile
 };

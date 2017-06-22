@@ -1,5 +1,5 @@
 <div id="adminTab" class="main-tab container">
-	<form id="admin-create-contest" ng-show="!ContestCtrl.contestExists">
+	<form id="admin-create-contest" ng-show="!ContestCtrl.contestPending">
 		<h3 style="margin-bottom: 1rem;">Tạo kỳ thi</h3>
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Tên kì thi</label>
@@ -69,7 +69,68 @@
 			</div>
 		</div>
 	</form>
-	<form id="admin-edit-contest" ng-show="ContestCtrl.contestExists">
-		<h3>Quản lý kì thi</h3>
+	<form id="admin-edit-contest" ng-show="ContestCtrl.contestPending">
+		<h3 style="margin-bottom: 1rem;">Quản lý kì thi</h3>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">Tên kì thi</label>
+			<div class="col-sm-6">
+				<input class="form-control input-lg" type="text" ng-model="ContestCtrl.contestPendingName">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">Chủ đề</label>
+			<div class="col-sm-6">
+				<input class="form-control input-lg" type="text" ng-model="ContestCtrl.contestPendingTopic">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="chooseFileButton" class="col-sm-2 col-form-label">File đề bài</label>
+			<div class="col-sm-6">
+				<div class="col-form-label" style="display: inline-block;">
+					<a href="{{ ContestCtrl.contestPendingFilePath }}" target="_blank">Đề bài</a>
+				</div>
+				<button class="btn btn-secondary" ngf-select ng-model="ContestCtrl.contestPendingFileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file khác</button>
+				<span>{{ ContestCtrl.contestPendingFileProblem.name | fileNameFilter }}</span>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control" ng-model="ContestCtrl.contestPendingProblemsString" ng-change="ContestCtrl.pendingProblemNamesChanged()" placeholder="SEGMENT, ANT, POLYGON">
+				<div>
+			    	<div class="problem-name" ng-repeat="name in ContestCtrl.contestPendingProblems track by $index" style="margin-top: 6px;" ng-class="{indent: $index > 0}">
+			    		{{ name }}
+			    	</div>
+		    	</div>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="setStartTime" class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
+			<div class="col-sm-6">
+				<div class="input-group" moment-picker="ContestCtrl.contestPendingStart" format="HH:mm, DD/MM/YYYY" locale="vi">
+				    <span class="input-group-addon">
+				        <i class="fa fa-clock-o"></i>
+				    </span>
+				    <input class="form-control" ng-model="ContestCtrl.contestPendingStart" ng-disabled="ContestCtrl.isMomentBeforeNow(ContestCtrl.contestPendingStart)">
+				</div>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="setEndTime" class="col-sm-2 col-form-label">Thời gian kết thúc</label>
+			<div class="col-sm-6">
+				<div class="input-group" moment-picker="ContestCtrl.contestPendingEnd" format="HH:mm, DD/MM/YYYY" locale="vi">
+				    <span class="input-group-addon">
+				        <i class="fa fa-clock-o"></i>
+				    </span>
+				    <input class="form-control" ng-model="ContestCtrl.contestPendingEnd">
+				</div>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-4 offset-sm-2">
+				<button class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.editContest()">Chỉnh sửa</button>
+				<button class="btn btn-danger" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.stopContest()">Dừng kì thi</button>
+			</div>
+		</div>
 	</form>
 </div>

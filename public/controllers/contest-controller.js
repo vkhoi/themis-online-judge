@@ -3,7 +3,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.submissionDetails = "";
 	vm.submissionLogs = [];
 
-	vm.contestExists = false;
+	vm.contestGoingOn = false;
 
 	vm.contests = [];
 
@@ -18,12 +18,24 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.fileTest = null;
 	vm.uploading = false;
 
+	// For admin to edit contest.
+	vm.contestPendingId = -1;
+	vm.contestPending = false;
+	vm.contestPendingSetter = "";
+	vm.contestPendingName = "";
+	vm.contestPendingtopic = "";
+	vm.contestPendingStart = "";
+	vm.contestPendingEnd = "";
+	vm.contestPendingProblems = "";
+	vm.contestPendingFilePath = "";
+	vm.contestPendingFileProblem = null;
+
 	function getScoreboard() {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
-			vm.contestExists = res.data.contestExists;
+			vm.contestGoingOn = res.data.contestExists;
 			var scoreboard = res.data.scoreboard;
-			if (vm.contestExists) {
+			if (vm.contestGoingOn) {
 				scoreboard.forEach(function(user) {
 					var elem = {
 						username: user.username,
@@ -192,6 +204,36 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
+	function checkContestPending() {
+		$http.get('/api/contest/pendingContest').then(function successCallback(res) {
+			if (res.data.contest == -1) {
+				vm.contestPending = false;
+			}
+			else {
+				let contest = res.data.contest;
+				console.log(contest);
+				vm.contestPending = true;
+				vm.contestPendingId = contest._id;
+				vm.contestPendingSetter = contest.setter;
+				vm.contestPendingName = contest.name;
+				vm.contestPendingTopic = contest.topic;
+				vm.contestPendingStart = contest.startTime;
+				vm.contestPendingEnd = contest.endTime;
+				vm.contestPendingProblems = contest.problemNames;
+				vm.contestPendingFilePath = contest.filePath;
+
+				vm.contestPendingProblemsString = "";
+				if (vm.contestPendingProblems.length > 0) {
+					vm.contestPendingProblemsString = vm.contestPendingProblems[0];
+					for (let i = 1; i < vm.contestPendingProblems.length; i += 1)
+						vm.contestPendingProblemsString += ", " + vm.contestPendingProblems[i];
+				}
+			}
+		}, function errorCallback(err) {
+			console.log(err);
+		});
+	}
+
 	function init() {
 		if ($state.current.name == "home") {
 			$state.go("home.scoreboard");
@@ -201,6 +243,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		getProblemsAndScoreboard();
 		getSubmissionLogs();
 		getContests();
+		checkContestPending();
 	}
 	init();
 
@@ -254,41 +297,46 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			return;
 		}
 		vm.uploading = true;
-		console.log(vm.fileTest);
 		Upload.upload({
 			url: '/api/contest/create',
 			data: {
 				setter: Session.username,
 				name: vm.contestName,
 				topic: vm.contestTopic,
-				file: vm.fileProblem,
 				problemNames: vm.problemNames,
 				startTime: vm.startTime,
-				endTime: vm.endTime
+				endTime: vm.endTime,
+				file: vm.fileProblem
 			}
 		}).then(function successCallback(res) {
-			var id = res.data.id;
-			Upload.upload({
-				url: '/api/contest/addTest',
-				data: {
-					id: id,
-					file: vm.fileTest
-				}
-			}).then(function successCallback(res) {
-				// vm.fileProblem = null;
-				// vm.fileTest = null
-				// vm.uploading = false;
-				// vm.contestName = "";
-				// vm.contestTopic = "";
-				// vm.startTime = "";
-				// vm.endTime = "";
-				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
-				getContests();
-			}, function errorCallback(err) {
-				console.log(err);
-			});
+			if (res.data.status == "FAILED") {
+				swal("Thất bại!", "Đang có kì thi sắp diễn ra hoặc chưa kết thúc!", "warning");
+			}
+			else {
+				var id = res.data.id;
+				Upload.upload({
+					url: '/api/contest/addTest',
+					data: {
+						id: id,
+						file: vm.fileTest
+					}
+				}).then(function successCallback(res) {
+					vm.fileProblem = null;
+					vm.fileTest = null
+					vm.uploading = false;
+					vm.contestName = "";
+					vm.contestTopic = "";
+					vm.startTime = "";
+					vm.endTime = "";
+					swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
+					getContests();
+					checkContestPending();
+				}, function errorCallback(err) {
+					console.log(err.toString());
+				});
+			}
 		}, function errorCallback(err) {
-			console.log(err);
+			console.log(err.toString());
 		});
 	}
 
@@ -319,6 +367,65 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			if (name.length > 0)
 				vm.problemNames.push(name);
 		});
+	}
+
+	vm.pendingProblemNamesChanged = function() {
+		var s = beautifyString(vm.contestPendingProblemsString);
+		var a = s.split(",");
+		vm.contestPendingProblems = [];
+		a.forEach(function(problemName) {
+			name = trimString(problemName);
+			if (name.length > 0)
+				vm.contestPendingProblems.push(name);
+		});
+	}
+
+	vm.editContest = function() {
+		if (vm.contestPendingName == "" || vm.contestPendingTopic == "" || vm.contestPendingProblems.length == 0 || vm.contestPendingStart == "" || vm.contestPendingEnd == "") {
+			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
+			return;
+		}
+		// else if (isValidTime(vm.contestPendingStart, vm.contestPendingEnd) == false) {
+		// 	swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
+		// 	return;
+		// }
+		$http.post('/api/contest/edit', {
+			id: vm.contestPendingId,
+			name: vm.contestPendingName,
+			topic: vm.contestPendingTopic,
+			problemNames: vm.contestPendingProblems,
+			startTime: vm.contestPendingStart,
+			endTime: vm.contestPendingEnd,
+		}).then(function successCallback(res) {
+			if (vm.contestPendingFileProblem) {
+				Upload.upload({
+					url: '/api/contest/editProblemFile',
+					data: {
+						id: vm.contestPendingId,
+						file: vm.contestPendingFileProblem
+					}
+				}).then(function successCallback(res) {
+					vm.contestPendingFilePath = res.data.filePath;
+					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
+				}, function errorCallback(err) {
+					console.log(err);
+				});
+			}
+			else {
+				swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
+			}
+		}, function errorCallback(err) {
+			console.log(err);
+		});
+
+	}
+
+	vm.stopContest = function() {
+
+	}
+
+	vm.isMomentBeforeNow = function(t) {
+		return moment(t, "HH:mm, DD/MM/YYYY") < moment();
 	}
 }]);
 
