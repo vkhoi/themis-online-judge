@@ -34,6 +34,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		fileProblem: null
 	};
 
+	vm.hasSetCountdown = false;
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -113,8 +115,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				vm.contests.push(elem);
 				if (isRunning(elem)) {
 					vm.runningContest = elem;
-					$timeout(countdown, 1000);
-					console.log(elem);
+					if (!vm.hasSetCountdown) {
+						vm.hasSetCountdown = true;
+						$timeout(countdown, 1000);
+					}
 				}
 			});
 		});
@@ -310,10 +314,19 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function isValidTime(startTime, endTime) {
 		var start = moment(startTime, "HH:mm, DD/MM/YYYY");
 		var end = moment(endTime, "HH:mm, DD/MM/YYYY");
-		if (end.isBefore(start)) 
+		if (end.isBefore(start) || end.isBefore(moment())) 
 			return false;
+
+		// If the contest is already going on, there's no need to check 
+		// its start time with the current time.
+		if (vm.contestGoingOn)
+			return true;
+
+		// Contest has not occurred -> need to validate if its start time
+		// is after the current time.
 		if (start.isBefore(moment()))
 			return false;
+
 		return true;
 	}
 
@@ -415,10 +428,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
 			return;
 		}
-		// else if (isValidTime(vm.contestPendingStart, vm.contestPendingEnd) == false) {
-		// 	swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
-		// 	return;
-		// }
+		else if (!isValidTime(vm.contestPending.start, vm.contestPending.end)) {
+			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
+			return;
+		}
 		$http.post('/api/contest/edit', {
 			id: vm.contestPending.id,
 			name: vm.contestPending.name,
