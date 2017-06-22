@@ -6,7 +6,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.contestGoingOn = false;
 
 	vm.contests = [];
-	vm.runningContest = {}
+	vm.runningContest = {};
 
 	// For admin to create contest.
 	vm.contestName = "";
@@ -20,18 +20,21 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.uploading = false;
 
 	// For admin to edit contest.
-	vm.contestPendingId = -1;
-	vm.contestPending = false;
-	vm.contestPendingSetter = "";
-	vm.contestPendingName = "";
-	vm.contestPendingtopic = "";
-	vm.contestPendingStart = "";
-	vm.contestPendingEnd = "";
-	vm.contestPendingProblems = "";
-	vm.contestPendingFilePath = "";
-	vm.contestPendingFileProblem = null;
+	vm.contestPending = {
+		id: -1,
+		exists: false,
+		setter: "",
+		name: "",
+		topic: "",
+		start: "",
+		end: "",
+		problemsString: "",
+		problems: [],
+		filePath: "",
+		fileProblem: null
+	};
 
-	function getScoreboard() {
+	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
 			vm.contestGoingOn = res.data.contestExists;
@@ -47,9 +50,11 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						elem.scores.push(user[vm.problems[i]]);
 					vm.scoreboard.push(elem);
 				});
-				setTimeout(function() {
-					getScoreboard();
-				}, 10000);
+				if (refresh) {
+					$timeout(function() {
+						getScoreboard();
+					}, 10000);
+				}
 			}
 		});
 	}
@@ -147,7 +152,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			var score = res.data.scores[submissionName];
 			var details = res.data.details[submissionName];
 			if (score == "-1") {
-				setTimeout(function() {
+				$timeout(function() {
 					askJuryForScore(submissionName);
 				}, 5000);
 				return;
@@ -158,11 +163,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					vm.submissionLogs[i].details = details;
 					if (!$scope.$$phase)
 						$scope.$apply();
+					getScoreboard(false);
 					break;
 				}
 			}
 		}, function errorCallback(err) {
-			setTimeout(function() {
+			$timeout(function() {
 				askJuryForScore(submissionName);
 			}, 5000);
 		});
@@ -228,26 +234,29 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function checkContestPending() {
 		$http.get('/api/contest/pendingContest').then(function successCallback(res) {
 			if (res.data.contest == -1) {
-				vm.contestPending = false;
+				vm.contestPending.exists = false;
 			}
 			else {
 				let contest = res.data.contest;
 				console.log(contest);
-				vm.contestPending = true;
-				vm.contestPendingId = contest._id;
-				vm.contestPendingSetter = contest.setter;
-				vm.contestPendingName = contest.name;
-				vm.contestPendingTopic = contest.topic;
-				vm.contestPendingStart = contest.startTime;
-				vm.contestPendingEnd = contest.endTime;
-				vm.contestPendingProblems = contest.problemNames;
-				vm.contestPendingFilePath = contest.filePath;
+				vm.contestPending = {
+					id: contest._id,
+					exists: true,
+					setter: contest.setter,
+					name: contest.name,
+					topic: contest.topic,
+					start: contest.startTime,
+					end: contest.endTime,
+					problems: contest.problemNames,
+					filePath: contest.filePath,
+					fileProblem: null
+				};
 
-				vm.contestPendingProblemsString = "";
-				if (vm.contestPendingProblems.length > 0) {
-					vm.contestPendingProblemsString = vm.contestPendingProblems[0];
-					for (let i = 1; i < vm.contestPendingProblems.length; i += 1)
-						vm.contestPendingProblemsString += ", " + vm.contestPendingProblems[i];
+				vm.contestPending.problemsString = "";
+				if (vm.contestPending.problems.length > 0) {
+					vm.contestPending.problemsString = vm.contestPending.problems[0];
+					for (let i = 1; i < vm.contestPending.problems.length; i += 1)
+						vm.contestPending.problemsString += ", " + vm.contestPending.problems[i];
 				}
 			}
 		}, function errorCallback(err) {
@@ -391,18 +400,18 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.pendingProblemNamesChanged = function() {
-		var s = beautifyString(vm.contestPendingProblemsString);
+		var s = beautifyString(vm.contestPending.problemsString);
 		var a = s.split(",");
-		vm.contestPendingProblems = [];
+		vm.contestPending.problems = [];
 		a.forEach(function(problemName) {
 			name = trimString(problemName);
 			if (name.length > 0)
-				vm.contestPendingProblems.push(name);
+				vm.contestPending.problems.push(name);
 		});
 	}
 
 	vm.editContest = function() {
-		if (vm.contestPendingName == "" || vm.contestPendingTopic == "" || vm.contestPendingProblems.length == 0 || vm.contestPendingStart == "" || vm.contestPendingEnd == "") {
+		if (vm.contestPending.name == "" || vm.contestPending.topic == "" || vm.contestPending.problems.length == 0 || vm.contestPending.start == "" || vm.contestPending.end == "") {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
 			return;
 		}
@@ -411,22 +420,22 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		// 	return;
 		// }
 		$http.post('/api/contest/edit', {
-			id: vm.contestPendingId,
-			name: vm.contestPendingName,
-			topic: vm.contestPendingTopic,
-			problemNames: vm.contestPendingProblems,
-			startTime: vm.contestPendingStart,
-			endTime: vm.contestPendingEnd,
+			id: vm.contestPending.id,
+			name: vm.contestPending.name,
+			topic: vm.contestPending.topic,
+			problemNames: vm.contestPending.problems,
+			startTime: vm.contestPending.start,
+			endTime: vm.contestPending.end,
 		}).then(function successCallback(res) {
-			if (vm.contestPendingFileProblem) {
+			if (vm.contestPending.fileProblem) {
 				Upload.upload({
 					url: '/api/contest/editProblemFile',
 					data: {
-						id: vm.contestPendingId,
-						file: vm.contestPendingFileProblem
+						id: vm.contestPending.id,
+						file: vm.contestPending.fileProblem
 					}
 				}).then(function successCallback(res) {
-					vm.contestPendingFilePath = res.data.filePath;
+					vm.contestPending.filePath = res.data.filePath;
 					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
 					getContests();
 				}, function errorCallback(err) {
@@ -464,5 +473,29 @@ themisApp.filter('fileNameFilter', function() {
 	return function(input) {
 		if (!input) return "Chưa chọn file nào";
 		return input;
+	}
+});
+
+themisApp.filter('toHour', function() {
+	return function(input) {
+		if (!input) return 0;
+		input = Math.floor(input / 1000);
+		return Math.floor(input / 3600);
+	}
+});
+
+themisApp.filter('toMinute', function() {
+	return function(input) {
+		if (!input) return 0;
+		input = Math.floor(input / 1000);
+		return Math.floor(input % 3600 / 60);
+	}
+});
+
+themisApp.filter('toSecond', function() {
+	return function(input) {
+		if (!input) return 0;
+		input = Math.floor(input / 1000);
+		return input % 3600 % 60;
 	}
 });
