@@ -466,12 +466,24 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.stopContest = function() {
-
+		if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(vm.contestPending.end, "HH:mm, DD/MM/YYYY"))) {
+			console.log('stop Contest');
+			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
+				console.log(res);
+				swal("Thành công!", "Kì thi đã kết thúc!", "success");
+				getContests();
+				checkContestPending();
+			}, function errorCallback(err) {
+				console.log(err);
+			});
+		}
 	}
 
 	vm.isMomentBeforeNow = function(t) {
-		return moment(t, "HH:mm, DD/MM/YYYY") < moment();
+		return moment(t, "HH:mm, DD/MM/YYYY").isBefore(moment());
 	}
+
+	console.log(moment());
 }]);
 
 themisApp.filter('submissionResultFilter', function() {

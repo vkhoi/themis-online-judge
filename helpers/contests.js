@@ -9,6 +9,7 @@ const UserSubLog	= require('../helpers/user-submission-log');
 const scoreboard 	= require('../helpers/scoreboard');
 const fse 			= require('fs-extra');
 const extract 		= require('extract-zip')
+const dateTimeCvt	= require('./datetime-converter');
 
 // redis to store only 1 key-value pair: contest - id.
 const redis			= require('redis');
@@ -202,43 +203,48 @@ function scheduleContestStart(t, contestId) {
 	});
 }
 
+// Function to end current contest.
+function endCurrentContest(extraJudgingTime = 1000) {
+	getCurrentContestId().then(function successCallback(contestId) {
+		getContest(contestId).then(function successCallback(contest) {
+			// This will make client unable to see scoreboard and make submission.
+			redisClient.del("contest", function(err, reply) {
+				console.log('delete contest', reply);
+			});
+			redisClient.del("pendingContest", function(err, reply) {
+			});
+			// Only stop contest 5 minutes after actual endTime. This is because
+			// there might be some submissions that were submitted near the end
+			// of the contest and have not been graded.
+			setTimeout(function() {
+				let sb = scoreboard.getScoreboard(contest.problemNames);
+				fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
+					if (err)
+						console.log(err.toString());
+				});
+				scoreboard.stopContest();
+				UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
+					UserSubLog.clearAllSubmissions().then(function successCallback() {
+					}, function errorCallback(err) {
+						console.log(err.toString());
+					});
+				}, function errorCallback(err) {
+					console.log(err.toString());
+				});
+			}, extraJudgingTime);
+		}, function errorCallback(err) {
+			if (err)
+				console.log(err.toString());
+		});
+	});
+}
+
 // Function to schedule the end of a contest.
 function scheduleContestEnd(t) {
 	let endMoment = moment(t, "HH:mm, DD/MM/YYYY");
 	let endTime = endMoment.toDate();
 	currentContestEndJob = schedule.scheduleJob(endTime, function() {
-		getCurrentContestId().then(function successCallback(contestId) {
-			getContest(contestId).then(function successCallback(contest) {
-				// This will make client unable to see scoreboard and make submission.
-				redisClient.del("contest", function(err, reply) {
-					console.log('delete contest', reply);
-				});
-				redisClient.del("pendingContest", function(err, reply) {
-				});
-				// Only stop contest 5 minutes after actual endTime. This is because
-				// there might be some submissions that were submitted near the end
-				// of the contest and have not been graded.
-				setTimeout(function() {
-					let sb = scoreboard.getScoreboard(contest.problemNames);
-					fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
-						if (err)
-							console.log(err.toString());
-					});
-					scoreboard.stopContest();
-					UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
-						UserSubLog.clearAllSubmissions().then(function successCallback() {
-						}, function errorCallback(err) {
-							console.log(err.toString());
-						});
-					}, function errorCallback(err) {
-						console.log(err.toString());
-					});
-				}, 1000);
-			}, function errorCallback(err) {
-				if (err)
-					console.log(err.toString());
-			});
-		});
+		endCurrentContest();
 	});
 }
 
@@ -434,6 +440,30 @@ function rescheduleContestEnd(t, contestId) {
 	scheduleContestEnd(t, contestId);
 }
 
+// Function to cancel the start+end job and stop current contest right away.
+function stopCurrentContest(contest, cancelStartJob = true, cancelEndJob = true) {
+	if (cancelStartJob)
+		currentContestStartJob.cancel();
+	if (cancelEndJob)
+		currentContestEndJob.cancel();
+	let now = moment().format("HH:mm, DD/MM/YYYY");
+
+	Contests.update({ _id: contest._id }, {
+		$set: {
+			endTime: now,
+			duration: dateTimeCvt.toDuration(contest.startTime, now)
+		}
+	}, {}, function(err, numAffected) {
+		if (err) {
+			console.log(err.toString());
+		}
+		else {
+			endCurrentContest();
+			console.log("End contest successfully");
+		}
+	});
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -452,5 +482,6 @@ module.exports = {
 	editContest: 					editContest,
 	editContestProblemFile: 		editContestProblemFile,
 	rescheduleContestStart: 		rescheduleContestStart,
-	rescheduleContestEnd: 			rescheduleContestEnd
+	rescheduleContestEnd: 			rescheduleContestEnd,
+	stopCurrentContest: 			stopCurrentContest
 };

@@ -152,4 +152,26 @@ router.post('/editProblemFile', [ensureAdmin, upload], function(req, res) {
 	});
 });
 
+// Name: Stop running contest.
+// Type: POST.
+router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
+	Contests.getCurrentContestId().then(function successCallback(id) {
+		Contests.getContest(id).then(function successCallback(contest) {
+			let start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
+			let end = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
+			if (start.isBefore(moment()) && moment().isBefore(end)) {
+				Contests.stopCurrentContest(contest, false, true);
+				res.send({ status: "SUCCESS" });
+			}
+			else {
+				res.send({ status: "No running contest"});
+			}
+		}, function errorCallback(err) {
+			res.status(500).send(err.toString());
+		});
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
+});
+
 module.exports = router;
