@@ -1,4 +1,4 @@
-themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthService', 'Session', 'Upload', function($state, $scope, $http, AuthService, Session, Upload) {
+themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthService', 'Session', 'Upload', '$timeout', function($state, $scope, $http, AuthService, Session, Upload, $timeout) {
 	var vm = this;
 	vm.submissionDetails = "";
 	vm.submissionLogs = [];
@@ -6,6 +6,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.contestGoingOn = false;
 
 	vm.contests = [];
+	vm.runningContest = {}
 
 	// For admin to create contest.
 	vm.contestName = "";
@@ -67,7 +68,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			return {
 				isStarted: true,
 				isEnded: false,
-				timeLeft: end - moment()
+				timeLeft: end - moment(),
 			}
 		}
 		else {
@@ -77,6 +78,14 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				timeLeft: start - moment()
 			}
 		}
+	}
+
+	function isRunning(contest) {
+		var start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
+		var end = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
+		if (start < moment() && moment() < end) 
+			return true;
+		else return false;
 	}
 
 	function getContests() {
@@ -97,8 +106,20 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					status: getProblemStatus(contest.startTime, contest.endTime)
 				};
 				vm.contests.push(elem);
+				if (isRunning(elem)) {
+					vm.runningContest = elem;
+					$timeout(countdown, 1000);
+					console.log(elem);
+				}
 			});
 		});
+	}
+
+	var countdown = function() {
+		if (vm.runningContest.status.timeLeft>0) {
+			vm.runningContest.status.timeLeft-=1000;
+			$timeout(countdown, 1000);
+		}
 	}
 
 	function getProblemsAndScoreboard() {

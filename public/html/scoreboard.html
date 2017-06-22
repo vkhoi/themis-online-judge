@@ -1,23 +1,38 @@
 <div id="scoreboardTab" class="main-tab container">
-	<table class="table table-bordered table-hover" ng-show="ContestCtrl.contestGoingOn">
-		<thead>
-			<tr>
-				<th style="width: 10%;">Xếp hạng</th>
-				<th>Tên thí sinh</th>
-				<th ng-repeat="problem in ContestCtrl.problems" style="width: 10%;">
-					{{ problem }}
-				</th>
-				<th style="width: 10%;">Tổng điểm</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="user in ContestCtrl.scoreboard">
-				<td style="width: 10%;">{{ $index + 1 }}</td>
-				<td>{{ user.username }}</td>
-				<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
-				<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
-			</tr>
-		</tbody>
-	</table>
+	<div ng-show="ContestCtrl.contestExists">
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Kì thi {{ ContestCtrl.runningContest.name }}</h3>
+			</div>
+			<div class="col-md-6">
+				<h3>
+					<timer countdown="ContestCtrl.runningContest.status.timeLeft / 1000" max-time-unit="'hour'" interval="1000"> 
+					Còn {{hours}} tiếng, {{mminutes}} phút, {{sseconds}} giây {{ ContestCtrl.runningContest.status.timeLeft }} </timer>
+				</h3>
+			</div>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-hover" ng-show="ContestCtrl.contestGoingOn">
+				<thead>
+					<tr>
+						<th style="width: 10%;">Xếp hạng</th>
+						<th>Tên thí sinh</th>
+						<th ng-repeat="problem in ContestCtrl.problems" style="width: 10%;">
+							{{ problem }}
+						</th>
+						<th style="width: 10%;">Tổng điểm</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="user in ContestCtrl.scoreboard">
+						<td style="width: 10%;">{{ $index + 1 }}</td>
+						<td>{{ user.username }}</td>
+						<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
+						<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 	<h5 ng-show="!ContestCtrl.contestGoingOn">Đang không có kì thi nào diễn ra</h5>
 </div>
