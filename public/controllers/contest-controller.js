@@ -407,12 +407,14 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				}).then(function successCallback(res) {
 					vm.contestPendingFilePath = res.data.filePath;
 					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
+					getContests();
 				}, function errorCallback(err) {
 					console.log(err);
 				});
 			}
 			else {
 				swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
+				getContests();
 			}
 		}, function errorCallback(err) {
 			console.log(err);

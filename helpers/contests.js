@@ -26,6 +26,8 @@ const redisClient 	= redis.createClient();
 
 const testDir 		= 'data/contests/tests';
 
+var currentContestStartJob, currentContestEndJob;
+
 // Function to create a new contest into the database.
 function addContest(newContest) {
 	return new Promise(function(resolve, reject) {
@@ -193,9 +195,9 @@ function removeThemisTestFolder() {
 
 // Function to schedule the start of a contest.
 function scheduleContestStart(t, contestId) {
-	var startMoment = moment(t, "HH:mm, DD/MM/YYYY");
-	var startTime = startMoment.toDate();
-	schedule.scheduleJob(startTime, function() {
+	let startMoment = moment(t, "HH:mm, DD/MM/YYYY");
+	let startTime = startMoment.toDate();
+	currentContestStartJob = schedule.scheduleJob(startTime, function() {
 		redisClient.set("contest", contestId);
 	});
 }
@@ -204,7 +206,7 @@ function scheduleContestStart(t, contestId) {
 function scheduleContestEnd(t) {
 	let endMoment = moment(t, "HH:mm, DD/MM/YYYY");
 	let endTime = endMoment.toDate();
-	schedule.scheduleJob(endTime, function() {
+	currentContestEndJob = schedule.scheduleJob(endTime, function() {
 		getCurrentContestId().then(function successCallback(contestId) {
 			getContest(contestId).then(function successCallback(contest) {
 				// This will make client unable to see scoreboard and make submission.
@@ -360,17 +362,29 @@ function editContest(contest) {
 				reject(Error("Could not find this contest in database"));
 			}
 			else {
+				let startTimeChanged = false, endTimeChanged = false;
+				if (contest.startTime != _contest.startTime)
+					startTimeChanged = true;
+				if (contest.endTime != _contest.endTime)
+					endTimeChanged = true;
 				Contests.update({ _id: contest.id }, {
 					$set: {
 						name: contest.name,
 						topic: contest.topic,
-						problemNames: contest.problemNames
+						problemNames: contest.problemNames,
+						startTime: contest.startTime,
+						endTime: contest.endTime,
+						duration: contest.duration
 					}
 				}, {}, function(err, numAffected) {
 					if (err) {
 						reject(Error("Could not update contest's info"));
 					}
 					else {
+						if (startTimeChanged)
+							rescheduleContestStart(contest.startTime, contest.id);
+						if (endTimeChanged)
+							rescheduleContestEnd(contest.endTime, contest.id);
 						resolve();
 					}
 				});
@@ -408,6 +422,17 @@ function editContestProblemFile(contest) {
 	});
 }
 
+// Function to reschedule contest's start time.
+function rescheduleContestStart(t, contestId) {
+	currentContestStartJob.cancel();
+	scheduleContestStart(t, contestId);
+}
+
+// Function to reschedule contest's end time.
+function rescheduleContestEnd(t, contestId) {
+	currentContestEndJob.cancel();
+	scheduleContestEnd(t, contestId);
+}
 
 module.exports = {
 	addContest: 					addContest,
@@ -425,5 +450,7 @@ module.exports = {
 	getPendingContest: 				getPendingContest,
 	getPendingContestId: 			getPendingContestId,
 	editContest: 					editContest,
-	editContestProblemFile: 		editContestProblemFile
+	editContestProblemFile: 		editContestProblemFile,
+	rescheduleContestStart: 		rescheduleContestStart,
+	rescheduleContestEnd: 			rescheduleContestEnd
 };
