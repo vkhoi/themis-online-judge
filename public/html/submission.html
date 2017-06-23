@@ -1,9 +1,17 @@
 <div id="submissionTab" class="main-tab container">
 	<div ng-show="ContestCtrl.contestGoingOn">
 		<form id="uploadSolution">
-			<div style="margin-bottom: 1rem;">
-				<h3>Nộp bài</h3>
+			<div class="row">
+				<div class="col-md-8" style="margin-bottom: 1rem;">
+					<h3>Nộp bài kì thi {{ContestCtrl.runningContest.name}}</h3>
+				</div>
+				<div>
+					<h3>
+						Còn {{ ContestCtrl.runningContest.status.timeLeft | toHour }} tiếng, {{ ContestCtrl.runningContest.status.timeLeft | toMinute }} phút, {{ ContestCtrl.runningContest.status.timeLeft | toSecond }} giây
+					</h3>
+				</div>
 			</div>
+			
 			<div class="form-group row">
 				<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
 				<div class="col-sm-6">

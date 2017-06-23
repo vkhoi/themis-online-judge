@@ -88,9 +88,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	function isRunning(contest) {
-		var start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
 		var end = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
-		if (start < moment() && moment() < end) 
+		if (moment() < end) 
 			return true;
 		else return false;
 	}
