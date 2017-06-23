@@ -1,8 +1,9 @@
 <div id="scoreboardTab" class="main-tab container">
-	<div ng-show="ContestCtrl.contestGoingOn">
+	<div ng-show="ContestCtrl.runningContest.exists">
 		<div class="row" style="margin-bottom: 0.5rem;">
 			<div class="col-md-8">
-				<h3>Bảng điểm kì thi {{ ContestCtrl.runningContest.name }}</h3>
+				<h3 ng-show="ContestCtrl.contestGoingOn">Bảng điểm kì thi {{ ContestCtrl.runningContest.name }}</h3>
+				<h3 ng-hide="ContestCtrl.contestGoingOn">Kì thi {{ ContestCtrl.runningContest.name }} sắp bắt đầu</h3>
 			</div>
 			<div>
 				<h3>
@@ -33,5 +34,5 @@
 			</table>
 		</div>
 	</div>
-	<h5 ng-show="!ContestCtrl.contestGoingOn">Đang không có kì thi nào diễn ra</h5>
+	<h5 ng-show="!ContestCtrl.runningContest.exists">Đang không có kì thi nào diễn ra</h5>
 </div>

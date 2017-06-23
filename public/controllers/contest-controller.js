@@ -6,7 +6,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.contestGoingOn = false;
 
 	vm.contests = [];
-	vm.runningContest = {};
+	vm.runningContest = {
+		exists: false,
+	}
 
 	// For admin to create contest.
 	vm.contestName = "";
@@ -98,6 +100,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		$http.get('/api/contest/all').then(function successCallback(res) {
 			vm.contests = [];
 			var contests = res.data.contests;
+			vm.runningContest.exists = false;
 			contests.forEach(function(contest) {
 				var elem = {
 					id: contest._id,
@@ -114,6 +117,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				vm.contests.push(elem);
 				if (isRunning(elem)) {
 					vm.runningContest = elem;
+					vm.runningContest.exists = true;
 					if (!vm.hasSetCountdown) {
 						vm.hasSetCountdown = true;
 						$timeout(countdown, 1000);
