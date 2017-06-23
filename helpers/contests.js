@@ -41,28 +41,40 @@ function addContest(newContest) {
 				}
 			}
 			if (ok) {
-				Contests.insert({
-					setter: newContest.setter,
-					name: newContest.name,
-					topic: newContest.topic,
-					startTime: newContest.startTime,
-					endTime: newContest.endTime,
-					duration: newContest.duration,
-					filePath: newContest.filePath,
-					problemNames: newContest.problemNames
-				}, function(err, contest) {
-					if (err) {
-						reject(Error("Could not add new contest"));
+				ok = true;
+				for (let i = 0; i < allContests.length; i += 1) {
+					if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment(allContests[i].endTime, "HH:mm, DD/MM/YYYY") < 300000) {
+						ok = false;
+						break;
 					}
-					else {
-						console.log('added', contest);
-						redisClient.set("pendingContest", contest._id);
-						resolve(contest._id);
-					}
-				});
+				}
+				if (ok) {
+					Contests.insert({
+						setter: newContest.setter,
+						name: newContest.name,
+						topic: newContest.topic,
+						startTime: newContest.startTime,
+						endTime: newContest.endTime,
+						duration: newContest.duration,
+						filePath: newContest.filePath,
+						problemNames: newContest.problemNames
+					}, function(err, contest) {
+						if (err) {
+							reject(Error("Could not add new contest"));
+						}
+						else {
+							console.log('added', contest);
+							redisClient.set("pendingContest", contest._id);
+							resolve(contest._id);
+						}
+					});
+				}
+				else {
+					reject(Error("Thời gian bắt đầu phải cách thời gian kết thúc của kì thi trước ít nhất là 5 phút"));
+				}
 			}
 			else {
-				reject(Error("There's already a contest going to occur"));
+				reject(Error("Đang có kì thi sắp diễn ra hoặc chưa kết thúc!"));
 			}
 		}, function errorCallback(err) {
 			reject(Error(err.toString()));
@@ -89,7 +101,7 @@ function getAllContests() {
 						duration: contest.duration,
 						problemNames: contest.problemNames
 					};
-					if (moment(elem.startTime, "HH:mm, DD/MM/YYYY") < moment()) {
+					if (moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
 						elem.filePath = contest.filePath;
 					}
 					else {
@@ -98,7 +110,11 @@ function getAllContests() {
 					res.push(elem);
 				});
 				res.sort(function(a, b) {
-					return moment(a.startTime, "HH:mm, DD/MM/YYYY") < moment(b.startTime, "HH:mm, DD/MM/YYYY");
+					if (a == b) return 0;
+					if (moment(a.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment(b.startTime, "HH:mm, DD/MM/YYYY")))
+						return 1;
+					else
+						return -1;
 				});
 				resolve(res);
 			}

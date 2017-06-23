@@ -56,7 +56,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 				res.send({ status: 'SUCCESS', id: id });
 			});
 		}, function errorCallback(err) {
-			res.send({ status: 'FAILED', message: 'Đang có kì thi sắp diễn ra hoặc chưa kết thúc!' });
+			res.send({ status: 'FAILED', message: err.toString() });
 		});
 	}
 });
