@@ -169,8 +169,11 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 					res.send({ status: "FAILED", message: "Kì thi phải kéo dài ít nhất 5 phút mới được dừng" });
 				}
 				else {
-					Contests.stopCurrentContest(contest, false, true);
-					res.send({ status: "SUCCESS" });
+					Contests.stopCurrentContest(contest, false, true).then(function successCallback() {
+						res.send({ status: "SUCCESS" });
+					}, function errorCallback(err) {
+						res.status(500).send(err.toString());
+					});
 				}
 			}
 			else {
@@ -179,6 +182,26 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 		}, function errorCallback(err) {
 			res.status(500).send(err.toString());
 		});
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
+});
+
+// Name: Delete pending contest.
+// Type: POST.
+router.post('/deletePendingContest', [ensureAdmin], function(req, res) {
+	Contests.getPendingContest().then(function successCallback(contest) {
+		let start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
+		if (moment().isBefore(start)) {
+			Contests.deletePendingContest(contest).then(function successCallback() {
+				res.send({ status: "SUCCESS" });
+			}, function errorCallback(err) {
+				res.status(500).send(err.toString());
+			});
+		}
+		else {
+			res.send({ status: "Contest has already started so it cannot be deleted"});
+		}
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
 	});

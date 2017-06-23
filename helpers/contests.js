@@ -458,25 +458,52 @@ function rescheduleContestEnd(t, contestId) {
 
 // Function to cancel the start+end job and stop current contest right away.
 function stopCurrentContest(contest, cancelStartJob = true, cancelEndJob = true) {
-	if (cancelStartJob)
-		currentContestStartJob.cancel();
-	if (cancelEndJob)
-		currentContestEndJob.cancel();
-	let now = moment().format("HH:mm, DD/MM/YYYY");
+	return new Promise(function(resolve, reject) {
+		if (cancelStartJob)
+			currentContestStartJob.cancel();
+		if (cancelEndJob)
+			currentContestEndJob.cancel();
+		let now = moment().format("HH:mm, DD/MM/YYYY");
 
-	Contests.update({ _id: contest._id }, {
-		$set: {
-			endTime: now,
-			duration: dateTimeCvt.toDuration(contest.startTime, now)
-		}
-	}, {}, function(err, numAffected) {
-		if (err) {
-			console.log(err.toString());
-		}
-		else {
-			endCurrentContest();
-			console.log("End contest successfully");
-		}
+		Contests.update({ _id: contest._id }, {
+			$set: {
+				endTime: now,
+				duration: dateTimeCvt.toDuration(contest.startTime, now)
+			}
+		}, {}, function(err, numAffected) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
+				endCurrentContest();
+				console.log("End contest successfully");
+				resolve();
+			}
+		});
+	});
+}
+
+// Function to delete the pending contest.
+function deletePendingContest(contest) {
+	return new Promise(function(resolve, reject) {
+		currentContestStartJob.cancel();
+		currentContestEndJob.cancel();
+		redisClient.del("pendingContest", function(err, reply) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
+				Contests.remove({ _id: contest._id }, {}, function(err, numRemoved) {
+				if (err) {
+					reject(Error(err.toString()));
+				}
+				else {
+					console.log("delete pending contest");
+					resolve();
+				}
+			});
+			}
+		});
 	});
 }
 
@@ -499,5 +526,6 @@ module.exports = {
 	editContestProblemFile: 		editContestProblemFile,
 	rescheduleContestStart: 		rescheduleContestStart,
 	rescheduleContestEnd: 			rescheduleContestEnd,
-	stopCurrentContest: 			stopCurrentContest
+	stopCurrentContest: 			stopCurrentContest,
+	deletePendingContest: 			deletePendingContest
 };

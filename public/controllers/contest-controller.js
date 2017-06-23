@@ -468,7 +468,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.stopContest = function() {
 		if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(vm.contestPending.end, "HH:mm, DD/MM/YYYY"))) {
-			console.log('stop Contest');
+			console.log('stop contest');
 			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
 				console.log(res);
 				if (res.data.status == "FAILED") {
@@ -495,6 +495,27 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		let start = moment(t1, "HH:mm, DD/MM/YYYY");
 		let end = moment(t2, "HH:mm, DD/MM/YYYY");
 		return start.isBefore(moment()) && moment().isBefore(end);
+	}
+
+	vm.deleteContest = function() {
+		if (moment().isBefore(moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY"))) {
+			console.log('delete contest');
+			$http.post('/api/contest/deletePendingContest').then(function successCallback(res) {
+				console.log(res);
+				if (res.data.status == "FAILED") {
+					let message = res.data.message;
+					swal("Thất bại!", message, "warning");
+				}
+				else {
+					swal("Thành công!", "Kì thi đã bị xóa!", "success");
+					getContests();
+					checkContestPending();
+					getProblemsAndScoreboard();
+				}
+			}, function errorCallback(err) {
+				console.log(err);
+			});
+		}
 	}
 }]);
 
