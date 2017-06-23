@@ -353,7 +353,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
-				swal("Thất bại!", "Đang có kì thi sắp diễn ra hoặc chưa kết thúc!", "warning");
+				let message = res.data.message;
+				swal("Thất bại!", message, "warning");
 			}
 			else {
 				var id = res.data.id;
@@ -470,9 +471,16 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			console.log('stop Contest');
 			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
 				console.log(res);
-				swal("Thành công!", "Kì thi đã kết thúc!", "success");
-				getContests();
-				checkContestPending();
+				if (res.data.status == "FAILED") {
+					let message = res.data.message;
+					swal("Thất bại!", message, "warning");
+				}
+				else {
+					swal("Thành công!", "Kì thi đã kết thúc!", "success");
+					getContests();
+					checkContestPending();
+					getProblemsAndScoreboard();
+				}
 			}, function errorCallback(err) {
 				console.log(err);
 			});
@@ -483,7 +491,11 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		return moment(t, "HH:mm, DD/MM/YYYY").isBefore(moment());
 	}
 
-	console.log(moment());
+	vm.isOngoing = function(t1, t2) {
+		let start = moment(t1, "HH:mm, DD/MM/YYYY");
+		let end = moment(t2, "HH:mm, DD/MM/YYYY");
+		return start.isBefore(moment()) && moment().isBefore(end);
+	}
 }]);
 
 themisApp.filter('submissionResultFilter', function() {

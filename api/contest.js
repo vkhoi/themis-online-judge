@@ -36,25 +36,29 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		filePath: path.join('data/contests', req.file.filename),
 		problemNames: req.body.problemNames
 	};
-	// console.log(newContest);
-	
-	let id = null;
-	Contests.addContest(newContest).then(function successCallback(contestId) {
-		id = contestId;
 
-		Contests.scheduleContestStart(req.body.startTime, contestId);
-		Contests.scheduleContestEnd(req.body.endTime, contestId);
+	if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
+		res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
+	}
+	else {
+		let id = null;
+		Contests.addContest(newContest).then(function successCallback(contestId) {
+			id = contestId;
 
-		upload(req, res, function(err) {
-			if (err) {
-				res.status(400).send('FAILED');
-				return;
-			}
-			res.send({ status: 'SUCCESS', id: id });
+			Contests.scheduleContestStart(req.body.startTime, contestId);
+			Contests.scheduleContestEnd(req.body.endTime, contestId);
+
+			upload(req, res, function(err) {
+				if (err) {
+					res.status(400).send('FAILED');
+					return;
+				}
+				res.send({ status: 'SUCCESS', id: id });
+			});
+		}, function errorCallback(err) {
+			res.send({ status: 'FAILED', message: 'Đang có kì thi sắp diễn ra hoặc chưa kết thúc!' });
 		});
-	}, function errorCallback(err) {
-		res.send({ status: 'FAILED' });
-	});
+	}
 });
 
 // Specify directory to store test data of contest.
@@ -160,8 +164,14 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 			let start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
 			let end = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
 			if (start.isBefore(moment()) && moment().isBefore(end)) {
-				Contests.stopCurrentContest(contest, false, true);
-				res.send({ status: "SUCCESS" });
+				let duration = moment() - start;
+				if (duration < 300000) {
+					res.send({ status: "FAILED", message: "Kì thi phải kéo dài ít nhất 5 phút mới được dừng" });
+				}
+				else {
+					Contests.stopCurrentContest(contest, false, true);
+					res.send({ status: "SUCCESS" });
+				}
 			}
 			else {
 				res.send({ status: "No running contest"});
