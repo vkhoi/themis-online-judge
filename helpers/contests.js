@@ -160,17 +160,23 @@ function uncompressFileTest(fileTestName) {
 			}
 			else {
 				console.log('unzip SUCCESS');
-				fse.remove(testDir + '/__MACOSX', function(err) {
-					if (err) {
-						console.log(err.toString());
-						reject(Error(err.toString()));
+				fse.pathExists(testDir + '/__MACOSX', function(err, exists) {
+					if (exists) {
+						fse.remove(testDir + '/__MACOSX', function(err) {
+							if (err) {
+								console.log(err.toString());
+								reject(Error(err.toString()));
+							}
+							else {
+								console.log('remove __MACOSX SUCCESS');
+								resolve();
+							}
+						});
 					}
 					else {
-						console.log('remove __MACOSX SUCCESS');
 						resolve();
 					}
 				});
-				resolve();
 			}
 		});
 	});
