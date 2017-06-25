@@ -1,4 +1,4 @@
-themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH_EVENTS', 'AuthService', function($rootScope, $scope, $state, AUTH_EVENTS, AuthService) {
+themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH_EVENTS', 'AuthService', 'Session', function($rootScope, $scope, $state, AUTH_EVENTS, AuthService) {
 	var vm = this;
 
 	vm.credentials = {
@@ -6,8 +6,12 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH
 		password: ''
 	};
 
+	vm.showSpinner = false;
+
 	vm.login = function(credentials) {
+		vm.showSpinner = true;
 		AuthService.login(credentials).then(function(user) {
+			vm.showSpinner = false;
 			$state.go('home.contest.all');
 		}, function() {
 			console.log('Login Controller', 'login failed');

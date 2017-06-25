@@ -38,6 +38,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.hasSetCountdown = false;
 
+	// Variable to show/hide spinner.
+	vm.showSpinner = false;
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -215,6 +218,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.submit = function() {
+		vm.showSpinner = true;
 		Upload.upload({
 			url: '/api/submit',
 			data: {
@@ -223,6 +227,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				file: vm.fileSubmit
 			}
 		}).then(function successCallback(res) {
+			vm.showSpinner = false;
 			vm.fileSubmit = null;
 			var latestSubmission = res.data.submissionName;
 			var timeStamp = parseInt(latestSubmission.split('-')[0]);
@@ -234,7 +239,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			});
 			askJuryForScore(latestSubmission);
 		}, function errorCallback(err) {
+			vm.showSpinner = false;
 			console.log(err);
+			swal("Thất bại!", "Có lỗi trong quá trình upload ", "warning");
 		});
 	}
 
@@ -334,6 +341,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.createContest = function() {
+		vm.showSpinner = true;
 		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "" || vm.problemNames.length == 0) {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập, file đề bài, và file test.", "warning");
 			return;
@@ -356,6 +364,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
+				vm.showSpinner = false;
 				let message = res.data.message;
 				swal("Thất bại!", message, "warning");
 			}
@@ -368,6 +377,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						file: vm.fileTest
 					}
 				}).then(function successCallback(res) {
+					vm.showSpinner = false;
 					vm.fileProblem = null;
 					vm.fileTest = null
 					vm.uploading = false;
@@ -428,6 +438,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.editContest = function() {
+		vm.showSpinner = true;
 		if (vm.contestPending.name == "" || vm.contestPending.topic == "" || vm.contestPending.problems.length == 0 || vm.contestPending.start == "" || vm.contestPending.end == "") {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
 			return;
@@ -452,6 +463,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						file: vm.contestPending.fileProblem
 					}
 				}).then(function successCallback(res) {
+					vm.showSpinner = false;
 					vm.contestPending.filePath = res.data.filePath;
 					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
 					getContests();
@@ -460,6 +472,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				});
 			}
 			else {
+				vm.showSpinner = false;
 				swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
 				getContests();
 			}
@@ -471,8 +484,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.stopContest = function() {
 		if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(vm.contestPending.end, "HH:mm, DD/MM/YYYY"))) {
+			vm.showSpinner = true;
 			console.log('stop contest');
 			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
+				vm.showSpinner = false;
 				console.log(res);
 				if (res.data.status == "FAILED") {
 					let message = res.data.message;
@@ -488,6 +503,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				console.log(err);
 			});
 		}
+		else {
+		}
 	}
 
 	vm.isMomentBeforeNow = function(t) {
@@ -502,8 +519,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.deleteContest = function() {
 		if (moment().isBefore(moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY"))) {
+			vm.showSpinner = true;
 			console.log('delete contest');
 			$http.post('/api/contest/deletePendingContest').then(function successCallback(res) {
+				vm.showSpinner = false;
 				console.log(res);
 				if (res.data.status == "FAILED") {
 					let message = res.data.message;
@@ -518,6 +537,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}, function errorCallback(err) {
 				console.log(err);
 			});
+		}
+		else {
 		}
 	}
 }]);

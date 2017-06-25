@@ -1,6 +1,8 @@
 themisApp.controller('HomeController', ['$state', '$scope', 'AuthService', 'Session', function($state, $scope, AuthService, Session) {
 	var vm = this;
 
+	vm.showSpinner = false;
+
 	function init() {
 		vm.username = Session.username;
 	}
@@ -21,7 +23,9 @@ themisApp.controller('HomeController', ['$state', '$scope', 'AuthService', 'Sess
 	}
 
 	vm.logout = function() {
+		vm.showSpinner = true;
 		AuthService.logout().then(function() {
+			vm.showSpinner = false;
 			$state.go('login');
 		});
 	}

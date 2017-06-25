@@ -15,6 +15,8 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$lo
 	var isAdd = true;
 	var titleLostFocus = false;
 
+	vm.showSpinner = false;
+
 	function init() {
 		if ($state.current.name == "home.postAdd") {
 			isAdd = true;
@@ -69,7 +71,9 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$lo
 			});
 		}
 		else if (isAdd) {
+			vm.showSpinner = true;
 			$http.post('/api/posts/add', { title: vm.title, author: Session.username, shorttext: vm.shorttext, content: vm.content, images: vm.images }).then(function successCallback(res) {
+				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",
 					text: "Bài mới đã được thêm vào!",
@@ -78,6 +82,7 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$lo
 					$state.go('home.postsAdmin');
 				});
 			}, function errorCallback(err) {
+				vm.showSpinner = false;
 				swal({
 					title: "Lỗi!",
 					text: "Không thể thêm bài viết mới! Hệ thống đang bị lỗi!",
@@ -87,7 +92,9 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$lo
 			});
 		}
 		else {
+			vm.showSpinner = true;
 			$http.post('/api/posts/edit', { id: $state.params.id, title: vm.title, shorttext: vm.shorttext, content: vm.content, images: vm.images }).then(function successCallback(res) {
+				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",
 					text: "Bài viết đã được chỉnh sửa!",
@@ -96,6 +103,7 @@ themisApp.controller('PostAddEditController', ['$state', '$scope', '$http', '$lo
 					$state.go('home.postsAdmin');
 				});
 			}, function errorCallback(err) {
+				vm.showSpinner = false;
 				swal({
 					title: "Lỗi!",
 					text: "Không thể chỉnh sửa bài viết! Hệ thống đang bị lỗi!",
