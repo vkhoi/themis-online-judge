@@ -353,6 +353,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
 			return;
 		}
+		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
+			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút!", "warning");
+			return;
+		}
 		vm.uploading = true;
 		Upload.upload({
 			url: '/api/contest/create',
