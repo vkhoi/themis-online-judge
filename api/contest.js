@@ -34,13 +34,19 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
 		filePath: path.join('data/contests', req.file.filename),
-		problemNames: req.body.problemNames
+		problems: req.body.problems
 	};
+	for (let i = 0; i < newContest.problems.length; i += 1) {
+		if ("$hashKey" in newContest.problems[i]) {
+			delete newContest.problems[i].$hashKey;
+		}
+	}
+	console.log(newContest);
 
 	if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
 		res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
 	}
-	else if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY" - moment() < 300000)) {
+	else if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
 		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút' });
 	}
 	else {
@@ -136,8 +142,9 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
-		problemNames: req.body.problemNames
+		problems: req.body.problems
 	};
+	console.log(contest);
 	Contests.editContest(contest).then(function successCallback(result) {
 		res.send({ status: "SUCCESS "});
 	}, function errorCallback(err) {

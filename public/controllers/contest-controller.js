@@ -13,7 +13,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	// For admin to create contest.
 	vm.contestName = "";
 	vm.contestTopic = "";
-	vm.problemNames = [];
+	vm.problems = [];
 	vm.problemNamesString = "";
 	vm.startTime = "";
 	vm.endTime = "";
@@ -250,6 +250,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function checkContestPending() {
 		$http.get('/api/contest/pendingContest').then(function successCallback(res) {
+			// console.log(res);
 			if (res.data.contest == -1) {
 				vm.contestPending.exists = false;
 			}
@@ -264,17 +265,24 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					topic: contest.topic,
 					start: contest.startTime,
 					end: contest.endTime,
-					problems: contest.problemNames,
+					problems: contest.problems,
 					filePath: contest.filePath,
 					fileProblem: null
 				};
 
 				vm.contestPending.problemsString = "";
-				if (vm.contestPending.problems.length > 0) {
-					vm.contestPending.problemsString = vm.contestPending.problems[0];
+				if (vm.contestPending.problems && vm.contestPending.problems.length > 0) {
+					vm.contestPending.problemsString = vm.contestPending.problems[0].name;
 					for (let i = 1; i < vm.contestPending.problems.length; i += 1)
-						vm.contestPending.problemsString += ", " + vm.contestPending.problems[i];
+						vm.contestPending.problemsString += ", " + vm.contestPending.problems[i].name;
+				
+					for (let i = 0; i < vm.contestPending.problems.length; i += 1) {
+						vm.contestPending.problems[i].testScore = parseFloat(vm.contestPending.problems[i].testScore);
+						vm.contestPending.problems[i].timeLimit = parseFloat(vm.contestPending.problems[i].timeLimit);
+						vm.contestPending.problems[i].memoryLimit = parseInt(vm.contestPending.problems[i].memoryLimit);
+					}
 				}
+				// console.log(vm.contestPending);
 			}
 		}, function errorCallback(err) {
 			console.log(err);
@@ -344,9 +352,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.createContest = function() {
-		vm.showSpinner = true;
-		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "" || vm.problemNames.length == 0) {
-			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập, file đề bài, và file test.", "warning");
+		if (vm.fileProblem == null || !vm.fileTest || vm.contestTopic == "" || vm.startTime == "" || vm.endTime == "" || vm.problems.length == 0) {
+			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, thông tin các bài tập, file đề bài, và file test.", "warning");
 			return;
 		}
 		else if (isValidTime(vm.startTime, vm.endTime) == false) {
@@ -357,6 +364,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút!", "warning");
 			return;
 		}
+		vm.showSpinner = true;
 		vm.uploading = true;
 		Upload.upload({
 			url: '/api/contest/create',
@@ -364,7 +372,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				setter: Session.username,
 				name: vm.contestName,
 				topic: vm.contestTopic,
-				problemNames: vm.problemNames,
+				problems: vm.problems,
 				startTime: vm.startTime,
 				endTime: vm.endTime,
 				file: vm.fileProblem
@@ -423,13 +431,18 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.problemNamesChanged = function() {
-		var s = beautifyString(vm.problemNamesString);
-		var a = s.split(",");
-		vm.problemNames = [];
+		let s = beautifyString(vm.problemNamesString);
+		let a = s.split(",");
+		vm.problems = [];
 		a.forEach(function(problemName) {
-			name = trimString(problemName);
+			let name = trimString(problemName);
 			if (name.length > 0)
-				vm.problemNames.push(name);
+				vm.problems.push({
+					name: name,
+					testScore: 1.0,
+					timeLimit: 1,
+					memoryLimit: 1024
+				});
 		});
 	}
 
@@ -458,7 +471,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			id: vm.contestPending.id,
 			name: vm.contestPending.name,
 			topic: vm.contestPending.topic,
-			problemNames: vm.contestPending.problems,
+			problems: vm.contestPending.problems,
 			startTime: vm.contestPending.start,
 			endTime: vm.contestPending.end,
 		}).then(function successCallback(res) {

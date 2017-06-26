@@ -23,7 +23,7 @@ const redisClient 	= redis.createClient();
 // 5. endTime
 // 6. duration
 // 7. filePath
-// 8. problemNames
+// 8. problems
 
 const testDir 		= 'data/contests/tests';
 
@@ -57,9 +57,10 @@ function addContest(newContest) {
 						endTime: newContest.endTime,
 						duration: newContest.duration,
 						filePath: newContest.filePath,
-						problemNames: newContest.problemNames
+						problems: newContest.problems
 					}, function(err, contest) {
 						if (err) {
+							console.log(err);
 							reject(Error("Could not add new contest"));
 						}
 						else {
@@ -99,7 +100,7 @@ function getAllContests() {
 						startTime: contest.startTime,
 						endTime: contest.endTime,
 						duration: contest.duration,
-						problemNames: contest.problemNames
+						problems: contest.problems
 					};
 					if (moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
 						elem.filePath = contest.filePath;
@@ -251,7 +252,11 @@ function endCurrentContest(extraJudgingTime = 1000) {
 			// there might be some submissions that were submitted near the end
 			// of the contest and have not been graded.
 			setTimeout(function() {
-				let sb = scoreboard.getScoreboard(contest.problemNames);
+				let problemNames = [];
+				contest.problems.forEach(function(problem) {
+					problemNames.push(problem.name);
+				});
+				let sb = scoreboard.getScoreboard(problemNames);
 				fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
 					if (err)
 						console.log(err.toString());
@@ -310,7 +315,13 @@ function getContestProblemNames(id) {
 				resolve([]);
 			}
 			else {
-				resolve(contest.problemNames);
+				let res = [];
+				console.log(contest);
+				if (contest.problems)
+					contest.problems.forEach(function(problem) {
+						res.push(problem.name);
+					});
+				resolve(res);
 			}
 		});
 	});
@@ -411,7 +422,7 @@ function editContest(contest) {
 					$set: {
 						name: contest.name,
 						topic: contest.topic,
-						problemNames: contest.problemNames,
+						problems: contest.problems,
 						startTime: contest.startTime,
 						endTime: contest.endTime,
 						duration: contest.duration
