@@ -17,15 +17,12 @@ function retrieveResult(submissionName) {
 			}
 			else {
 				var lines = fileContent.split('\n');
-				var score = lines[0].split(' ')[1];
-				// if (config.mode == "debug")
-				// 	resolve({
-				// 		score: Math.random() * 100,
-				// 		details: 'ahihi'
-				// 	});
-				// else
+				var score = parseFloat(lines[0].split(' ')[1]);
+				if (isNaN(score)) {
+					score = 0;
+				}
 				resolve({
-					score: parseFloat(score),
+					score: score,
 					details: fileContent
 				});
 			}

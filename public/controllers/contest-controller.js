@@ -135,6 +135,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			vm.runningContest.status.timeLeft-=1000;
 			$timeout(countdown, 1000);
 		}
+		else {
+			$state.reload();
+		}
 	}
 
 	function getProblemsAndScoreboard() {
@@ -252,7 +255,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 			else {
 				let contest = res.data.contest;
-				console.log(contest);
+				// console.log(contest);
 				vm.contestPending = {
 					id: contest._id,
 					exists: true,

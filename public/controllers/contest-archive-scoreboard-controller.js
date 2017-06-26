@@ -5,7 +5,7 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		$http.post('/api/getProblems', { id: $state.params.id }).then(function successCallback(res) {
 			vm.problems = res.data.problems;
 			$http.post('/api/getScoreboard', { id: $state.params.id } ).then(function successCallback(res) {
-				console.log(res);
+				// console.log(res);
 				vm.scoreboard = [];
 				var scoreboard = res.data.scoreboard;
 				scoreboard.forEach(function(user) {
