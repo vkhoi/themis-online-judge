@@ -204,13 +204,25 @@ function moveTestFolders(fileTestName) {
 // Function to clear contents of Themis's test folder.
 function removeThemisTestFolder() {
 	return new Promise(function(resolve, reject) {
-		fse.remove('data/contests/Tasks', function(err) {
+		fse.pathExists('data/contests/Tasks', function(err, exists) {
 			if (err) {
 				reject(Error(err.toString()));
 			}
 			else {
-				console.log('remove folder Tasks SUCCESS');
-				resolve();
+				if (exists) {
+					fse.remove('data/contests/Tasks', function(err) {
+					if (err) {
+						reject(Error(err.toString()));
+					}
+					else {
+						console.log('remove folder Tasks SUCCESS');
+						resolve();
+					}
+				});
+				}
+				else {
+					resolve();
+				}
 			}
 		});
 	});
