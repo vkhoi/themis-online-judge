@@ -553,7 +553,7 @@ function configTest(problems) {
 			else {
 				if (config.mode != "debug") {
 					console.log(config.autoDir);
-					fse.copy("../runAuto.bat", "data/contests/Tasks/", function(err) {
+					fse.copy("data/runAuto.bat", "data/contests/Tasks/", function(err) {
 						if (err) {
 							reject(Error(err.toString()));
 						}

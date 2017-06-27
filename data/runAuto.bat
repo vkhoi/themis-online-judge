@@ -1,0 +1,1 @@
+C:\Users\Administrator\Downloads\runsikulix.cmd -r C:\Users\Administrator\Desktop\Auto.sikuli
