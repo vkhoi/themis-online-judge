@@ -553,12 +553,19 @@ function configTest(problems) {
 			else {
 				if (config.mode != "debug") {
 					console.log(config.autoDir);
-					exec(config.autoDir, function(err, stdout, stderr) {
+					fse.copy("../runAuto.bat", "data/contests/Tasks/", function(err) {
 						if (err) {
 							reject(Error(err.toString()));
 						}
 						else {
-							resolve();
+							exec(config.autoDir, function(err, stdout, stderr) {
+								if (err) {
+									reject(Error(err.toString()));
+								}
+								else {
+									resolve();
+								}
+							});
 						}
 					});
 				}
