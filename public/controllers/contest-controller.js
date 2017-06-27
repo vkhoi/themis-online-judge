@@ -396,6 +396,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				vm.contestTopic = "";
 				vm.startTime = "";
 				vm.endTime = "";
+				vm.problems = [];
 				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
 				getContests();
 				checkContestPending();
@@ -514,7 +515,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.stopContest = function() {
 		if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(vm.contestPending.end, "HH:mm, DD/MM/YYYY"))) {
 			vm.showSpinner = true;
-			console.log('stop contest');
 			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
 				vm.showSpinner = false;
 				console.log(res);

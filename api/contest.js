@@ -41,7 +41,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 			delete newContest.problems[i].$hashKey;
 		}
 	}
-	console.log(newContest);
+	// console.log(newContest);
 
 	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
 	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
@@ -50,18 +50,20 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	// 	res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút' });
 	// }
 	let id = null;
-	Contests.addContest(newContest).then(function successCallback(contestId) {
-		id = contestId;
+	Contests.configTest(newContest.problems).then(function successCallback() {
+		Contests.addContest(newContest).then(function successCallback(contestId) {
+			Contests.scheduleContestStart(req.body.startTime, contestId);
+			Contests.scheduleContestEnd(req.body.endTime, contestId);
 
-		Contests.scheduleContestStart(req.body.startTime, contestId);
-		Contests.scheduleContestEnd(req.body.endTime, contestId);
-
-		upload(req, res, function(err) {
-			if (err) {
-				res.status(400).send('FAILED');
-				return;
-			}
-			res.send({ status: 'SUCCESS', id: id });
+			upload(req, res, function(err) {
+				if (err) {
+					res.status(400).send('FAILED');
+					return;
+				}
+				res.send({ status: 'SUCCESS', id: contestId });
+			});
+		}, function errorCallback(err) {
+			res.send({ status: 'FAILED', message: err.toString() });
 		});
 	}, function errorCallback(err) {
 		res.send({ status: 'FAILED', message: err.toString() });
@@ -169,17 +171,11 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 			let start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
 			let end = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
 			if (start.isBefore(moment()) && moment().isBefore(end)) {
-				let duration = moment() - start;
-				if (duration < 300000) {
-					res.send({ status: "FAILED", message: "Kì thi phải kéo dài ít nhất 5 phút mới được dừng" });
-				}
-				else {
-					Contests.stopCurrentContest(contest, false, true).then(function successCallback() {
-						res.send({ status: "SUCCESS" });
-					}, function errorCallback(err) {
-						res.status(500).send(err.toString());
-					});
-				}
+				Contests.stopCurrentContest(contest, false, true).then(function successCallback() {
+					res.send({ status: "SUCCESS" });
+				}, function errorCallback(err) {
+					res.status(500).send(err.toString());
+				});
 			}
 			else {
 				res.send({ status: "No running contest"});

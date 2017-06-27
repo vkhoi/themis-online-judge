@@ -77,10 +77,10 @@ function addUser(user) {
 	return new Promise(function(resolve, reject) {
 		Users.findOne({ username: user.username }, function(err, _user) {
 			if (err) {
-				reject(Error('Server got errors'));
+				reject(Error('Hệ thống đang gặp lỗi'));
 			}
 			else if (_user) {
-				reject(Error('User existed'));
+				reject(Error('Username này đã tồn tại trong cơ sở dữ liệu'));
 			}
 			else {
 				Users.insert({
@@ -90,7 +90,7 @@ function addUser(user) {
 					role: user.role
 				}, function(err, user) {
 					if (err) {
-						reject(Error('Could not add new user'));
+						reject(Error('Không thể thêm user mới vào cơ sở dữ liệu'));
 					}
 					else {
 						resolve();

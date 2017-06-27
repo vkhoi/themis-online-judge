@@ -10,6 +10,7 @@ const scoreboard 	= require('../helpers/scoreboard');
 const fse 			= require('fs-extra');
 const extract 		= require('extract-zip')
 const dateTimeCvt	= require('./datetime-converter');
+const EOL 			= require('os').EOL;
 
 // redis to store only 1 key-value pair: contest - id.
 const redis			= require('redis');
@@ -536,6 +537,39 @@ function deletePendingContest(contest) {
 	});
 }
 
+// Function to configure test data.
+function configTest(problems) {
+	return new Promise(function(resolve, reject) {
+		let data = "";
+		data += problems.length + EOL;
+		problems.forEach(function(problem) {
+			data += problem.testScore + " " + problem.timeLimit + " " + problem.memoryLimit + EOL;
+		});
+		console.log(data);
+		fse.outputFile("data/contests/Tasks/config.txt", data, function(err) {
+			if (err) {
+				reject(Error(err.toString()));
+			}
+			else {
+				if (config.mode != "debug") {
+					console.log(config.autoDir);
+					exec(config.autoDir, function(err, stdout, stderr) {
+						if (err) {
+							reject(Error(err.toString()));
+						}
+						else {
+							resolve();
+						}
+					});
+				}
+				else {
+					resolve();
+				}
+			}
+		});
+	});
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -556,5 +590,6 @@ module.exports = {
 	rescheduleContestStart: 		rescheduleContestStart,
 	rescheduleContestEnd: 			rescheduleContestEnd,
 	stopCurrentContest: 			stopCurrentContest,
-	deletePendingContest: 			deletePendingContest
+	deletePendingContest: 			deletePendingContest,
+	configTest: 					configTest
 };

@@ -12,6 +12,9 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 
 	var isAdd = true;
 
+	// Variable to show/hide spinner.
+	vm.showSpinner = false;
+
 	function init() {
 		if ($state.current.name == "home.memberEdit") {
 			isAdd = false;
@@ -44,8 +47,10 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 	init();
 
 	vm.addEditMember = function() {
+		vm.showSpinner = true;
 		if (isAdd) {
 			$http.post('/api/users/add', { username: vm.username, password: vm.password, name: vm.name, role: vm.role }).then(function successCallback(res) {
+				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",
 					text: "Đã thêm thành viên mới!",
@@ -54,9 +59,10 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 					$state.go('home.members');
 				});
 			}, function errorCallback(err) {
+				vm.showSpinner = false;
 				swal({
 					title: "Lỗi!",
-					text: "Không thể thêm thành viên mới! Hệ thống đang bị lỗi!",
+					text: err.data,
 					type: "error",
 					confirmButtonText: "Đóng"
 				});
@@ -64,6 +70,7 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 		}
 		else {
 			$http.post('/api/users/edit', { username: vm.username, password: vm.password, name: vm.name, role: vm.role }).then(function successCallback(res) {
+				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",
 					text: "Thông tin thành viên đã được chỉnh sửa!",
@@ -72,6 +79,7 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 					$state.go('home.members');
 				});
 			}, function errorCallback(err) {
+				vm.showSpinner = false;
 				swal({
 					title: "Lỗi!",
 					text: "Không thể chỉnh sửa thông tin thành viên! Hệ thống đang bị lỗi!",
