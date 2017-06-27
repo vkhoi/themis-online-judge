@@ -70,10 +70,11 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseTestButton" class="col-sm-2 col-form-label">Up test</label>
+			<label for="chooseTestButton" class="col-sm-2 col-form-label">Upload test</label>
 			<div class="col-sm-7">
-				<button id="chooseTestButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-accept="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
-				<span>{{ ContestCtrl.fileTest.name | fileNameFilter }}</span>
+				<button id="chooseTestButton" class="btn btn-secondary" ngf-select="ContestCtrl.uploadTest($file)" ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-accept="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
+				<span>{{ ContestCtrl.uploadMessage(ContestCtrl.fileTest.name) }}</span>
+				<progress-circle amount="45"></progress-circle>
 				<p style="margin-top: 1rem;"><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>
 				<ol>
 					<li>Thư mục test phải có cấu trúc thỏa mãn yêu cầu của phần mềm chấm Themis. Mỗi bài tập sẽ có 1 thư mục riêng để chứa tất cả file test cho bài tập đó, và thư mục này sẽ được đặt tên là tên của bài tập đó. Mỗi bài tập có bao nhiêu test, thì thư mục của bài tập đó sẽ chứa bấy nhiêu thư mục con tương ứng với từng test. Mỗi thư mục con ứng với từng test đó sẽ chứa 2 file duy nhất: 1 file input và 1 file output.</li>
@@ -114,7 +115,7 @@
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
 			<div class="col-sm-7">
-				<input type="text" class="form-control" ng-model="ContestCtrl.contestPending.problemsString" placeholder="SEGMENT, ANT, POLYGON" disabled>
+				<input type="text" class="form-control" ng-model="ContestCtrl.contestPending.problemsString" ng-change="ContestCtrl.problemNamesPendingChanged()" placeholder="SEGMENT, ANT, POLYGON">
 				<!-- <div>
 			    	<div class="problem-name" ng-repeat="name in ContestCtrl.contestPending.problems track by $index" style="margin-top: 6px;" ng-class="{indent: $index > 0}">
 			    		{{ name }}

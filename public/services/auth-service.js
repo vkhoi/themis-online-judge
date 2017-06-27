@@ -44,11 +44,9 @@ themisApp.factory('AuthService', ['$http', '$localStorage', '$timeout', 'Session
 					});
 			}
 			else {
-				// This looks stupid. But $timeout returns a promise and we really need a
-				// promise here.
-				return $timeout(function() {
-					return false;
-				}, 100);
+				return new Promise(function(resolve, reject) {
+					resolve(false);
+				});
 			}
 		}
 		else {

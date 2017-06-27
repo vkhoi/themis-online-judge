@@ -43,31 +43,29 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	}
 	console.log(newContest);
 
-	if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
-		res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
-	}
-	else if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
-		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút' });
-	}
-	else {
-		let id = null;
-		Contests.addContest(newContest).then(function successCallback(contestId) {
-			id = contestId;
+	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
+	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
+	// }
+	// else if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
+	// 	res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút' });
+	// }
+	let id = null;
+	Contests.addContest(newContest).then(function successCallback(contestId) {
+		id = contestId;
 
-			Contests.scheduleContestStart(req.body.startTime, contestId);
-			Contests.scheduleContestEnd(req.body.endTime, contestId);
+		Contests.scheduleContestStart(req.body.startTime, contestId);
+		Contests.scheduleContestEnd(req.body.endTime, contestId);
 
-			upload(req, res, function(err) {
-				if (err) {
-					res.status(400).send('FAILED');
-					return;
-				}
-				res.send({ status: 'SUCCESS', id: id });
-			});
-		}, function errorCallback(err) {
-			res.send({ status: 'FAILED', message: err.toString() });
+		upload(req, res, function(err) {
+			if (err) {
+				res.status(400).send('FAILED');
+				return;
+			}
+			res.send({ status: 'SUCCESS', id: id });
 		});
-	}
+	}, function errorCallback(err) {
+		res.send({ status: 'FAILED', message: err.toString() });
+	});
 });
 
 // Specify directory to store test data of contest.
@@ -86,22 +84,17 @@ var uploadTest = multer({ storage: storageTest }).single('file');
 // Type: POST.
 // Data: id of contest.
 router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
-	let id = req.body.id;
 	let fileTestName = req.file.filename;
 	let originalName = req.file.originalname;
-	Contests.getContest(id).then(function successCallback(contest) {
-		Contests.uncompressFileTest(fileTestName).then(function successCallback() {
-			Contests.removeThemisTestFolder().then(function successCallback() {
-				Contests.moveTestFolders(originalName).then(function successCallback() {
-					uploadTest(req, res, function(err) {
-						if (err) {
-							res.status(400).send('FAILED');
-							return;
-						}
-						res.send({ status: 'SUCCESS' });
-					});
-				}, function errorCallback(err) {
-					res.status(500).send();
+	Contests.uncompressFileTest(fileTestName).then(function successCallback() {
+		Contests.removeThemisTestFolder().then(function successCallback() {
+			Contests.moveTestFolders(originalName).then(function successCallback() {
+				uploadTest(req, res, function(err) {
+					if (err) {
+						res.status(400).send('FAILED');
+						return;
+					}
+					res.send({ status: 'SUCCESS' });
 				});
 			}, function errorCallback(err) {
 				res.status(500).send();
@@ -109,6 +102,8 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 		}, function errorCallback(err) {
 			res.status(500).send();
 		});
+	}, function errorCallback(err) {
+		res.status(500).send();
 	});
 });
 

@@ -41,6 +41,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	// Variable to show/hide spinner.
 	vm.showSpinner = false;
 
+	vm.uploadTestPercent = 0;
+
+	var uploadingTest = false;
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard').then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -360,8 +364,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
 			return;
 		}
-		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
-			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút!", "warning");
+		else if (!uploadingTest || vm.uploadTestPercent < 100) {
+			swal("Thất bại!", "Xin hãy đợi sau khi upload xong file test", "warning");
 			return;
 		}
 		vm.showSpinner = true;
@@ -384,28 +388,17 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				swal("Thất bại!", message, "warning");
 			}
 			else {
-				var id = res.data.id;
-				Upload.upload({
-					url: '/api/contest/addTest',
-					data: {
-						id: id,
-						file: vm.fileTest
-					}
-				}).then(function successCallback(res) {
-					vm.showSpinner = false;
-					vm.fileProblem = null;
-					vm.fileTest = null
-					vm.uploading = false;
-					vm.contestName = "";
-					vm.contestTopic = "";
-					vm.startTime = "";
-					vm.endTime = "";
-					swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
-					getContests();
-					checkContestPending();
-				}, function errorCallback(err) {
-					console.log(err.toString());
-				});
+				vm.showSpinner = false;
+				vm.fileProblem = null;
+				vm.fileTest = null
+				vm.uploading = false;
+				vm.contestName = "";
+				vm.contestTopic = "";
+				vm.startTime = "";
+				vm.endTime = "";
+				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
+				getContests();
+				checkContestPending();
 			}
 		}, function errorCallback(err) {
 			console.log(err.toString());
@@ -438,6 +431,22 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			let name = trimString(problemName);
 			if (name.length > 0)
 				vm.problems.push({
+					name: name,
+					testScore: 1.0,
+					timeLimit: 1,
+					memoryLimit: 1024
+				});
+		});
+	}
+
+	vm.problemNamesPendingChanged = function() {
+		let s = beautifyString(vm.contestPending.problemsString);
+		let a = s.split(",");
+		vm.contestPending.problems = [];
+		a.forEach(function(problemName) {
+			let name = trimString(problemName);
+			if (name.length > 0)
+				vm.contestPending.problems.push({
 					name: name,
 					testScore: 1.0,
 					timeLimit: 1,
@@ -559,6 +568,50 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			});
 		}
 		else {
+		}
+	}
+
+	var countdown = function() {
+		if (vm.runningContest.status.timeLeft > 0) {
+			vm.runningContest.status.timeLeft-=1000;
+			$timeout(countdown, 1000);
+		}
+		else {
+			$state.reload();
+		}
+	}
+
+	var countUp = function() {
+		// console.log(vm.uploadTestPercent);
+		if (vm.uploadTestPercent < 100) {
+			vm.uploadTestPercent += 10;
+		}
+		$timeout(countUp, 1000);
+	}
+
+	vm.uploadTest = function(file) {
+		uploadingTest = true;
+		// $timeout(countUp, 1000);
+		Upload.upload({
+			url: '/api/contest/addTest',
+			data: {
+				file: file
+			}
+		}).then(function successCallback(res) {
+		}, function errorCallback(err) {
+		}, function update(evt) {
+			vm.uploadTestPercent = parseInt(100.0 * evt.loaded / evt.total);
+			// console.log(vm.uploadTestPercent);
+		});
+	}
+
+	vm.uploadMessage = function(filename) {
+		if (!uploadingTest)
+			return "Chưa chọn file nào";
+		else if (vm.uploadTestPercent >= 100)
+			return "Đã upload hoàn chỉnh file " + filename;
+		else {
+			return "Đang upload file " + filename + " " + vm.uploadTestPercent + "%";
 		}
 	}
 }]);

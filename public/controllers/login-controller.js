@@ -14,6 +14,7 @@ themisApp.controller('LoginController', ['$rootScope', '$scope', '$state', 'AUTH
 			vm.showSpinner = false;
 			$state.go('home.contest.all');
 		}, function() {
+			vm.showSpinner = false;
 			console.log('Login Controller', 'login failed');
 			swal({
 				title: "Không thể đăng nhập!",
