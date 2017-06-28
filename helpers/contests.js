@@ -2,7 +2,7 @@ const path 			= require('path');
 const DataStore 	= require('nedb');
 const Contests		= new DataStore({ filename: path.join(process.cwd(), 'data/contests/', 'contests.db'), autoload: true });
 const config 		= require('../config');
-const exec			= require('child_process').exec;
+const { exec }		= require('child_process');
 const schedule 		= require('node-schedule');
 const moment 		= require('moment');
 const UserSubLog	= require('../helpers/user-submission-log');
@@ -545,27 +545,18 @@ function configTest(problems) {
 		problems.forEach(function(problem) {
 			data += problem.testScore + " " + problem.timeLimit + " " + problem.memoryLimit + EOL;
 		});
-		console.log(data);
 		fse.outputFile("data/contests/Tasks/config.txt", data, function(err) {
 			if (err) {
 				reject(Error(err.toString()));
 			}
 			else {
 				if (config.mode != "debug") {
-					console.log(config.autoDir);
-					fse.copy("data/runAuto.bat", "data/contests/Tasks/", function(err) {
+					exec(config.autoDir, function(err, stdout, stderr) {
 						if (err) {
 							reject(Error(err.toString()));
 						}
 						else {
-							exec(config.autoDir, function(err, stdout, stderr) {
-								if (err) {
-									reject(Error(err.toString()));
-								}
-								else {
-									resolve();
-								}
-							});
+							resolve();
 						}
 					});
 				}
