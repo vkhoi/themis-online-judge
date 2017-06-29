@@ -374,6 +374,13 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}
 		vm.showSpinnerTest = true;
 		vm.uploading = true;
+
+		vm.problems.forEach(function(problem) {
+			problem.testScore = parseInt(problem.testScore);
+			problem.timeLimit = parseInt(problem.timeLimit);
+			problem.memoryLimit = parseInt(problem.memoryLimit);
+		});
+		
 		Upload.upload({
 			url: '/api/contest/create',
 			data: {
@@ -437,7 +444,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			if (name.length > 0)
 				vm.problems.push({
 					name: name,
-					testScore: 1.0,
+					testScore: 1,
 					timeLimit: 1,
 					memoryLimit: 1024
 				});
@@ -453,7 +460,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			if (name.length > 0)
 				vm.contestPending.problems.push({
 					name: name,
-					testScore: 1.0,
+					testScore: 1,
 					timeLimit: 1,
 					memoryLimit: 1024
 				});
@@ -472,7 +479,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	vm.editContest = function() {
-		vm.showSpinner = true;
 		if (vm.contestPending.name == "" || vm.contestPending.topic == "" || vm.contestPending.problems.length == 0 || vm.contestPending.start == "" || vm.contestPending.end == "") {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
 			return;
@@ -481,10 +487,18 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
 			return;
 		}
-		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+		else if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
+		vm.showSpinner = true;
+
+		vm.contestPending.problems.forEach(function(problem) {
+			problem.testScore = parseInt(problem.testScore);
+			problem.timeLimit = parseInt(problem.timeLimit);
+			problem.memoryLimit = parseInt(problem.memoryLimit);
+		});
+
 		$http.post('/api/contest/edit', {
 			id: vm.contestPending.id,
 			name: vm.contestPending.name,

@@ -41,6 +41,11 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 			delete newContest.problems[i].$hashKey;
 		}
 	}
+	newContest.problems.forEach(function(problem) {
+		problem.testScore = parseInt(problem.testScore);
+		problem.timeLimit = parseInt(problem.timeLimit);
+		problem.memoryLimit = parseInt(problem.memoryLimit);
+	});
 	console.log(newContest);
 
 	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
@@ -138,7 +143,13 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
 		problems: req.body.problems
 	};
+	contest.problems.forEach(function(problem) {
+		problem.testScore = parseInt(problem.testScore);
+		problem.timeLimit = parseInt(problem.timeLimit);
+		problem.memoryLimit = parseInt(problem.memoryLimit);
+	});
 	console.log(contest);
+	
 	if (moment(contest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
 	}

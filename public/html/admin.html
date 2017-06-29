@@ -23,7 +23,7 @@
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
 			<div class="col-sm-7">
-				<input type="text" class="form-control" ng-model="ContestCtrl.problemNamesString" ng-change="ContestCtrl.problemNamesChanged()" placeholder="SEGMENT, ANT, POLYGON">
+				<input type="text" class="form-control" capitalize ng-model="ContestCtrl.problemNamesString" ng-change="ContestCtrl.problemNamesChanged()" placeholder="SEGMENT, ANT, POLYGON">
 		    	<!-- <div class="problem-name" ng-repeat="name in ContestCtrl.problemNames track by $index" style="margin-top: 6px;" ng-class="{indent: $index > 0}">
 		    		{{ name }}
 		    	</div> -->
@@ -39,9 +39,9 @@
 					<tbody>
 						<tr ng-repeat="problem in ContestCtrl.problems">
 							<td style="width: 20%;">{{ problem.name }}</td>
-							<td><input class="form-control" type="number" step="0.1" ng-model="problem.testScore"></td>
-							<td><input class="form-control" type="number" step="0.1" ng-model="problem.timeLimit"></td>
-							<td><input class="form-control" type="number" ng-model="problem.memoryLimit"></td>
+							<td><input class="form-control" ng-model="problem.testScore" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
+							<td><input class="form-control" ng-model="problem.timeLimit" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
+							<td><input class="form-control" ng-model="problem.memoryLimit" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
 						</tr>
 					</tbody>
 				</table>
@@ -133,9 +133,9 @@
 					<tbody>
 						<tr ng-repeat="problem in ContestCtrl.contestPending.problems">
 							<td style="width: 20%;">{{ problem.name }}</td>
-							<td><input class="form-control" type="number" step="0.1" ng-model="problem.testScore"></td>
-							<td><input class="form-control" type="number" step="0.1" ng-model="problem.timeLimit"></td>
-							<td><input class="form-control" type="number" ng-model="problem.memoryLimit"></td>
+							<td><input class="form-control" ng-model="problem.testScore" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
+							<td><input class="form-control" ng-model="problem.timeLimit" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
+							<td><input class="form-control" ng-model="problem.memoryLimit" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
 						</tr>
 					</tbody>
 				</table>

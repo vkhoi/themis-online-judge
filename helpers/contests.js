@@ -50,6 +50,11 @@ function addContest(newContest) {
 					}
 				}
 				if (ok) {
+					// console.log(newContest.problems);
+					newContest.problems.sort(function(a, b) {
+						return a.name.localeCompare(b.name);
+					});
+					// console.log(newContest.problems);
 					configTest(newContest.problems).then(function successCallback() {
 						Contests.insert({
 							setter: newContest.setter,
@@ -423,8 +428,22 @@ function editContest(contest) {
 					startTimeChanged = true;
 				if (contest.endTime != _contest.endTime)
 					endTimeChanged = true;
-				if (contest.problems != _contest.problems)
-					problemsChanged = true;
+
+				// console.log(contest.problems);
+				contest.problems.sort(function(a, b) {
+					return a.name.localeCompare(b.name);
+				});
+				// console.log(contest.problems);
+
+				for (let i = 0; i < contest.problems.length; i += 1) {
+					if (contest.problems[i].timeLimit != _contest.problems[i].timeLimit ||
+						contest.problems[i].memoryLimit != _contest.problems[i].memoryLimit ||
+						contest.problems[i].testScore != _contest.problems[i].testScore) {
+						problemsChanged = true;
+						break;
+					}
+				}
+
 				Contests.update({ _id: contest.id }, {
 					$set: {
 						name: contest.name,
@@ -565,7 +584,7 @@ function configTest(problems) {
 				reject(Error(err.toString()));
 			}
 			else {
-				if (config.mode == "debug") {
+				if (config.mode != "debug") {
 					fse.outputFile("data/contests/RunAuto/Run.txt", "ahihi", function(err) {
 						if (err) {
 							reject(Error(err.toString()));
