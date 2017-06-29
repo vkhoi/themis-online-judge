@@ -50,25 +50,29 @@ function addContest(newContest) {
 					}
 				}
 				if (ok) {
-					Contests.insert({
-						setter: newContest.setter,
-						name: newContest.name,
-						topic: newContest.topic,
-						startTime: newContest.startTime,
-						endTime: newContest.endTime,
-						duration: newContest.duration,
-						filePath: newContest.filePath,
-						problems: newContest.problems
-					}, function(err, contest) {
-						if (err) {
-							console.log(err);
-							reject(Error("Could not add new contest"));
-						}
-						else {
-							console.log('added', contest);
-							redisClient.set("pendingContest", contest._id);
-							resolve(contest._id);
-						}
+					configTest(newContest.problems).then(function successCallback() {
+						Contests.insert({
+							setter: newContest.setter,
+							name: newContest.name,
+							topic: newContest.topic,
+							startTime: newContest.startTime,
+							endTime: newContest.endTime,
+							duration: newContest.duration,
+							filePath: newContest.filePath,
+							problems: newContest.problems
+						}, function(err, contest) {
+							if (err) {
+								console.log(err);
+								reject(Error("Could not add new contest"));
+							}
+							else {
+								console.log('added', contest);
+								redisClient.set("pendingContest", contest._id);
+								resolve(contest._id);
+							}
+						});
+					}, function errorCallback(err) {
+						reject(Error(err.toString()));
 					});
 				}
 				else {
@@ -317,7 +321,7 @@ function getContestProblemNames(id) {
 			}
 			else {
 				let res = [];
-				console.log(contest);
+				// console.log(contest);
 				if (contest.problems)
 					contest.problems.forEach(function(problem) {
 						res.push(problem.name);
@@ -414,11 +418,13 @@ function editContest(contest) {
 				reject(Error("Could not find this contest in database"));
 			}
 			else {
-				let startTimeChanged = false, endTimeChanged = false;
+				let startTimeChanged = false, endTimeChanged = false, problemsChanged = false;
 				if (contest.startTime != _contest.startTime)
 					startTimeChanged = true;
 				if (contest.endTime != _contest.endTime)
 					endTimeChanged = true;
+				if (contest.problems != _contest.problems)
+					problemsChanged = true;
 				Contests.update({ _id: contest.id }, {
 					$set: {
 						name: contest.name,
@@ -437,7 +443,16 @@ function editContest(contest) {
 							rescheduleContestStart(contest.startTime, contest.id);
 						if (endTimeChanged)
 							rescheduleContestEnd(contest.endTime, contest.id);
-						resolve();
+						if (problemsChanged) {
+							configTest(contest.problems).then(function successCallback() {
+								resolve();
+							}, function errorCallback(err) {
+								reject(Error(err.toString()));
+							});
+						}
+						else {
+							resolve();
+						}
 					}
 				});
 			}
@@ -550,7 +565,7 @@ function configTest(problems) {
 				reject(Error(err.toString()));
 			}
 			else {
-				if (config.mode != "debug") {
+				if (config.mode == "debug") {
 					fse.outputFile("data/contests/RunAuto/Run.txt", "ahihi", function(err) {
 						if (err) {
 							reject(Error(err.toString()));
@@ -592,6 +607,5 @@ module.exports = {
 	rescheduleContestStart: 		rescheduleContestStart,
 	rescheduleContestEnd: 			rescheduleContestEnd,
 	stopCurrentContest: 			stopCurrentContest,
-	deletePendingContest: 			deletePendingContest,
-	configTest: 					configTest
+	deletePendingContest: 			deletePendingContest
 };

@@ -41,29 +41,25 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 			delete newContest.problems[i].$hashKey;
 		}
 	}
-	// console.log(newContest);
+	console.log(newContest);
 
 	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
 	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
 	// }
-	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
+	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
 	}
 	else {
-		Contests.configTest(newContest.problems).then(function successCallback() {
-			Contests.addContest(newContest).then(function successCallback(contestId) {
-				Contests.scheduleContestStart(req.body.startTime, contestId);
-				Contests.scheduleContestEnd(req.body.endTime, contestId);
+		Contests.addContest(newContest).then(function successCallback(contestId) {
+			Contests.scheduleContestStart(req.body.startTime, contestId);
+			Contests.scheduleContestEnd(req.body.endTime, contestId);
 
-				upload(req, res, function(err) {
-					if (err) {
-						res.status(400).send('FAILED');
-						return;
-					}
-					res.send({ status: 'SUCCESS', id: contestId });
-				});
-			}, function errorCallback(err) {
-				res.send({ status: 'FAILED', message: err.toString() });
+			upload(req, res, function(err) {
+				if (err) {
+					res.status(400).send('FAILED');
+					return;
+				}
+				res.send({ status: 'SUCCESS', id: contestId });
 			});
 		}, function errorCallback(err) {
 			res.send({ status: 'FAILED', message: err.toString() });
@@ -143,11 +139,16 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		problems: req.body.problems
 	};
 	console.log(contest);
-	Contests.editContest(contest).then(function successCallback(result) {
-		res.send({ status: "SUCCESS "});
-	}, function errorCallback(err) {
-		res.status(500).send(err.toString());
-	});
+	if (moment(contest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
+	}
+	else {
+		Contests.editContest(contest).then(function successCallback(result) {
+			res.send({ status: "SUCCESS "});
+		}, function errorCallback(err) {
+			res.status(500).send(err.toString());
+		});
+	}
 });
 
 // Name: Edit problem file.

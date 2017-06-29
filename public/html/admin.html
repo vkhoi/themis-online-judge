@@ -115,7 +115,7 @@
 		<div class="form-group row">
 			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
 			<div class="col-sm-7">
-				<input type="text" class="form-control" ng-model="ContestCtrl.contestPending.problemsString" ng-change="ContestCtrl.problemNamesPendingChanged()" placeholder="SEGMENT, ANT, POLYGON">
+				<input type="text" disabled class="form-control" ng-model="ContestCtrl.contestPending.problemsString" ng-change="ContestCtrl.problemNamesPendingChanged()" placeholder="SEGMENT, ANT, POLYGON">
 				<!-- <div>
 			    	<div class="problem-name" ng-repeat="name in ContestCtrl.contestPending.problems track by $index" style="margin-top: 6px;" ng-class="{indent: $index > 0}">
 			    		{{ name }}

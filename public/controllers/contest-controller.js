@@ -287,7 +287,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						vm.contestPending.problems[i].memoryLimit = parseInt(vm.contestPending.problems[i].memoryLimit);
 					}
 				}
-				// console.log(vm.contestPending);
 			}
 		}, function errorCallback(err) {
 			console.log(err);
@@ -340,7 +339,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function isValidTime(startTime, endTime) {
 		var start = moment(startTime, "HH:mm, DD/MM/YYYY");
 		var end = moment(endTime, "HH:mm, DD/MM/YYYY");
-		if (end.isBefore(start) || end.isBefore(moment())) 
+		if (start == end || end.isBefore(start) || end.isBefore(moment())) 
 			return false;
 
 		// If the contest is already going on, there's no need to check 
@@ -369,8 +368,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Xin hãy đợi sau khi upload xong file test", "warning");
 			return;
 		}
-		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
-			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)", "warning");
+		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)", "warning");
 			return;
 		}
 		vm.showSpinnerTest = true;
@@ -480,6 +479,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}
 		else if (!isValidTime(vm.contestPending.start, vm.contestPending.end)) {
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
+			return;
+		}
+		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
 		$http.post('/api/contest/edit', {
