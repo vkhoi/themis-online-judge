@@ -369,6 +369,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Xin hãy đợi sau khi upload xong file test", "warning");
 			return;
 		}
+		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
+			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)", "warning");
+			return;
+		}
 		vm.showSpinnerTest = true;
 		vm.uploading = true;
 		Upload.upload({

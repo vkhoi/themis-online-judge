@@ -550,7 +550,7 @@ function configTest(problems) {
 				reject(Error(err.toString()));
 			}
 			else {
-				if (config.mode == "debug") {
+				if (config.mode != "debug") {
 					fse.outputFile("data/contests/RunAuto/Run.txt", "ahihi", function(err) {
 						if (err) {
 							reject(Error(err.toString()));

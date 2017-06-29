@@ -49,25 +49,26 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
 		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
 	}
-	let id = null;
-	Contests.configTest(newContest.problems).then(function successCallback() {
-		Contests.addContest(newContest).then(function successCallback(contestId) {
-			Contests.scheduleContestStart(req.body.startTime, contestId);
-			Contests.scheduleContestEnd(req.body.endTime, contestId);
+	else {
+		Contests.configTest(newContest.problems).then(function successCallback() {
+			Contests.addContest(newContest).then(function successCallback(contestId) {
+				Contests.scheduleContestStart(req.body.startTime, contestId);
+				Contests.scheduleContestEnd(req.body.endTime, contestId);
 
-			upload(req, res, function(err) {
-				if (err) {
-					res.status(400).send('FAILED');
-					return;
-				}
-				res.send({ status: 'SUCCESS', id: contestId });
+				upload(req, res, function(err) {
+					if (err) {
+						res.status(400).send('FAILED');
+						return;
+					}
+					res.send({ status: 'SUCCESS', id: contestId });
+				});
+			}, function errorCallback(err) {
+				res.send({ status: 'FAILED', message: err.toString() });
 			});
 		}, function errorCallback(err) {
 			res.send({ status: 'FAILED', message: err.toString() });
 		});
-	}, function errorCallback(err) {
-		res.send({ status: 'FAILED', message: err.toString() });
-	});
+	}
 });
 
 // Specify directory to store test data of contest.
