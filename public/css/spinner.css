@@ -1,10 +1,10 @@
-#spinner {
+.spinner {
 	position: absolute;
 	top: 0;
 	width: 100%;
 }
 
-#spinner .spinner-panel {
+.spinner .spinner-panel {
 	position: fixed;
 	width: 100%;
 	background-color: #dddddd;
@@ -12,11 +12,16 @@
 	z-index: 999;
 }
 
-#spinner .spinner-icon {
+.spinner .spinner-main {
 	position: fixed;
-	left: calc(50% - 90px);
+	left: calc(50% - 210px);
 	z-index: 1000;
 
+	width: 420px;
+}
+
+.spinner .spinner-icon {
+	margin: auto;
 	width: 180px;
 	height: 180px;
 	box-sizing: border-box;

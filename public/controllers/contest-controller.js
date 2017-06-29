@@ -40,6 +40,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	// Variable to show/hide spinner.
 	vm.showSpinner = false;
+	vm.showSpinnerTest = false;
 
 	vm.uploadTestPercent = 0;
 
@@ -368,7 +369,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Xin hãy đợi sau khi upload xong file test", "warning");
 			return;
 		}
-		vm.showSpinner = true;
+		vm.showSpinnerTest = true;
 		vm.uploading = true;
 		Upload.upload({
 			url: '/api/contest/create',
@@ -383,12 +384,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
-				vm.showSpinner = false;
+				vm.showSpinnerTest = false;
 				let message = res.data.message;
 				swal("Thất bại!", message, "warning");
 			}
 			else {
-				vm.showSpinner = false;
+				vm.showSpinnerTest = false;
 				vm.fileProblem = null;
 				vm.fileTest = null
 				vm.uploading = false;
@@ -562,6 +563,15 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					getContests();
 					checkContestPending();
 					getProblemsAndScoreboard();
+					vm.contestName = "";
+					vm.contestTopic = "";
+					vm.problems = [];
+					vm.problemNamesString = "";
+					vm.startTime = "";
+					vm.endTime = "";
+					vm.fileProblem = null;
+					vm.fileTest = null;
+					vm.uploading = false;
 				}
 			}, function errorCallback(err) {
 				console.log(err);

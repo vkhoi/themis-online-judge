@@ -550,13 +550,17 @@ function configTest(problems) {
 				reject(Error(err.toString()));
 			}
 			else {
-				if (config.mode != "debug") {
-					exec(config.autoDir, function(err, stdout, stderr) {
+				if (config.mode == "debug") {
+					fse.outputFile("data/contests/RunAuto/Run.txt", "ahihi", function(err) {
 						if (err) {
 							reject(Error(err.toString()));
 						}
 						else {
-							resolve();
+							console.log("output Run.txt success");
+							let expectedWaitTime = (Math.floor(problems.length * 8 / 30) + 1) * 30;
+							setTimeout(function() {
+								resolve();
+							}, expectedWaitTime * 1000);
 						}
 					});
 				}

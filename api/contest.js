@@ -46,9 +46,9 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
 	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
 	// }
-	// else if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
-	// 	res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút' });
-	// }
+	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 300000) {
+		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
+	}
 	let id = null;
 	Contests.configTest(newContest.problems).then(function successCallback() {
 		Contests.addContest(newContest).then(function successCallback(contestId) {
