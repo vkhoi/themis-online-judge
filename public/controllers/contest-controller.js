@@ -147,13 +147,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		else {
 			$state.reload();
 		}
-		// if (vm.runningContest.status.timeLeft > 0) {
-		// 	vm.runningContest.status.timeLeft-=1000;
-		// 	$timeout(countdown, 1000);
-		// }
-		// else {
-		// 	$state.reload();
-		// }
 	}
 
 	function getProblemsAndScoreboard() {
@@ -498,7 +491,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
 			return;
 		}
-		else if (moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+		else if (moment().isBefore(moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY")) && moment(vm.contestPending.start, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
@@ -557,9 +550,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				}
 				else {
 					swal("Thành công!", "Kì thi đã kết thúc!", "success");
-					getContests();
-					checkContestPending();
-					getProblemsAndScoreboard();
+					$state.reload();
 				}
 			}, function errorCallback(err) {
 				console.log(err);
@@ -585,25 +576,14 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			console.log('delete contest');
 			$http.post('/api/contest/deletePendingContest').then(function successCallback(res) {
 				vm.showSpinner = false;
-				console.log(res);
+				// console.log(res);
 				if (res.data.status == "FAILED") {
 					let message = res.data.message;
 					swal("Thất bại!", message, "warning");
 				}
 				else {
 					swal("Thành công!", "Kì thi đã bị xóa!", "success");
-					getContests();
-					checkContestPending();
-					getProblemsAndScoreboard();
-					vm.contestName = "";
-					vm.contestTopic = "";
-					vm.problems = [];
-					vm.problemNamesString = "";
-					vm.startTime = "";
-					vm.endTime = "";
-					vm.fileProblem = null;
-					vm.fileTest = null;
-					vm.uploading = false;
+					$state.reload();
 				}
 			}, function errorCallback(err) {
 				console.log(err);
@@ -630,9 +610,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				file: file
 			}
 		}).then(function successCallback(res) {
+			vm.uploadTestPercent = 100;
 		}, function errorCallback(err) {
 		}, function update(evt) {
-			vm.uploadTestPercent = parseInt(100.0 * evt.loaded / evt.total);
+			vm.uploadTestPercent = Math.min(99, parseInt(100.0 * evt.loaded / evt.total));
 			// console.log(vm.uploadTestPercent);
 		});
 	}

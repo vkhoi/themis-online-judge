@@ -14,14 +14,14 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file đề bài</label>
+			<label class="col-sm-2 col-form-label">Chọn file đề bài</label>
 			<div class="col-sm-7">
 				<button id="chooseFileButton" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileProblem" name="file" ngf-pattern="'.doc,.docx,.pdf'" ngf-accept="'.doc,.docx,.pdf'" ngf-max-size="25MB">Chọn file</button>
 				<span>{{ ContestCtrl.fileProblem.name | fileNameFilter }}</span>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
+			<label class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
 			<div class="col-sm-7">
 				<input type="text" class="form-control" capitalize ng-model="ContestCtrl.problemNamesString" ng-change="ContestCtrl.problemNamesChanged()" placeholder="SEGMENT, ANT, POLYGON">
 		    	<!-- <div class="problem-name" ng-repeat="name in ContestCtrl.problemNames track by $index" style="margin-top: 6px;" ng-class="{indent: $index > 0}">
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="setStartTime" class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
+			<label class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
 			<div class="col-sm-7">
 				<div class="input-group" moment-picker="ContestCtrl.startTime" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
@@ -59,7 +59,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="setEndTime" class="col-sm-2 col-form-label">Thời gian kết thúc</label>
+			<label class="col-sm-2 col-form-label">Thời gian kết thúc</label>
 			<div class="col-sm-7">
 				<div class="input-group" moment-picker="ContestCtrl.endTime" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
@@ -70,7 +70,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseTestButton" class="col-sm-2 col-form-label">Upload test</label>
+			<label class="col-sm-2 col-form-label">Upload test</label>
 			<div class="col-sm-7">
 				<button id="chooseTestButton" class="btn btn-secondary" ngf-select="ContestCtrl.uploadTest($file)" ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-accept="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
 				<span>{{ ContestCtrl.uploadMessage(ContestCtrl.fileTest.name) }}</span>
@@ -103,7 +103,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseFileButton" class="col-sm-2 col-form-label">File đề bài</label>
+			<label class="col-sm-2 col-form-label">File đề bài</label>
 			<div class="col-sm-7">
 				<div class="col-form-label" style="display: inline-block;">
 					<a href="{{ ContestCtrl.contestPending.filePath }}" target="_blank">Đề bài</a>
@@ -113,7 +113,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="chooseFileButton" class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
+			<label class="col-sm-2 col-form-label">Mã bài (viết cách nhau bởi dấu phẩy)</label>
 			<div class="col-sm-7">
 				<input type="text" disabled class="form-control" ng-model="ContestCtrl.contestPending.problemsString" ng-change="ContestCtrl.problemNamesPendingChanged()" placeholder="SEGMENT, ANT, POLYGON">
 				<!-- <div>
@@ -142,7 +142,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="setStartTime" class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
+			<label class="col-sm-2 col-form-label">Thời gian bắt đầu</label>
 			<div class="col-sm-7">
 				<div class="input-group" moment-picker="ContestCtrl.contestPending.start" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
@@ -153,7 +153,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="setEndTime" class="col-sm-2 col-form-label">Thời gian kết thúc</label>
+			<label class="col-sm-2 col-form-label">Thời gian kết thúc</label>
 			<div class="col-sm-7">
 				<div class="input-group" moment-picker="ContestCtrl.contestPending.end" format="HH:mm, DD/MM/YYYY" locale="vi">
 				    <span class="input-group-addon">
