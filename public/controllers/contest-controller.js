@@ -37,6 +37,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	};
 
 	vm.hasSetCountdown = false;
+	var countdownStartedAt, countdownDuration;
 
 	// Variable to show/hide spinner.
 	vm.showSpinner = false;
@@ -128,6 +129,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					vm.runningContest.exists = true;
 					if (!vm.hasSetCountdown) {
 						vm.hasSetCountdown = true;
+						countdownStartedAt = Date.now();
+						countdownDuration = vm.runningContest.status.timeLeft;
 						$timeout(countdown, 1000);
 					}
 				}
@@ -136,13 +139,21 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	}
 
 	var countdown = function() {
-		if (vm.runningContest.status.timeLeft > 0) {
-			vm.runningContest.status.timeLeft-=1000;
+		let passed = Date.now() - countdownStartedAt;
+		if (passed < countdownDuration) {
+			vm.runningContest.status.timeLeft = countdownDuration - passed;
 			$timeout(countdown, 1000);
 		}
 		else {
 			$state.reload();
 		}
+		// if (vm.runningContest.status.timeLeft > 0) {
+		// 	vm.runningContest.status.timeLeft-=1000;
+		// 	$timeout(countdown, 1000);
+		// }
+		// else {
+		// 	$state.reload();
+		// }
 	}
 
 	function getProblemsAndScoreboard() {
@@ -599,16 +610,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			});
 		}
 		else {
-		}
-	}
-
-	var countdown = function() {
-		if (vm.runningContest.status.timeLeft > 0) {
-			vm.runningContest.status.timeLeft-=1000;
-			$timeout(countdown, 1000);
-		}
-		else {
-			$state.reload();
 		}
 	}
 
