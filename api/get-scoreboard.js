@@ -13,7 +13,12 @@ router.post('/', [ensureAuthorized], function(req, res) {
 		Contests.getArchivedScoreboard(id).then(function successCallback(data) {
 			res.send(data);
 		}, function errorCallback(err) {
-			res.status(500).send(err.toString());
+			Contests.getContestScoreboard(id).then(function successCallback(data) {
+				data.isNotFinal = true;
+				res.send(data);
+			}, function errorCallback(err) {
+				res.status(500).send(err.toString());
+			});
 		});
 	}
 	else {

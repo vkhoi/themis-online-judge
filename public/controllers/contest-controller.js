@@ -36,6 +36,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
+			console.log(res);
 			vm.scoreboard = [];
 			vm.contestGoingOn = res.data.contestExists;
 			var scoreboard = res.data.scoreboard;
@@ -46,8 +47,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						total: user.total,
 						scores: []
 					};
-					for (var i = 0; i < vm.problems.length; i += 1)
-						elem.scores.push(user[vm.problems[i]]);
+					for (var i = 0; i < vm.runningContest.problems.length; i += 1)
+						elem.scores.push(user[vm.runningContest.problems[i].name]);
 					vm.scoreboard.push(elem);
 				});
 				if (refresh) {
@@ -140,6 +141,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 							}
 						}
 						initialRunningContest = vm.runningContest;
+						vm.selectedProblem = vm.runningContest.problems[0].name;
 						if (!vm.hasSetCountdown) {
 							vm.hasSetCountdown = true;
 							countdownStartedAt = Date.now();
@@ -165,14 +167,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		else {
 			$state.reload();
 		}
-	}
-
-	function getProblemsAndScoreboard() {
-		$http.post('/api/getProblems').then(function successCallback(res) {
-			vm.problems = res.data.problems;
-			vm.selectedProblem = vm.problems[0];
-			getScoreboard();
-		});
 	}
 
 	function padNumber(number, L) {
@@ -321,7 +315,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}
 		vm.username = Session.username;
 		getContests().then(function successCallback() {
-			if (vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
+			if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
 				getScoreboard();
 		}, function errorCallback(err) {
 			console.log(err);

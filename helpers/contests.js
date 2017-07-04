@@ -249,7 +249,7 @@ function scheduleContestStart(t, contestId) {
 }
 
 // Function to end current contest.
-function endCurrentContest(extraJudgingTime = 180000) {
+function endCurrentContest(extraJudgingTime = 300000) {
 	getCurrentContestId().then(function successCallback(contestId) {
 		getContest(contestId).then(function successCallback(contest) {
 			// This will make client unable to see scoreboard and make submission.
@@ -603,7 +603,7 @@ function configTest(problems) {
 						}
 						else {
 							console.log("output Run.txt success");
-							let expectedWaitTime = (Math.floor(problems.length * 8 / 30) + 1) * 30;
+							let expectedWaitTime = (Math.floor(problems.length * 10 / 30) + 1) * 30;
 							setTimeout(function() {
 								resolve();
 							}, expectedWaitTime * 1000);
