@@ -17,8 +17,8 @@
 					<tr>
 						<th style="width: 10%;">Xếp hạng</th>
 						<th>Tên thí sinh</th>
-						<th ng-repeat="problem in ContestCtrl.problems" style="width: 10%;">
-							{{ problem }}
+						<th ng-repeat="problem in ContestCtrl.runningContest.problems" style="width: 10%;">
+							{{ problem.name }}
 						</th>
 						<th style="width: 10%;">Tổng điểm</th>
 					</tr>

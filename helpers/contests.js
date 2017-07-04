@@ -338,6 +338,18 @@ function getContestProblemNames(id) {
 }
 
 // Function to get contest's scoreboard.
+function getContestScoreboard(id) {
+	return new Promise(function(resolve, reject) {
+		getContestProblemNames(id).then(function successCallback(names) {
+			let res = scoreboard.getScoreboard(names);
+			resolve(res);
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+// Function to get contest's scoreboard.
 function getCurrentContestScoreboard() {
 	return new Promise(function(resolve, reject) {
 		getCurrentContestId().then(function successCallback(contestId) {
@@ -617,6 +629,7 @@ module.exports = {
 	scheduleContestEnd: 			scheduleContestEnd,
 	getCurrentContestId: 			getCurrentContestId,
 	getContestProblemNames: 		getContestProblemNames,
+	getContestScoreboard: 			getContestScoreboard,
 	getCurrentContestScoreboard: 	getCurrentContestScoreboard,
 	getArchivedScoreboard: 			getArchivedScoreboard,
 	getPendingContest: 				getPendingContest,

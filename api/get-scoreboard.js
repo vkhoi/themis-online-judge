@@ -8,7 +8,8 @@ var Contests 			= require('../helpers/contests');
 // Data: id (optional).
 router.post('/', [ensureAuthorized], function(req, res) {
 	let id = req.body.id;
-	if (id) {
+	let archived = req.body.archived;
+	if (archived == "true") {
 		Contests.getArchivedScoreboard(id).then(function successCallback(data) {
 			res.send(data);
 		}, function errorCallback(err) {
@@ -16,7 +17,7 @@ router.post('/', [ensureAuthorized], function(req, res) {
 		});
 	}
 	else {
-		Contests.getCurrentContestScoreboard().then(function successCallback(data) {
+		Contests.getContestScoreboard(id).then(function successCallback(data) {
 			res.send(data);
 		}, function errorCallback(err) {
 			res.status(500).send(err.toString());
