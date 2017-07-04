@@ -148,16 +148,11 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		problem.memoryLimit = parseInt(problem.memoryLimit);
 	});
 
-	if (moment().isBefore(moment(contest.startTime, "HH:mm, DD/MM/YYYY")) && moment(contest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
-		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
-	}
-	else {
-		Contests.editContest(contest).then(function successCallback(result) {
-			res.send({ status: "SUCCESS "});
-		}, function errorCallback(err) {
-			res.status(500).send(err.toString());
-		});
-	}
+	Contests.editContest(contest).then(function successCallback(result) {
+		res.send({ status: "SUCCESS "});
+	}, function errorCallback(err) {
+		res.status(500).send(err.toString());
+	});
 });
 
 // Name: Edit problem file.

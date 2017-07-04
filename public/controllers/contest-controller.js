@@ -515,7 +515,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
-		vm.showSpinner = true;
+		vm.showSpinnerTest = true;
 
 		vm.runningContest.problems.forEach(function(problem) {
 			problem.testScore = parseInt(problem.testScore);
@@ -539,7 +539,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 						file: vm.runningContest.fileProblem
 					}
 				}).then(function successCallback(res) {
-					vm.showSpinner = false;
+					vm.showSpinnerTest = false;
 					vm.runningContest.filePath = res.data.filePath;
 					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
 					$state.reload();
@@ -548,7 +548,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				});
 			}
 			else {
-				vm.showSpinner = false;
+				vm.showSpinnerTest = false;
 				swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
 				$state.reload();
 			}

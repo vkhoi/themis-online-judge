@@ -249,7 +249,7 @@ function scheduleContestStart(t, contestId) {
 }
 
 // Function to end current contest.
-function endCurrentContest(extraJudgingTime = 1000) {
+function endCurrentContest(extraJudgingTime = 180000) {
 	getCurrentContestId().then(function successCallback(contestId) {
 		getContest(contestId).then(function successCallback(contest) {
 			// This will make client unable to see scoreboard and make submission.
