@@ -24,6 +24,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.hasSetCountdown = false;
 	var countdownStartedAt, countdownDuration;
 
+	var initialRunningContest = null;
+
 	// Variable to show/hide spinner.
 	vm.showSpinner = false;
 	vm.showSpinnerTest = false;
@@ -137,6 +139,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 								vm.runningContest.problems[i].memoryLimit = parseInt(vm.runningContest.problems[i].memoryLimit);
 							}
 						}
+						initialRunningContest = vm.runningContest;
 						if (!vm.hasSetCountdown) {
 							vm.hasSetCountdown = true;
 							countdownStartedAt = Date.now();
@@ -148,7 +151,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				});
 				resolve();
 			}, function errorCallback(err) {
-				reject(Error(res));
+				reject(Error(err));
 			});
 		});
 	}
@@ -422,7 +425,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			else {
 				vm.showSpinnerTest = false;
 				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
-				getContests();
+				$state.reload();
 			}
 		}, function errorCallback(err) {
 			console.log(err.toString());
@@ -490,6 +493,15 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
+	function isContestProblemsEdit() {
+		for (let i = 0; i < initialRunningContest.problems.length; i += 1) {
+			if (initialRunningContest.problems[i].timeLimit != vm.runningContest.problems[i].timeLimit || initialRunningContest.problems[i].memoryLimit != vm.runningContest.problems[i].memoryLimit || initialRunningContest.problems[i].testScore != vm.runningContest.problems[i].testScore) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	vm.editContest = function() {
 		if (vm.runningContest.name == "" || vm.runningContest.topic == "" || vm.runningContest.problems.length == 0 || vm.runningContest.start == "" || vm.runningContest.end == "") {
 			swal("Thất bại!", "Vui lòng điền thời gian thi, chủ đề, tên kì thì, mã các bài tập", "warning");
@@ -499,7 +511,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian thi không hợp lệ!", "warning");
 			return;
 		}
-		else if (moment().isBefore(moment(vm.runningContest.start, "HH:mm, DD/MM/YYYY")) && moment(vm.runningContest.start, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
+		else if (isContestProblemsEdit() && moment().isBefore(moment(vm.runningContest.start, "HH:mm, DD/MM/YYYY")) && moment(vm.runningContest.start, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
@@ -530,7 +542,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					vm.showSpinner = false;
 					vm.runningContest.filePath = res.data.filePath;
 					swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
-					getContests();
+					$state.reload();
 				}, function errorCallback(err) {
 					console.log(err);
 				});
@@ -538,7 +550,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			else {
 				vm.showSpinner = false;
 				swal("Thành công!", "Bạn đã chỉnh sửa thông tin kì thi", "success");
-				getContests();
+				$state.reload();
 			}
 		}, function errorCallback(err) {
 			console.log(err);

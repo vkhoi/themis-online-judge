@@ -18,7 +18,7 @@
 					<label for="problemName" class="col-sm-2 col-form-label">Chọn bài</label>
 					<div class="col-sm-6">
 						<select id="problemName" class="form-control" ng-model="ContestCtrl.selectedProblem">
-							<option ng-repeat="p in ContestCtrl.problems track by $index">{{ p }}</option>
+							<option ng-repeat="p in ContestCtrl.runningContest.problems track by $index">{{ p.name }}</option>
 						</select>
 					</div>
 				</div>

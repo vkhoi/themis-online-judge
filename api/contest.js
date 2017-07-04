@@ -46,7 +46,6 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		problem.timeLimit = parseInt(problem.timeLimit);
 		problem.memoryLimit = parseInt(problem.memoryLimit);
 	});
-	console.log(newContest);
 
 	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
 	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
@@ -148,7 +147,6 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		problem.timeLimit = parseInt(problem.timeLimit);
 		problem.memoryLimit = parseInt(problem.memoryLimit);
 	});
-	console.log(contest);
 
 	if (moment().isBefore(moment(contest.startTime, "HH:mm, DD/MM/YYYY")) && moment(contest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
 		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });

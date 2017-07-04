@@ -161,8 +161,8 @@
 		<div class="form-group row">
 			<div class="col-sm-4 offset-sm-2">
 				<button class="btn btn-primary" type="submit" ng-click="ContestCtrl.editContest()">Chỉnh sửa</button>
-				<button class="btn btn-danger" type="submit" ng-click="ContestCtrl.stopContest()" ng-show="ContestCtrl.isOngoing(ContestCtrl.runningContest.start, ContestCtrl.contestPending.end)">Dừng kì thi</button>
-				<button class="btn btn-danger" type="submit" ng-click="ContestCtrl.deleteContest()" ng-show="!ContestCtrl.isOngoing(ContestCtrl.runningContest.start, ContestCtrl.contestPending.end)">Hủy kì thi</button>
+				<button class="btn btn-danger" type="submit" ng-click="ContestCtrl.stopContest()" ng-show="ContestCtrl.isOngoing(ContestCtrl.runningContest.start, ContestCtrl.runningContest.end)">Dừng kì thi</button>
+				<button class="btn btn-danger" type="submit" ng-click="ContestCtrl.deleteContest()" ng-show="!ContestCtrl.isOngoing(ContestCtrl.runningContest.start, ContestCtrl.runningContest.end)">Hủy kì thi</button>
 			</div>
 		</div>
 	</form>
