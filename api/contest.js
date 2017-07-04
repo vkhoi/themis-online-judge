@@ -87,6 +87,10 @@ var uploadTest = multer({ storage: storageTest }).single('file');
 // Type: POST.
 // Data: id of contest.
 router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
+	if (!req.file) {
+		res.status(500).send("FILE NULL");
+		return;
+	}
 	let fileTestName = req.file.filename;
 	let originalName = req.file.originalname;
 
@@ -102,13 +106,13 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 						res.send({ status: 'SUCCESS' });
 					});
 				}, function errorCallback(err) {
-					res.status(500).send();
+					res.status(500).send(err.toString());
 				});
 			}, function errorCallback(err) {
-				res.status(500).send();
+				res.status(500).send(err.toString());
 			});
 		}, function errorCallback(err) {
-			res.status(500).send();
+			res.status(500).send(err.toString());
 		});
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());

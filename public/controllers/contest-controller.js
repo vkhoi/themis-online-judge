@@ -633,7 +633,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			uploadingTest = false;
 			vm.fileTest = null;
 			vm.uploadTestPercent = 0;
-			swal("Thất bại!", "Hệ thống vẫn đang chấm bài của contest trước. Xin hãy thử lại sau.", "warning");
+			if (err.data != "FILE NULL") {
+				swal("Thất bại!", "Hệ thống vẫn đang chấm bài của contest trước. Xin hãy thử lại sau.", "warning");
+			}
 		}, function update(evt) {
 			vm.uploadTestPercent = Math.min(99, parseInt(100.0 * evt.loaded / evt.total));
 		});
