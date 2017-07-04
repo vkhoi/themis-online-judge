@@ -36,7 +36,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
-			console.log(res);
+			// console.log(res);
 			vm.scoreboard = [];
 			vm.contestGoingOn = res.data.contestExists;
 			var scoreboard = res.data.scoreboard;
@@ -140,7 +140,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 								vm.runningContest.problems[i].memoryLimit = parseInt(vm.runningContest.problems[i].memoryLimit);
 							}
 						}
-						initialRunningContest = vm.runningContest;
+						initialRunningContest = JSON.parse(JSON.stringify(vm.runningContest));
 						vm.selectedProblem = vm.runningContest.problems[0].name;
 						if (!vm.hasSetCountdown) {
 							vm.hasSetCountdown = true;
@@ -360,8 +360,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		if (start == end || end.isBefore(start) || end.isBefore(moment())) 
 			return false;
 
-		// If the contest is already going on, there's no need to check 
-		// its start time with the current time.
 		if (vm.contestGoingOn)
 			return true;
 
@@ -509,6 +507,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút", "warning");
 			return;
 		}
+		else if (vm.runningContest.start != initialRunningContest.start && moment(initialRunningContest.start, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
+			swal("Thất bại!", "Kì thi đã bắt đầu! Không thể thay đổi thời gian bắt đầu!", "warning");
+			return;
+		}
+		console.log(vm.runningContest.start);
+		console.log(initialRunningContest.start);
 		vm.showSpinnerTest = true;
 
 		vm.runningContest.problems.forEach(function(problem) {
@@ -626,9 +630,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}).then(function successCallback(res) {
 			vm.uploadTestPercent = 100;
 		}, function errorCallback(err) {
+			uploadingTest = false;
+			vm.fileTest = null;
+			vm.uploadTestPercent = 0;
+			swal("Thất bại!", "Hệ thống vẫn đang chấm bài của contest trước. Xin hãy thử lại sau.", "warning");
 		}, function update(evt) {
 			vm.uploadTestPercent = Math.min(99, parseInt(100.0 * evt.loaded / evt.total));
-			// console.log(vm.uploadTestPercent);
 		});
 	}
 

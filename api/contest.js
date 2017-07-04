@@ -51,7 +51,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
 	// }
 	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
-		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 5 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
+		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
 	}
 	else {
 		Contests.addContest(newContest).then(function successCallback(contestId) {
@@ -89,15 +89,20 @@ var uploadTest = multer({ storage: storageTest }).single('file');
 router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 	let fileTestName = req.file.filename;
 	let originalName = req.file.originalname;
-	Contests.uncompressFileTest(fileTestName).then(function successCallback() {
-		Contests.removeThemisTestFolder().then(function successCallback() {
-			Contests.moveTestFolders(originalName).then(function successCallback() {
-				uploadTest(req, res, function(err) {
-					if (err) {
-						res.status(400).send('FAILED');
-						return;
-					}
-					res.send({ status: 'SUCCESS' });
+
+	Contests.canAddNewContest().then(function successCallback() {
+		Contests.uncompressFileTest(fileTestName).then(function successCallback() {
+			Contests.removeThemisTestFolder().then(function successCallback() {
+				Contests.moveTestFolders(originalName).then(function successCallback() {
+					uploadTest(req, res, function(err) {
+						if (err) {
+							res.status(400).send('FAILED');
+							return;
+						}
+						res.send({ status: 'SUCCESS' });
+					});
+				}, function errorCallback(err) {
+					res.status(500).send();
 				});
 			}, function errorCallback(err) {
 				res.status(500).send();
@@ -106,7 +111,7 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 			res.status(500).send();
 		});
 	}, function errorCallback(err) {
-		res.status(500).send();
+		res.status(500).send(err.toString());
 	});
 });
 

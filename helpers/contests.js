@@ -435,57 +435,62 @@ function editContest(contest) {
 				reject(Error("Could not find this contest in database"));
 			}
 			else {
-				let startTimeChanged = false, endTimeChanged = false, problemsChanged = false;
-				if (contest.startTime != _contest.startTime)
-					startTimeChanged = true;
-				if (contest.endTime != _contest.endTime)
-					endTimeChanged = true;
-
-				// console.log(contest.problems);
-				contest.problems.sort(function(a, b) {
-					return a.name.localeCompare(b.name);
-				});
-				// console.log(contest.problems);
-
-				for (let i = 0; i < contest.problems.length; i += 1) {
-					if (contest.problems[i].timeLimit != _contest.problems[i].timeLimit ||
-						contest.problems[i].memoryLimit != _contest.problems[i].memoryLimit ||
-						contest.problems[i].testScore != _contest.problems[i].testScore) {
-						problemsChanged = true;
-						break;
-					}
+				if (contest.startTime != _contest.startTime && moment(_contest.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
+					reject(Error("Invalid start time"));
 				}
+				else {
+					let startTimeChanged = false, endTimeChanged = false, problemsChanged = false;
+					if (contest.startTime != _contest.startTime)
+						startTimeChanged = true;
+					if (contest.endTime != _contest.endTime)
+						endTimeChanged = true;
 
-				Contests.update({ _id: contest.id }, {
-					$set: {
-						name: contest.name,
-						topic: contest.topic,
-						problems: contest.problems,
-						startTime: contest.startTime,
-						endTime: contest.endTime,
-						duration: contest.duration
+					// console.log(contest.problems);
+					contest.problems.sort(function(a, b) {
+						return a.name.localeCompare(b.name);
+					});
+					// console.log(contest.problems);
+
+					for (let i = 0; i < contest.problems.length; i += 1) {
+						if (contest.problems[i].timeLimit != _contest.problems[i].timeLimit ||
+							contest.problems[i].memoryLimit != _contest.problems[i].memoryLimit ||
+							contest.problems[i].testScore != _contest.problems[i].testScore) {
+							problemsChanged = true;
+							break;
+						}
 					}
-				}, {}, function(err, numAffected) {
-					if (err) {
-						reject(Error("Could not update contest's info"));
-					}
-					else {
-						if (startTimeChanged)
-							rescheduleContestStart(contest.startTime, contest.id);
-						if (endTimeChanged)
-							rescheduleContestEnd(contest.endTime, contest.id);
-						if (problemsChanged) {
-							configTest(contest.problems).then(function successCallback() {
-								resolve();
-							}, function errorCallback(err) {
-								reject(Error(err.toString()));
-							});
+
+					Contests.update({ _id: contest.id }, {
+						$set: {
+							name: contest.name,
+							topic: contest.topic,
+							problems: contest.problems,
+							startTime: contest.startTime,
+							endTime: contest.endTime,
+							duration: contest.duration
+						}
+					}, {}, function(err, numAffected) {
+						if (err) {
+							reject(Error("Could not update contest's info"));
 						}
 						else {
-							resolve();
+							if (startTimeChanged)
+								rescheduleContestStart(contest.startTime, contest.id);
+							if (endTimeChanged)
+								rescheduleContestEnd(contest.endTime, contest.id);
+							if (problemsChanged) {
+								configTest(contest.problems).then(function successCallback() {
+									resolve();
+								}, function errorCallback(err) {
+									reject(Error(err.toString()));
+								});
+							}
+							else {
+								resolve();
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 		}, function errorCallback(err) {
 			reject(Error(err.toString()));
@@ -618,6 +623,39 @@ function configTest(problems) {
 	});
 }
 
+function canAddNewContest() {
+	return new Promise(function(resolve, reject) {
+		getAllContests().then(function successCallback(allContests) {
+			let ok = true;
+			for (let i = 0; i < allContests.length; i += 1) {
+				if (moment(allContests[i].endTime, "HH:mm, DD/MM/YYYY") >= moment()) {
+					ok = false;
+					break;
+				}
+			}
+			if (ok) {
+				for (let i = 0; i < allContests.length; i += 1) {
+					if (moment() - moment(allContests[i].endTime, "HH:mm, DD/MM/YYYY") < 300000) {
+						ok = false;
+						break;
+					}
+				}
+				if (ok) {
+					resolve();
+				}
+				else {
+					reject(Error("Thời gian bắt đầu phải cách thời gian kết thúc của kì thi trước ít nhất là 5 phút"));
+				}
+			}
+			else {
+				reject(Error("Đang có kì thi sắp diễn ra hoặc chưa kết thúc!"));
+			}
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -639,5 +677,6 @@ module.exports = {
 	rescheduleContestStart: 		rescheduleContestStart,
 	rescheduleContestEnd: 			rescheduleContestEnd,
 	stopCurrentContest: 			stopCurrentContest,
-	deletePendingContest: 			deletePendingContest
+	deletePendingContest: 			deletePendingContest,
+	canAddNewContest: 				canAddNewContest
 };
