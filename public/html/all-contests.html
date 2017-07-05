@@ -26,11 +26,11 @@
 					<div ng-hide="contest.status.isStarted">
 						Sắp bắt đầu
 						<br/> 
-						<timer countdown="contest.status.timeLeft / 1000" max-time-unit="'hour'" interval="1000" style="font-size: 80%; font-style: italic;"> Còn {{hours}} tiếng, {{mminutes}} phút, {{sseconds}} giây </timer>
+						<span style="font-size: 80%; font-style: italic;">Còn {{ ContestCtrl.runningContest.status.timeLeft | toHour }} tiếng, {{ ContestCtrl.runningContest.status.timeLeft | toMinute }} phút, {{ ContestCtrl.runningContest.status.timeLeft | toSecond }} giây</span>
 					</div>
 					<div ng-show="contest.status.isStarted && !contest.status.isEnded"> 	Đang diễn ra
 						<br/> 
-						<timer countdown="contest.status.timeLeft / 1000" max-time-unit="'hour'" interval="1000" style="font-size: 80%; font-style: italic;"> Còn {{hours}} tiếng, {{mminutes}} phút, {{sseconds}} giây </timer> 
+						<span style="font-size: 80%; font-style: italic;">Còn {{ ContestCtrl.runningContest.status.timeLeft | toHour }} tiếng, {{ ContestCtrl.runningContest.status.timeLeft | toMinute }} phút, {{ ContestCtrl.runningContest.status.timeLeft | toSecond }} giây</span> 
 					</div>
 					<div ng-show="contest.status.isEnded"> Đã kết thúc </div>
 				</td>

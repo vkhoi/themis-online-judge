@@ -48,7 +48,7 @@ function updateScore(username, problem, newScore) {
 // 	});
 // })();
 
-function getScoreboard(problems) {
+function generateScoreboardFromScores(problems) {
 	res = {
 		contestExists: true,
 		scoreboard: []
@@ -67,6 +67,51 @@ function getScoreboard(problems) {
 		return b.total - a.total;
 	});
 	return res;
+}
+
+function generateScoresFromUserSubLog(problems) {
+	return new Promise(function(resolve, reject) {
+		UserSubLog.getAllUserSubLogScores().then(function successCallback(data) {
+			data.forEach(function(userSubLog) {
+				var username = userSubLog.username;
+				if (!scores[username]) {
+					scores[username] = {
+						total: 0
+					};
+					problems.forEach(function(problem) {
+						scores[username][problem] = 0;
+					});
+				}
+
+				var allScores = userSubLog.scores;
+				Object.keys(allScores).forEach(function(key) {
+					var problem = key.split('[').pop().slice(0, -1);
+					var newScore = allScores[key];
+					updateScore(username, problem, newScore);
+				});
+			});
+			resolve();
+		}, function errorCallback(err) {
+			reject(Error(err.toString()));
+		});
+	});
+}
+
+function getScoreboard(problems) {
+	return new Promise(function(resolve, reject) {
+		let res = generateScoreboardFromScores(problems);
+		if (res.scoreboard.length == 0) {
+			generateScoresFromUserSubLog(problems).then(function successCallback() {
+				let res = generateScoreboardFromScores(problems);
+				resolve(res);
+			}, function errorCallback(err) {
+				reject(Error(err.toString()));
+			});
+		}
+		else {
+			resolve(res);
+		}
+	});
 }
 
 function removeUser(username) {
