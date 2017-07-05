@@ -220,8 +220,11 @@ router.post('/deleteContest', [ensureAdmin], function(req, res) {
 
 // Name: secret API.
 router.get('/secret', [], function(req, res) {
-	Contests.checkJob();
-	res.send({ message: "SUCCESS" });
+	Contests.checkJob().then(function successCallback() {
+		res.send({ message: "SUCCESS" });
+	}, function errorCallback(err) {
+		res.send({ message: "No current contest" });
+	});
 });
 
 module.exports = router;
