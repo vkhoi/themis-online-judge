@@ -77,17 +77,21 @@ function addContest(newContest) {
 							}
 						});
 					}, function errorCallback(err) {
+						console.log(err);
 						reject(Error(err.toString()));
 					});
 				}
 				else {
+					console.log("Thời gian bắt đầu phải cách thời gian kết thúc của kì thi trước ít nhất là 5 phút");
 					reject(Error("Thời gian bắt đầu phải cách thời gian kết thúc của kì thi trước ít nhất là 5 phút"));
 				}
 			}
 			else {
+				console.log("Đang có kì thi sắp diễn ra hoặc chưa kết thúc!");
 				reject(Error("Đang có kì thi sắp diễn ra hoặc chưa kết thúc!"));
 			}
 		}, function errorCallback(err) {
+			console.log(err);
 			reject(Error(err.toString()));
 		});
 		
@@ -98,7 +102,10 @@ function addContest(newContest) {
 function getAllContests() {
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
-			if (err) reject(Error("Could not retrieve all contests"));
+			if (err) {
+				console.log("Could not retrieve all contests");
+				reject(Error("Could not retrieve all contests"));
+			}
 			else {
 				let res = [];
 				data.forEach(function(contest) {
@@ -138,6 +145,7 @@ function getContest(id) {
 	return new Promise(function(resolve, reject) {
 		Contests.findOne({ _id: id }, function(err, contest) {
 			if (err) {
+				console.log(err);
 				reject(Error("Could not retrieve contest with id"));
 			}
 			else {
@@ -266,19 +274,22 @@ function endCurrentContest(extraJudgingTime = 300000) {
 				contest.problems.forEach(function(problem) {
 					problemNames.push(problem.name);
 				});
-				let sb = scoreboard.getScoreboard(problemNames);
-				fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
-					if (err)
-						console.log(err.toString());
-				});
-				scoreboard.stopContest();
-				UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
-					UserSubLog.clearAllSubmissions().then(function successCallback() {
+				scoreboard.getScoreboard(problemNames).then(function successCallback(sb) {
+					fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
+						if (err)
+							console.log(err);
+					});
+					scoreboard.stopContest();
+					UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
+						UserSubLog.clearAllSubmissions().then(function successCallback() {
+						}, function errorCallback(err) {
+							console.log(err);
+						});
 					}, function errorCallback(err) {
-						console.log(err.toString());
+						console.log(err);
 					});
 				}, function errorCallback(err) {
-					console.log(err.toString());
+					console.log(err);
 				});
 			}, extraJudgingTime);
 		}, function errorCallback(err) {
@@ -339,11 +350,19 @@ function getContestProblemNames(id) {
 
 // Function to get contest's scoreboard.
 function getContestScoreboard(id) {
+	// Constantly watching over start and end job.
+	console.log(currentContestStartJob);
+	console.log(currentContestEndJob);
 	return new Promise(function(resolve, reject) {
 		getContestProblemNames(id).then(function successCallback(names) {
-			let res = scoreboard.getScoreboard(names);
-			resolve(res);
+			scoreboard.getScoreboard(names).then(function successCallback(res) {
+				resolve(res);
+			}, function errorCallback(err) {
+				console.log(err);
+				reject(Error(err.toString()));
+			});
 		}, function errorCallback(err) {
+			console.log(err);
 			reject(Error(err.toString()));
 		});
 	});
@@ -362,14 +381,19 @@ function getCurrentContestScoreboard() {
 			}
 			else {
 				getContestProblemNames(contestId).then(function successCallback(names) {
-					let res = scoreboard.getScoreboard(names);
-					resolve(res);
+					scoreboard.getScoreboard(names).then(function successCallback(res) {
+						resolve(res);
+					}, function errorCallback(err) {
+						console.log(err);
+						reject(Error(err.toString()));
+					});
 				}, function errorCallback(err) {
+					console.log(err);
 					reject(Error(err.toString()));
 				});
 			}
 		}, function errorCallback(err) {
-			console.log(err.toString());
+			console.log(err);
 			reject(Error(err.toString()));
 		});
 	});
