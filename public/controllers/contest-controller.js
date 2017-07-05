@@ -269,46 +269,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	function checkrunningContest() {
-		$http.get('/api/contest/pendingContest').then(function successCallback(res) {
-			// console.log(res);
-			if (res.data.contest == -1) {
-				vm.runningContest.exists = false;
-			}
-			else {
-				let contest = res.data.contest;
-				// console.log(contest);
-				vm.runningContest = {
-					id: contest._id,
-					exists: true,
-					setter: contest.setter,
-					name: contest.name,
-					topic: contest.topic,
-					start: contest.startTime,
-					end: contest.endTime,
-					problems: contest.problems,
-					filePath: contest.filePath,
-					fileProblem: null
-				};
-
-				vm.runningContest.problemsString = "";
-				if (vm.runningContest.problems && vm.runningContest.problems.length > 0) {
-					vm.runningContest.problemsString = vm.runningContest.problems[0].name;
-					for (let i = 1; i < vm.runningContest.problems.length; i += 1)
-						vm.runningContest.problemsString += ", " + vm.runningContest.problems[i].name;
-				
-					for (let i = 0; i < vm.runningContest.problems.length; i += 1) {
-						vm.runningContest.problems[i].testScore = parseFloat(vm.runningContest.problems[i].testScore);
-						vm.runningContest.problems[i].timeLimit = parseFloat(vm.runningContest.problems[i].timeLimit);
-						vm.runningContest.problems[i].memoryLimit = parseInt(vm.runningContest.problems[i].memoryLimit);
-					}
-				}
-			}
-		}, function errorCallback(err) {
-			console.log(err);
-		});
-	}
-
 	function init() {
 		if ($state.current.name == "home") {
 			$state.go("home.scoreboard");
@@ -357,7 +317,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function isValidTime(startTime, endTime) {
 		var start = moment(startTime, "HH:mm, DD/MM/YYYY");
 		var end = moment(endTime, "HH:mm, DD/MM/YYYY");
-		if (start == end || end.isBefore(start) || end.isBefore(moment())) 
+		if (startTime == endTime || end.isBefore(start) || end.isBefore(moment())) 
 			return false;
 
 		if (vm.contestGoingOn)
@@ -458,33 +418,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
-	vm.problemNamesPendingChanged = function() {
-		let s = beautifyString(vm.runningContest.problemsString);
-		let a = s.split(",");
-		vm.runningContest.problems = [];
-		a.forEach(function(problemName) {
-			let name = trimString(problemName);
-			if (name.length > 0)
-				vm.runningContest.problems.push({
-					name: name,
-					testScore: 1,
-					timeLimit: 1,
-					memoryLimit: 1024
-				});
-		});
-	}
-
-	vm.pendingProblemNamesChanged = function() {
-		var s = beautifyString(vm.runningContest.problemsString);
-		var a = s.split(",");
-		vm.runningContest.problems = [];
-		a.forEach(function(problemName) {
-			name = trimString(problemName);
-			if (name.length > 0)
-				vm.runningContest.problems.push(name);
-		});
-	}
-
 	function isContestProblemsEdit() {
 		for (let i = 0; i < initialRunningContest.problems.length; i += 1) {
 			if (initialRunningContest.problems[i].timeLimit != vm.runningContest.problems[i].timeLimit || initialRunningContest.problems[i].memoryLimit != vm.runningContest.problems[i].memoryLimit || initialRunningContest.problems[i].testScore != vm.runningContest.problems[i].testScore) {
@@ -511,8 +444,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Kì thi đã bắt đầu! Không thể thay đổi thời gian bắt đầu!", "warning");
 			return;
 		}
-		console.log(vm.runningContest.start);
-		console.log(initialRunningContest.start);
+		// console.log(vm.runningContest.start);
+		// console.log(initialRunningContest.start);
 		vm.showSpinnerTest = true;
 
 		vm.runningContest.problems.forEach(function(problem) {
@@ -591,8 +524,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.deleteContest = function() {
 		if (moment().isBefore(moment(vm.runningContest.start, "HH:mm, DD/MM/YYYY"))) {
 			vm.showSpinner = true;
-			console.log('delete contest');
-			$http.post('/api/contest/deletePendingContest').then(function successCallback(res) {
+			$http.post('/api/contest/deleteContest', { id: vm.runningContest.id }).then(function successCallback(res) {
 				vm.showSpinner = false;
 				// console.log(res);
 				if (res.data.status == "FAILED") {
@@ -605,23 +537,16 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				}
 			}, function errorCallback(err) {
 				console.log(err);
+				vm.showSpinner = false;
+				swal("Thất bại!", err.data, "warning");
 			});
 		}
 		else {
 		}
 	}
 
-	var countUp = function() {
-		// console.log(vm.uploadTestPercent);
-		if (vm.uploadTestPercent < 100) {
-			vm.uploadTestPercent += 10;
-		}
-		$timeout(countUp, 1000);
-	}
-
 	vm.uploadTest = function(file) {
 		uploadingTest = true;
-		// $timeout(countUp, 1000);
 		Upload.upload({
 			url: '/api/contest/addTest',
 			data: {

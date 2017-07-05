@@ -72,7 +72,6 @@ function addContest(newContest) {
 							}
 							else {
 								console.log('added', contest);
-								redisClient.set("pendingContest", contest._id);
 								resolve(contest._id);
 							}
 						});
@@ -100,6 +99,9 @@ function addContest(newContest) {
 
 // Function to get all contests from database.
 function getAllContests() {
+	// Constantly watching over start and end job.
+	checkJob();
+
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
 			if (err) {
@@ -149,7 +151,10 @@ function getContest(id) {
 				reject(Error("Could not retrieve contest with id"));
 			}
 			else {
-				resolve(contest);
+				if (contest)
+					resolve(contest);
+				else
+					reject(Error("Not found contest with this id"));
 			}
 		});
 	});
@@ -264,8 +269,6 @@ function endCurrentContest(extraJudgingTime = 300000) {
 			redisClient.del("contest", function(err, reply) {
 				console.log('delete contest', reply);
 			});
-			redisClient.del("pendingContest", function(err, reply) {
-			});
 			// Only stop contest 5 minutes after actual endTime. This is because
 			// there might be some submissions that were submitted near the end
 			// of the contest and have not been graded.
@@ -350,9 +353,6 @@ function getContestProblemNames(id) {
 
 // Function to get contest's scoreboard.
 function getContestScoreboard(id) {
-	// Constantly watching over start and end job.
-	console.log(currentContestStartJob);
-	console.log(currentContestEndJob);
 	return new Promise(function(resolve, reject) {
 		getContestProblemNames(id).then(function successCallback(names) {
 			scoreboard.getScoreboard(names).then(function successCallback(res) {
@@ -413,45 +413,7 @@ function getArchivedScoreboard(contestId) {
 	});
 }
 
-// Function to get the pending contest's id.
-function getPendingContestId() {
-	return new Promise(function(resolve, reject) {
-		redisClient.get("pendingContest", function(err, reply) {
-			if (err) {
-				reject(Error("Unable to get pending contest's id"));
-			}
-			else if (reply) {
-				resolve(reply);
-			}
-			else {
-				resolve(-1);
-			}
-		});
-	});
-}
-
-// Function to get the pending contest.
-function getPendingContest() {
-	return new Promise(function(resolve, reject) {
-		getPendingContestId().then(function successCallback(id) {
-			Contests.findOne({ _id: id }, function(err, contest) {
-			if (err) {
-				reject(Error("Could not retrieve contest with id"));
-			}
-			else if (!contest) {
-				resolve(-1);
-			}
-			else {
-				resolve(contest);
-			}
-		});
-		}, function errorCallback(err) {
-			reject(Error(err.toString()));
-		});
-	});
-}
-
-// Function to edit the pending contest.
+// Function to edit contest.
 function editContest(contest) {
 	return new Promise(function(resolve, reject) {
 		getContest(contest.id).then(function successCallback(_contest) {
@@ -588,25 +550,19 @@ function stopCurrentContest(contest, cancelStartJob = true, cancelEndJob = true)
 	});
 }
 
-// Function to delete the pending contest.
-function deletePendingContest(contest) {
+// Function to delete contest.
+function deleteContest(contest) {
 	return new Promise(function(resolve, reject) {
 		currentContestStartJob.cancel();
 		currentContestEndJob.cancel();
-		redisClient.del("pendingContest", function(err, reply) {
+		Contests.remove({ _id: contest._id }, {}, function(err, numRemoved) {
 			if (err) {
+				console.log(err);
 				reject(Error(err.toString()));
 			}
 			else {
-				Contests.remove({ _id: contest._id }, {}, function(err, numRemoved) {
-				if (err) {
-					reject(Error(err.toString()));
-				}
-				else {
-					console.log("delete pending contest");
-					resolve();
-				}
-			});
+				console.log("delete contest");
+				resolve();
 			}
 		});
 	});
@@ -680,6 +636,58 @@ function canAddNewContest() {
 	});
 }
 
+function regenerateContestStartJob(contest) {
+	if (currentContestStartJob == null) {
+		let startMoment = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
+		if (moment().isBefore(startMoment)) {
+			let startTime = startMoment.toDate();
+			currentContestStartJob = schedule.scheduleJob(startTime, function() {
+				redisClient.set("contest", contest._id);
+			});
+		}
+	}
+}
+
+function regenerateContestEndJob(contest) {
+	if (currentContestEndJob == null) {
+		let endMoment = moment(contest.endTime, "HH:mm, DD/MM/YYYY");
+		if (moment().isBefore(endMoment)) {
+			let endTime = endMoment.toDate();
+			currentContestEndJob = schedule.scheduleJob(endTime, function() {
+				endCurrentContest();
+			});
+		}
+	}
+}
+
+function checkJob() {
+	console.log(currentContestStartJob == null);
+	console.log(currentContestEndJob == null);
+
+	return new Promise(function(resolve, reject) {
+		getCurrentContestId().then(function successCallback(id) {
+			if (id == -1)
+				resolve();
+			else {
+				getContest(id).then(function successCallback(contest) {
+					if (currentContestStartJob == null)
+						regenerateContestStartJob(contest);
+					if (currentContestEndJob == null)
+						regenerateContestEndJob(contest);
+					resolve();
+				}, function errorCallback(err) {
+					console.log(err);
+					reject(Error(err.toString()));
+				});
+			}
+		}, function errorCallback(err) {
+			console.log(err);
+			reject(Error(err.toString()));
+		});
+		
+	});
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -694,13 +702,12 @@ module.exports = {
 	getContestScoreboard: 			getContestScoreboard,
 	getCurrentContestScoreboard: 	getCurrentContestScoreboard,
 	getArchivedScoreboard: 			getArchivedScoreboard,
-	getPendingContest: 				getPendingContest,
-	getPendingContestId: 			getPendingContestId,
 	editContest: 					editContest,
 	editContestProblemFile: 		editContestProblemFile,
 	rescheduleContestStart: 		rescheduleContestStart,
 	rescheduleContestEnd: 			rescheduleContestEnd,
 	stopCurrentContest: 			stopCurrentContest,
-	deletePendingContest: 			deletePendingContest,
-	canAddNewContest: 				canAddNewContest
+	deleteContest: 					deleteContest,
+	canAddNewContest: 				canAddNewContest,
+	checkJob: 						checkJob
 };

@@ -129,16 +129,6 @@ router.get('/all', [], function(req, res) {
 	});
 });
 
-// Name: Get pending contest.
-// Type: GET.
-router.get('/pendingContest', [ensureAdmin], function(req, res) {
-	Contests.getPendingContest().then(function successCallback(contest) {
-		res.send({ contest: contest });
-	}, function errorCallback(err) {
-		res.status(500).send(err.toString());
-	});
-});
-
 // Name: Edit contest's info.
 // Type: POST.
 router.post('/edit', [ensureAdmin], function(req, res) {
@@ -203,13 +193,18 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 	});
 });
 
-// Name: Delete pending contest.
+// Name: Delete contest.
 // Type: POST.
-router.post('/deletePendingContest', [ensureAdmin], function(req, res) {
-	Contests.getPendingContest().then(function successCallback(contest) {
+router.post('/deleteContest', [ensureAdmin], function(req, res) {
+	let id = req.body.id;
+	if (!id) {
+		res.status(500).send("No ID");
+		return;
+	}
+	Contests.getContest(id).then(function successCallback(contest) {
 		let start = moment(contest.startTime, "HH:mm, DD/MM/YYYY");
 		if (moment().isBefore(start)) {
-			Contests.deletePendingContest(contest).then(function successCallback() {
+			Contests.deleteContest(contest).then(function successCallback() {
 				res.send({ status: "SUCCESS" });
 			}, function errorCallback(err) {
 				res.status(500).send(err.toString());
@@ -221,6 +216,12 @@ router.post('/deletePendingContest', [ensureAdmin], function(req, res) {
 	}, function errorCallback(err) {
 		res.status(500).send(err.toString());
 	});
+});
+
+// Name: secret API.
+router.get('/secret', [], function(req, res) {
+	Contests.checkJob();
+	res.send({ message: "SUCCESS" });
 });
 
 module.exports = router;
