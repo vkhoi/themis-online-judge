@@ -224,4 +224,14 @@ router.get('/secret', [], function(req, res) {
 	});
 });
 
+// Name: Check if server is configuring test data.
+router.get('/isConfiguringTest', [ensureAdmin], function(req, res) {
+	if (Contests.checkIsConfiguringTest()) {
+		res.send({ status: 'TRUE' });
+	}
+	else {
+		res.send({ status: 'FALSE' });
+	}
+});
+
 module.exports = router;

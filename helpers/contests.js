@@ -30,6 +30,8 @@ const testDir 		= 'data/contests/tests';
 
 var currentContestStartJob, currentContestEndJob;
 
+var isConfiguringTest = false;
+
 // Function to create a new contest into the database.
 function addContest(newContest) {
 	return new Promise(function(resolve, reject) {
@@ -593,14 +595,21 @@ function configTest(problems) {
 						else {
 							console.log("output Run.txt success");
 							let expectedWaitTime = (Math.floor(problems.length * 10 / 30) + 1) * 30;
+							isConfiguringTest = true;
 							setTimeout(function() {
+								isConfiguringTest = false;
 								resolve();
 							}, expectedWaitTime * 1000);
 						}
 					});
 				}
 				else {
-					resolve();
+					isConfiguringTest = true;
+					setTimeout(function() {
+						isConfiguringTest = false;
+						resolve();
+					}, 30000);
+					// resolve();
 				}
 			}
 		});
@@ -692,6 +701,10 @@ function checkJob() {
 	});
 }
 
+function checkIsConfiguringTest() {
+	return isConfiguringTest;
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -713,5 +726,6 @@ module.exports = {
 	stopCurrentContest: 			stopCurrentContest,
 	deleteContest: 					deleteContest,
 	canAddNewContest: 				canAddNewContest,
-	checkJob: 						checkJob
+	checkJob: 						checkJob,
+	checkIsConfiguringTest: 		checkIsConfiguringTest
 };

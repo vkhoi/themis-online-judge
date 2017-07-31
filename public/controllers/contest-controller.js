@@ -273,18 +273,37 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		});
 	}
 
+	function checkIfIsConfiguringTest() {
+		$http.get('/api/contest/isConfiguringTest').then(function successCallback(res) {
+			console.log(res);
+			if (res.data.status == "FALSE") {
+				vm.showSpinnerTest = false;
+				getContests().then(function successCallback() {
+					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
+						getScoreboard();
+				}, function errorCallback(err) {
+					console.log(err);
+				});
+				getSubmissionLogs();
+			}
+			else {
+				vm.showSpinnerTest = true;
+				$timeout(function() {
+					vm.showSpinnerTest = true;
+					checkIfIsConfiguringTest();
+				}, 5000);
+			}
+		}, function errorCallback(err) {
+			console.log(err);
+		});
+	}
+
 	function init() {
 		if ($state.current.name == "home") {
 			$state.go("home.scoreboard");
 		}
 		vm.username = Session.username;
-		getContests().then(function successCallback() {
-			if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
-				getScoreboard();
-		}, function errorCallback(err) {
-			console.log(err);
-		});
-		getSubmissionLogs();
+		checkIfIsConfiguringTest();
 	}
 	init();
 
@@ -379,11 +398,13 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
 				vm.showSpinnerTest = false;
+				vm.uploading = false;
 				let message = res.data.message;
 				swal("Thất bại!", message, "warning");
 			}
 			else {
 				vm.showSpinnerTest = false;
+				vm.uploading = false;
 				swal("Thành công!", "Bạn đã tạo kỳ thi.", "success");
 				$state.reload();
 			}
