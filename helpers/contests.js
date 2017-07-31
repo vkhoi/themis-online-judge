@@ -100,7 +100,11 @@ function addContest(newContest) {
 // Function to get all contests from database.
 function getAllContests() {
 	// Constantly watching over start and end job.
-	checkJob();
+	checkJob().then(function successCallback() {
+
+	}, function errorCallback() {
+		
+	});
 
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
@@ -676,7 +680,7 @@ function checkJob() {
 						regenerateContestEndJob(contest);
 					resolve();
 				}, function errorCallback(err) {
-					console.log(err);
+					// console.log(err);
 					reject(Error(err.toString()));
 				});
 			}
