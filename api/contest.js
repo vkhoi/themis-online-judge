@@ -47,11 +47,8 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		problem.memoryLimit = parseInt(problem.memoryLimit);
 	});
 
-	// if (moment(newContest.endTime, "HH:mm, DD/MM/YYYY")-moment(newContest.startTime, "HH:mm, DD/MM/YYYY") < 300000) {
-	// 	res.send({ status: 'FAILED', message: 'Kì thi phải kéo dài ít nhất 5 phút' });
-	// }
-	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
-		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
+	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 120000) {
+		res.send({ status: 'FAILED', message: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 2 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)' });
 	}
 	else {
 		Contests.addContest(newContest).then(function successCallback(contestId) {

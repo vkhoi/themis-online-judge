@@ -578,7 +578,7 @@ function configTest(problems) {
 		let data = "";
 		data += problems.length + EOL;
 		problems.forEach(function(problem) {
-			data += problem.testScore + " " + problem.timeLimit + " " + problem.memoryLimit + EOL;
+			data += problem.testScore + " " + problem.timeLimit + " " + problem.memoryLimit + " " + problem.judgedByCode + EOL;
 		});
 		fse.outputFile("data/contests/Tasks/config.txt", data, function(err) {
 			if (err) {

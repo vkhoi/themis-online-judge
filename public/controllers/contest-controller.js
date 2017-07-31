@@ -138,6 +138,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 								vm.runningContest.problems[i].testScore = parseFloat(vm.runningContest.problems[i].testScore);
 								vm.runningContest.problems[i].timeLimit = parseFloat(vm.runningContest.problems[i].timeLimit);
 								vm.runningContest.problems[i].memoryLimit = parseInt(vm.runningContest.problems[i].memoryLimit);
+								if (vm.runningContest.problems[i].judgedByCode == "true")
+									vm.runningContest.problems[i].judgedByCode = true;
+								else
+									vm.runningContest.problems[i].judgedByCode = false;
 							}
 						}
 						initialRunningContest = JSON.parse(JSON.stringify(vm.runningContest));
@@ -344,8 +348,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			swal("Thất bại!", "Xin hãy đợi sau khi upload xong file test", "warning");
 			return;
 		}
-		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 180000) {
-			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 3 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)", "warning");
+		else if (moment(vm.startTime, "HH:mm, DD/MM/YYYY") - moment() < 120000) {
+			swal("Thất bại!", "Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 2 phút (vì lí do hệ thống cần xử lí file test sau khi được upload lên)", "warning");
 			return;
 		}
 		vm.showSpinnerTest = true;
@@ -355,6 +359,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			problem.testScore = parseInt(problem.testScore);
 			problem.timeLimit = parseInt(problem.timeLimit);
 			problem.memoryLimit = parseInt(problem.memoryLimit);
+			if (problem.judgedByCode)
+				problem.judgedByCode = true;
+			else
+				problem.judgedByCode = false;
 		});
 		
 		Upload.upload({
