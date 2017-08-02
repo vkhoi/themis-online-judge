@@ -12,8 +12,8 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="contest in ContestCtrl.contests">
-				<td style="width: 5%;">{{ $index + 1 }}</td>
+			<tr ng-repeat="contest in ContestCtrl.getShownContests()">
+				<td style="width: 5%;">{{ ContestCtrl.basePageIndex() + $index + 1 }}</td>
 				<td>
 					<div>
 						<a href="{{contest.filePath}}" target="_blank" ng-show="contest.filePath != -1">{{ contest.name }}</a>
@@ -49,4 +49,11 @@
 			</tr>
 		</tbody>
 	</table>
+	<nav aria-label="Page navigation example">
+	  	<ul class="pagination">
+		    <li class="page-item" ng-class="{ disabled: ContestCtrl.pageIndex == 1 }" ng-click="ContestCtrl.goToNextOrPrevPage(-1)"><a class="page-link" href="#">Trước</a></li>
+		    <li class="page-item" ng-repeat="item in ContestCtrl.getNumberOfPage() track by $index" ng-class="{ active: $index + 1 == ContestCtrl.pageIndex }" ng-click="ContestCtrl.goToPage($index + 1)"><a class="page-link" href="#">{{ $index + 1 }}</a></li>
+		    <li class="page-item" ng-class="{ disabled: ContestCtrl.isAtLastPage() }" ng-click="ContestCtrl.goToNextOrPrevPage(1)"><a class="page-link" href="#">Tiếp theo</a></li>
+	  	</ul>
+	</nav>
 </div>

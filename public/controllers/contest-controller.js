@@ -34,6 +34,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	var uploadingTest = false;
 
+	vm.pageIndex = 1;
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
 			// console.log(res);
@@ -604,6 +606,49 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			return "Đang upload file " + filename + " " + vm.uploadTestPercent + "%";
 		}
 	}
+
+	vm.getNumberOfPage = function() {
+		let N = vm.contests.length;
+		let res = Math.floor(N / 10);
+		if (N % 10 > 0)
+			res += 1;
+		return new Array(res);
+	}
+
+	vm.getShownContests = function() {
+		let startIdx = (vm.pageIndex - 1) * 10;
+		let endIdx = Math.min(startIdx + 9, vm.contests.length);
+		let array = vm.contests.slice(startIdx, endIdx + 1);
+		return array;
+	}
+
+	vm.isAtLastPage = function() {
+		let N = vm.contests.length;
+		let res = Math.floor(N / 10);
+		if (N % 10 > 0)
+			res += 1;
+		if (vm.pageIndex == res)
+			return true;
+		return false;
+	}
+
+	vm.basePageIndex = function() {
+		let res = (vm.pageIndex - 1) * 10;
+		return res;
+	}
+
+	vm.goToPage = function(idx) {
+		vm.pageIndex = idx;
+	}
+
+	vm.goToNextOrPrevPage = function(idx) {
+		if (vm.isAtLastPage() && idx == 1)
+			return;
+		if (vm.pageIndex == 1 && idx == -1)
+			return;
+		vm.pageIndex += idx;
+	}
+
 }]);
 
 themisApp.filter('submissionResultFilter', function() {
