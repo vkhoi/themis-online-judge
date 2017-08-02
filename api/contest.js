@@ -45,7 +45,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		problem.testScore = parseInt(problem.testScore);
 		problem.timeLimit = parseInt(problem.timeLimit);
 		problem.memoryLimit = parseInt(problem.memoryLimit);
-		if (problem.judgedByCode)
+		if (problem.judgedByCode == "true")
 			problem.judgedByCode = "1";
 		else
 			problem.judgedByCode = "0";
