@@ -99,6 +99,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function getContests() {
 		return new Promise(function(resolve, reject) {
 			$http.get('/api/contest/all').then(function successCallback(res) {
+				console.log(res);
 				vm.contests = [];
 				var contests = res.data.contests;
 				vm.runningContest.exists = false;
@@ -278,7 +279,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function checkIfIsConfiguringTest() {
 		$http.get('/api/contest/isConfiguringTest').then(function successCallback(res) {
 			console.log(res);
-			if (res.data.status == "FALSE") {
+			if (res.status == 403 || res.data.status == "FALSE") {
 				vm.showSpinnerTest = false;
 				getContests().then(function successCallback() {
 					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
@@ -297,6 +298,16 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 		}, function errorCallback(err) {
 			console.log(err);
+			if (err.status == 403) {
+				vm.showSpinnerTest = false;
+				getContests().then(function successCallback() {
+					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
+						getScoreboard();
+				}, function errorCallback(err) {
+					console.log(err);
+				});
+				getSubmissionLogs();
+			}
 		});
 	}
 
