@@ -1,0 +1,7 @@
+#site-account {
+	padding-bottom: 3rem;
+}
+#site-account > .row:first-child {
+	padding-top: 2rem;
+	border-top: 1px solid #dddddd;
+}

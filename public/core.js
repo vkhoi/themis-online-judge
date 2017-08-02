@@ -133,6 +133,12 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 					redirectTo: 'home.contest.scoreboard'
 				}
 			})
+			.state('home.account', {
+				url: 'account',
+				controller: 'AccountController',
+				controllerAs: 'AccountCtrl',
+				templateUrl: 'html/account.html'
+			})
 
 	$locationProvider.html5Mode(true);
 

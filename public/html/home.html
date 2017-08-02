@@ -8,17 +8,18 @@
 						<img src="img/site-logo.png"></img>
 					</div>
 				</div>
-				<div class="col-sm-5">
+				<div class="col-sm-6">
 					<div id="home-menu">
 						<h3>Đội Tuyển Tin PTNK</h3>
 						<ul>
 							<a ui-sref="home.posts"><li ng-class="{active: HomeCtrl.isTabActive('home.post')}">TÀI LIỆU</li></a>
 							<a ui-sref="home.contest.scoreboard"><li ng-class="{active: HomeCtrl.isTabActive('home.contest')}">LÀM BÀI</li></a>
 							<a ui-sref="home.members" ng-show="HomeCtrl.isAdmin()"><li ng-class="{active: HomeCtrl.isTabActive('home.member')}">THÀNH VIÊN</li></a>
+							<a ui-sref="home.account"><li ng-class="{active: HomeCtrl.isTabActive('home.account')}">TÀI KHOẢN</li></a>
 						</ul>
 					</div>
 				</div>
-				<div class="col-sm-5">
+				<div class="col-sm-4">
 					<div style="float: right; margin-top: 1.875rem;">
 						<h3>Xin chào, {{ HomeCtrl.username }}</h3>
 						<button ng-click="HomeCtrl.logout()" class="btn btn-danger" style="width: 100%;">Đăng xuất</button>
