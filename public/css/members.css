@@ -16,3 +16,8 @@
 	padding-top: 2rem;
 	border-top: 1px solid #dddddd;
 }
+
+#member-info::placeholder {
+	color: #bbbbbb;
+	font-style: italic;
+}

@@ -14,8 +14,9 @@
 				<tr>
 					<th style="width: 5%;">#</th>
 					<th style="width: 20%">Tên tài khoản</th>
-					<th style="width: 40%">Họ và tên</th>
-					<th style="width: 20%">Quyền hạn</th>
+					<th style="width: 25%">Họ và tên</th>
+					<th style="width: 15%">Quyền hạn</th>
+					<th style="width: 20%">Ghi chú</th>
 					<th style="width: 15%" class="text-center">Chỉnh sửa</th>
 				</tr>
 			</thead>
@@ -23,8 +24,9 @@
 				<tr ng-repeat="user in MembersCtrl.users">
 					<td style="width: 5%;">{{ $index + 1 }}</td>
 					<td style="width: 20%;">{{ user.username }}</td>
-					<td style="width: 40%;">{{ user.name }}</td>
-					<td style="width: 20%;">{{ user.role }}</td>
+					<td style="width: 25%;">{{ user.name }}</td>
+					<td style="width: 15%;">{{ user.role }}</td>
+					<td style="width: 20%;">{{ user.info }}</td>
 					<td style="width: 15%;" class="text-center">
 						<a ui-sref="home.memberEdit({ username: user.username })">
 							<button type="button" class="btn btn-info">

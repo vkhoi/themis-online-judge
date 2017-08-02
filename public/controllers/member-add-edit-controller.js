@@ -7,6 +7,7 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 	vm.password = "";
 	vm.name = "";
 	vm.role = "";
+	vm.info = "";
 
 	vm.isUsernameDisabled = false;
 
@@ -22,11 +23,11 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 			vm.pageName = "Chỉnh sửa thành viên";
 			vm.addEditBtnName = "Chỉnh sửa";
 			$http.post('/api/users/getUser', { username: $state.params.username }).then(function successCallback(res) {
-				console.log(res.data);
 				vm.username = $state.params.username;
 				vm.password = res.data.password;
 				vm.name = res.data.name;
 				vm.role = res.data.role;
+				vm.info = res.data.info;
 			}, function errorCallback(err) {
 				swal({
 					title: "Lỗi!",
@@ -47,9 +48,13 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 	init();
 
 	vm.addEditMember = function() {
+		if (vm.username == "" || vm.name == "" || vm.role == "") {
+			swal("Thất bại!", "Tên tài khoản, họ và tên, quyền hạn không được để trống", "warning");
+			return;
+		}
 		vm.showSpinner = true;
 		if (isAdd) {
-			$http.post('/api/users/add', { username: vm.username, password: vm.password, name: vm.name, role: vm.role }).then(function successCallback(res) {
+			$http.post('/api/users/add', { username: vm.username, name: vm.name, role: vm.role, info: vm.info }).then(function successCallback(res) {
 				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",
@@ -69,7 +74,7 @@ themisApp.controller('MemberAddEditController', ['$state', '$scope', '$http', 'A
 			});
 		}
 		else {
-			$http.post('/api/users/edit', { username: vm.username, password: vm.password, name: vm.name, role: vm.role }).then(function successCallback(res) {
+			$http.post('/api/users/edit', { username: vm.username, password: vm.password, name: vm.name, role: vm.role, info: vm.info }).then(function successCallback(res) {
 				vm.showSpinner = false;
 				swal({
 					title: "Thành công!",

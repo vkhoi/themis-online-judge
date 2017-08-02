@@ -45,6 +45,10 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		problem.testScore = parseInt(problem.testScore);
 		problem.timeLimit = parseInt(problem.timeLimit);
 		problem.memoryLimit = parseInt(problem.memoryLimit);
+		if (problem.judgedByCode)
+			problem.judgedByCode = "1";
+		else
+			problem.judgedByCode = "0";
 	});
 
 	if (moment(newContest.startTime, "HH:mm, DD/MM/YYYY") - moment() < 120000) {

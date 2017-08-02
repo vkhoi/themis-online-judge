@@ -138,7 +138,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 								vm.runningContest.problems[i].testScore = parseFloat(vm.runningContest.problems[i].testScore);
 								vm.runningContest.problems[i].timeLimit = parseFloat(vm.runningContest.problems[i].timeLimit);
 								vm.runningContest.problems[i].memoryLimit = parseInt(vm.runningContest.problems[i].memoryLimit);
-								if (vm.runningContest.problems[i].judgedByCode == "true")
+								if (vm.runningContest.problems[i].judgedByCode == "1")
 									vm.runningContest.problems[i].judgedByCode = true;
 								else
 									vm.runningContest.problems[i].judgedByCode = false;

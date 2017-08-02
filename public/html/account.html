@@ -1,3 +1,4 @@
+<spinner ng-show="AccountCtrl.showSpinner"></spinner>
 <div id="site-account" class="container">
 	<div class="row" style="margin-bottom: 1rem;">
 		<h3>Quản lý tài khoản</h3>
@@ -5,30 +6,30 @@
 	<div class="form-group row">
 	  	<label for="member-username" class="col-2 col-form-label">Tên tài khoản</label>
 	  	<div class="col-10">
-	   		<input class="form-control" type="text" id="member-username" ng-model="MemberAddEditCtrl.username">
-	  	</div>
-	</div>
-	<div class="form-group row">
-	  	<label for="member-username" class="col-2 col-form-label">Email</label>
-	  	<div class="col-10">
-	   		<input class="form-control" type="text" id="member-username" ng-model="MemberAddEditCtrl.username">
+	   		<input class="form-control" type="text" ng-model="AccountCtrl.username" disabled>
 	  	</div>
 	</div>
 	<div class="form-group row">
 	  	<label for="member-password" class="col-2 col-form-label">Mật khẩu</label>
 	  	<div class="col-10">
-	   		<input class="form-control" type="password" id="member-password" ng-model="MemberAddEditCtrl.password">
+	   		<input class="form-control" type="password" ng-model="AccountCtrl.password">
 	  	</div>
 	</div>
 	<div class="form-group row">
 	  	<label for="member-name" class="col-2 col-form-label">Họ và tên</label>
 	  	<div class="col-10">
-	   		<input class="form-control" type="text" id="member-name" ng-model="MemberAddEditCtrl.name">
+	   		<input class="form-control" type="text" ng-model="AccountCtrl.name">
+	  	</div>
+	</div>
+	<div class="form-group row">
+	  	<label for="member-name" class="col-2 col-form-label">Ghi chú</label>
+	  	<div class="col-10">
+	   		<input class="form-control" type="text" ng-model="AccountCtrl.info" disabled>
 	  	</div>
 	</div>
 	<div class="row">
 		<div class="col-sm-10 offset-sm-2">
-			<button type="button" class="btn btn-primary" ng-click="MemberAddEditCtrl.addEditMember()">Chỉnh sửa</button>
+			<button type="button" class="btn btn-primary" ng-click="AccountCtrl.editAccount()">Chỉnh sửa</button>
 		</div>
 	</div>
 </div>

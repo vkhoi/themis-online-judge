@@ -26,7 +26,8 @@ function getAllUsers() {
 					res.push({
 						username: users[i].username,
 						name: users[i].name,
-						role: users[i].role
+						role: users[i].role,
+						info: users[i].info
 					});
 				}
 				resolve(res);
@@ -47,7 +48,8 @@ function getUserWithUsername(username) {
 					username: user.username,
 					password: user.password,
 					name: user.name,
-					role: user.role
+					role: user.role,
+					info: user.info
 				}
 				resolve(res);
 			}
@@ -85,9 +87,10 @@ function addUser(user) {
 			else {
 				Users.insert({
 					username: user.username,
-					password: user.password,
+					password: "tinptnk", // default password
 					name: user.name,
-					role: user.role
+					role: user.role,
+					info: user.info
 				}, function(err, user) {
 					if (err) {
 						reject(Error('Không thể thêm user mới vào cơ sở dữ liệu'));
@@ -102,23 +105,37 @@ function addUser(user) {
 }
 
 // Function to edit a user.
-function editUser(user) {
+function editUser(user, editByContestant = false) {
 	return new Promise(function(resolve, reject) {
 		Users.findOne({ username: user.username }, function(err, _user) {
 			if (err || !_user) {
 				reject(Error('Could not find user to edit'));
 			}
 			else {
-				Users.update({ username: user.username }, {
-					$set: { password: user.password, name: user.name, role: user.role }
-				}, {}, function(err, numAffected) {
-					if (err) {
-						reject(Error('Could not update user with new info'));
-					}
-					else {
-						resolve();
-					}
-				});
+				if (editByContestant) {
+					Users.update({ username: user.username }, {
+						$set: { password: user.password, name: user.name }
+					}, {}, function(err, numAffected) {
+						if (err) {
+							reject(Error('Could not update user with new info'));
+						}
+						else {
+							resolve();
+						}
+					});
+				}
+				else {
+					Users.update({ username: user.username }, {
+						$set: { password: user.password, name: user.name, role: user.role, info: user.info }
+					}, {}, function(err, numAffected) {
+						if (err) {
+							reject(Error('Could not update user with new info'));
+						}
+						else {
+							resolve();
+						}
+					});
+				}
 			}
 		});
 	});
@@ -150,19 +167,11 @@ function removeUser(user) {
 (function addUltimateAdmin() {
 	Users.findOne({ username: "admin" }, function(err, user) {
 		if (!user) {
-			addUser({ username: "admin", password: "123", name: "Admin", role: "admin" });
+			addUser({ username: "admin", password: "123", name: "Admin", role: "admin", info: "admin" });
 			// UserSubLog.addUser("admin");
 		}
 	});
 })();
-
-// (function addUserSubmissionLog() {
-// 	Users.find({}, function(err, users) {
-// 		users.forEach(function(user) {
-// 			UserSubLog.addUser(user.username);
-// 		});
-// 	});
-// })();
 
 module.exports = {
 	getAllUsers: 			getAllUsers,
