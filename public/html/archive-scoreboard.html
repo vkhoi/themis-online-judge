@@ -22,7 +22,7 @@
 		<tbody>
 			<tr ng-repeat="user in ContestArchiveScoreboardCtrl.scoreboard">
 				<td style="width: 10%;">{{ $index + 1 }}</td>
-				<td>{{ user.username }}</td>
+				<td>{{ user.username + "-" + user.name }}</td>
 				<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
 				<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
 			</tr>
