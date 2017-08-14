@@ -36,6 +36,11 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	vm.pageIndex = 1;
 
+	// For admin.
+	vm.showCode = false;
+	vm.userSubmissionLogs = [];
+	vm.userSubmissionCode = "";
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
 			// console.log(res);
@@ -99,7 +104,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	function getContests() {
 		return new Promise(function(resolve, reject) {
 			$http.post('/api/contest/all', { username: Session.username }).then(function successCallback(res) {
-				console.log(res);
+				// console.log(res);
 				vm.contests = [];
 				var contests = res.data.contests;
 				vm.runningContest.exists = false;
@@ -131,7 +136,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 							fileProblem: null,
 							status: getProblemStatus(contest.startTime, contest.endTime)
 						};
-						console.log(vm.runningContest);
+						// console.log(vm.runningContest);
 						vm.runningContest.problemsString = "";
 						if (vm.runningContest.problems && vm.runningContest.problems.length > 0) {
 							vm.runningContest.problemsString = vm.runningContest.problems[0].name;
@@ -279,7 +284,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function checkIfIsConfiguringTest() {
 		$http.get('/api/contest/isConfiguringTest').then(function successCallback(res) {
-			console.log(res);
+			// console.log(res);
 			if (res.status == 403 || res.data.status == "FALSE") {
 				vm.showSpinnerTest = false;
 				getContests().then(function successCallback() {
@@ -537,7 +542,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			vm.showSpinner = true;
 			$http.post('/api/contest/stopRunningContest').then(function successCallback(res) {
 				vm.showSpinner = false;
-				console.log(res);
+				// console.log(res);
 				if (res.data.status == "FAILED") {
 					let message = res.data.message;
 					swal("Thất bại!", message, "warning");
@@ -670,6 +675,40 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		vm.pageIndex += idx;
 	}
 
+	vm.onUserSubmissionLogs = function(username, idx) {
+		vm.showCode = false;
+		let problem = vm.runningContest.problems[idx].name;
+		// console.log(username, problem);
+
+		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem }).then(function success(data) {
+			data = data.data;
+			vm.userSubmissionLogs = [];
+			data.forEach(function(sub) {
+				let x = timeToDate(parseInt(sub));
+				vm.userSubmissionLogs.push({
+					time: x,
+					timeStamp: sub,
+					username: username,
+					problem: problem
+				});
+			});
+		}, function error(err) {
+			console.log(err);
+		});
+	}
+
+	vm.onUserSubmissionCode = function(idx) {
+		let problem = vm.userSubmissionLogs[idx].problem;
+		let username = vm.userSubmissionLogs[idx].username;
+		let timeStamp = vm.userSubmissionLogs[idx].timeStamp;
+		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp }).then(function success(data) {
+			vm.showCode = true;
+			data = data.data;
+			vm.userSubmissionCode = data;
+		}, function error(err) {
+			console.log(err);
+		});
+	}
 }]);
 
 themisApp.filter('submissionResultFilter', function() {

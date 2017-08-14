@@ -23,9 +23,34 @@
 			<tr ng-repeat="user in ContestArchiveScoreboardCtrl.scoreboard">
 				<td style="width: 10%;">{{ $index + 1 }}</td>
 				<td>{{ user.username }}</td>
-				<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
+				<td ng-show="ContestArchiveScoreboardCtrl.isAdmin()" ng-repeat="score in user.scores track by $index" style="width: 10%;"><a href="#" data-toggle="modal" data-target="#userSubmissionLogs" ng-click="ContestArchiveScoreboardCtrl.onUserSubmissionLogs(user.username, $index)">{{ score | submissionResultFilter }}</a></td>
+				<td ng-hide="ContestArchiveScoreboardCtrl.isAdmin()" ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
 				<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td>
+			<!-- 	<td ng-repeat="score in user.scores track by $index" style="width: 10%;">{{ score | submissionResultFilter }}</td>
+				<td style="width: 10%;">{{ user.total | submissionResultFilter }}</td> -->
 			</tr>
 		</tbody>
 	</table>
+	<div class="modal fade" id="userSubmissionLogs" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Các bài đã nộp</h4>
+					<button type="button" class="close close-dialog" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<div class="modal-body">
+					<div ng-hide="ContestArchiveScoreboardCtrl.showCode">
+						<p ng-show="ContestArchiveScoreboardCtrl.userSubmissionLogs.length == 0">Chưa nộp lần nào</p>
+						<ul>
+							<li ng-repeat="sub in ContestArchiveScoreboardCtrl.userSubmissionLogs"><a href="#" ng-click="ContestArchiveScoreboardCtrl.onUserSubmissionCode($index)">{{sub.time}}</a></li>
+						</ul>
+					</div>
+					<div ng-show="ContestArchiveScoreboardCtrl.showCode">
+						<pre>{{ContestArchiveScoreboardCtrl.userSubmissionCode}}</pre>
+					</div>
+					<!-- <pre>{{ ContestCtrl.submissionDetails }}</pre> -->
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

@@ -1,7 +1,12 @@
-themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', '$http', function($state, $scope, $http) {
+themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', '$http', 'Session', function($state, $scope, $http, Session) {
 	var vm = this;
 
 	vm.isNotFinal = false;
+
+	// For admin.
+	vm.showCode = false;
+	vm.userSubmissionLogs = [];
+	vm.userSubmissionCode = "";
 
 	function init() {
 		$http.post('/api/getProblems', { id: $state.params.id }).then(function successCallback(res) {
@@ -26,4 +31,55 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		});
 	}
 	init();
+
+	vm.isAdmin = function() {
+		return Session.userRole == "admin";
+	}
+
+	vm.onUserSubmissionLogs = function(username, idx) {
+		vm.showCode = false;
+		let problem = vm.problems[idx];
+		// console.log(username, problem);
+
+		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem }).then(function success(data) {
+			data = data.data;
+			vm.userSubmissionLogs = [];
+			data.forEach(function(sub) {
+				let x = timeToDate(parseInt(sub));
+				vm.userSubmissionLogs.push({
+					time: x,
+					timeStamp: sub,
+					username: username,
+					problem: problem
+				});
+			});
+		}, function error(err) {
+			console.log(err);
+		});
+	}
+
+	vm.onUserSubmissionCode = function(idx) {
+		let problem = vm.userSubmissionLogs[idx].problem;
+		let username = vm.userSubmissionLogs[idx].username;
+		let timeStamp = vm.userSubmissionLogs[idx].timeStamp;
+		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp }).then(function success(data) {
+			vm.showCode = true;
+			data = data.data;
+			vm.userSubmissionCode = data;
+		}, function error(err) {
+			console.log(err);
+		});
+	}
+
+	function timeToDate(timeStamp) {
+		var d = new Date(timeStamp);
+		return padNumber(d.getDate(), 2) + "-" + padNumber(d.getMonth() + 1, 2) + "-" + d.getFullYear() + " " + padNumber(d.getHours(), 2) + ":" + padNumber(d.getMinutes(), 2) + ":" + padNumber(d.getSeconds(), 2);
+	}
+
+	function padNumber(number, L) {
+		var res = number.toString();
+		while (res.length < L)
+			res = "0" + res;
+		return res;
+	}
 }]);

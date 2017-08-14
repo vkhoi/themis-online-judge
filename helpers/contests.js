@@ -101,6 +101,9 @@ function addContest(newContest) {
 
 // Function to get all contests from database.
 function getAllContests(isAdmin) {
+	checkJob().then(function successCallback(res) {
+	}, function errorCallback(err) {
+	});
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
 			if (err) {

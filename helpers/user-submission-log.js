@@ -262,6 +262,54 @@ function clearAllSubmissions() {
 	});
 }
 
+function getSubmissionNames(username, problem) {
+	return new Promise(function(resolve, reject) {
+		UserSubLog.find({ username: username }, function(err, data) {
+			if (err) {
+				console.log(err);
+				reject(err);
+			}
+			else {
+				let submissions = data[0].submissions;
+				let res = [];
+				Object.keys(submissions).forEach(function(key) {
+					let problem_ = key.split('[').pop().slice(0, -1);
+					if (problem_ == problem) {
+						res.push(key.split('-')[0]);
+					}
+				});
+				resolve(res);
+			}
+		});
+	});
+}
+
+function getSubmissionCode(username, problem, timeStamp) {
+	return new Promise(function(resolve, reject) {
+		UserSubLog.find({ username: username }, function(err, data) {
+			if (err) {
+				console.log(err);
+				reject(err);
+			}
+			else {
+				let submissions = data[0].submissions;
+				let res = "";
+				Object.keys(submissions).forEach(function(key) {
+					let problem_ = key.split('[').pop().slice(0, -1);
+					if (problem_ == problem) {
+						let stamp = key.split('-')[0];
+						if (stamp == timeStamp) {
+							res = submissions[key];
+							return;
+						}
+					}
+				});
+				resolve(res);
+			}
+		});
+	});
+}
+
 module.exports = {
 	addUser: 					addUser,
 	removeUser: 				removeUser,
@@ -272,5 +320,7 @@ module.exports = {
 	getDetails: 				getDetails,
 	getAllUserSubLogScores: 	getAllUserSubLogScores,
 	copyUserSubLog: 			copyUserSubLog,
-	clearAllSubmissions: 		clearAllSubmissions
+	clearAllSubmissions: 		clearAllSubmissions,
+	getSubmissionNames: 		getSubmissionNames,
+	getSubmissionCode: 			getSubmissionCode
 };
