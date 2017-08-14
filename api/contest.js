@@ -18,8 +18,14 @@ var storage = multer.diskStorage({
 		cb(null, './public/data/contests');
 	},
 	filename: function(req, file, cb) {
-		var originalName = file.originalname;
-		cb(null, originalName);
+		let newName = Date.now().toString();
+		let originalName = file.originalname;
+		let pos = originalName.indexOf('.');
+		if (pos != -1) {
+			let ext = originalName.slice(pos+1, originalName.length);
+			newName += "." + ext;
+		}
+		cb(null, newName);
 	}
 });
 
@@ -39,6 +45,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		filePath: path.join('data/contests', req.file.filename),
 		problems: req.body.problems
 	};
+	console.log(newContest)
 	for (let i = 0; i < newContest.problems.length; i += 1) {
 		if ("$hashKey" in newContest.problems[i]) {
 			delete newContest.problems[i].$hashKey;
