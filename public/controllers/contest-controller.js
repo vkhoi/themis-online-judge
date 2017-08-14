@@ -597,12 +597,21 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			}
 		}).then(function successCallback(res) {
 			vm.uploadTestPercent = 100;
+			vm.problems = [];
+			res.data.problems.forEach(function(problem) {
+				vm.problems.push({ 
+					name: problem,
+					testScore: 1,
+					timeLimit: 1,
+					memoryLimit: 1024
+				});
+			});
 		}, function errorCallback(err) {
 			uploadingTest = false;
 			vm.fileTest = null;
 			vm.uploadTestPercent = 0;
 			if (err.data != "FILE NULL") {
-				swal("Thất bại!", "Hệ thống vẫn đang chấm bài của contest trước. Xin hãy thử lại sau.", "warning");
+				swal("Thất bại!", "Có lỗi xảy ra. Có thể format của file test không đúng với yêu cầu.", "warning");
 			}
 		}, function update(evt) {
 			vm.uploadTestPercent = Math.min(99, parseInt(100.0 * evt.loaded / evt.total));

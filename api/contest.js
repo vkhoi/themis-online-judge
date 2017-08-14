@@ -98,17 +98,27 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 	}
 	let fileTestName = req.file.filename;
 	let originalName = req.file.originalname;
+	let testArchiveName = "";
+	let problems = [];
 
 	Contests.canAddNewContest().then(function successCallback() {
 		Contests.uncompressFileTest(fileTestName).then(function successCallback() {
-			Contests.removeThemisTestFolder().then(function successCallback() {
-				Contests.moveTestFolders(originalName).then(function successCallback() {
-					uploadTest(req, res, function(err) {
-						if (err) {
-							res.status(400).send('FAILED');
-							return;
-						}
-						res.send({ status: 'SUCCESS' });
+			Contests.checkFormatAndFix().then(function successCallback(result) {
+				testArchiveName = result.testArchive;
+				problems = result.problems;
+				// console.log(testArchiveName, problems);
+				Contests.removeThemisTestFolder().then(function successCallback() {
+					Contests.moveTestFolders(originalName).then(function successCallback() {
+						uploadTest(req, res, function(err) {
+							if (err) {
+								res.status(400).send('FAILED');
+								return;
+							}
+							res.send({ status: 'SUCCESS', problems: problems });
+						});
+					}, function errorCallback(err) {
+						console.log(err);
+						res.status(500).send(err.toString());
 					});
 				}, function errorCallback(err) {
 					console.log(err);

@@ -176,31 +176,196 @@ function uncompressFileTest(fileTestName) {
 		// else command = 'unrar x ' + fileTestPath + ' ' + testDir;
 		// console.log(command);
 		// exec(command, function(err, stdout, stderr) {
-		extract(fileTestPath, { dir: path.join(process.cwd(), testDir) }, function(err) {
+		extract(fileTestPath, { dir: path.join(process.cwd(), testDir, "Tasks") }, function(err) {
 			if (err) {
 				console.log(err);
 				reject(Error(err.toString()));
 			}
 			else {
 				console.log('unzip SUCCESS');
-				fse.pathExists(testDir + '/__MACOSX', function(err, exists) {
-					if (exists) {
-						fse.remove(testDir + '/__MACOSX', function(err) {
-							if (err) {
-								console.log(err.toString());
-								reject(Error(err.toString()));
+				fse.remove(fileTestPath, function(err) {
+					if (err) {
+						console.log(err);
+						reject(err);
+					}
+					else {
+						fse.pathExists(testDir + '/__MACOSX', function(err, exists) {
+							if (exists) {
+								fse.remove(testDir + '/__MACOSX', function(err) {
+									if (err) {
+										console.log(err.toString());
+										reject(Error(err.toString()));
+									}
+									else {
+										console.log('remove __MACOSX SUCCESS');
+										resolve();
+									}
+								});
 							}
 							else {
-								console.log('remove __MACOSX SUCCESS');
 								resolve();
 							}
 						});
 					}
+				});
+			}
+		});
+	});
+}
+
+function containFolder(dir) {
+	return new Promise(function(resolve, reject) {
+		fse.readdir(dir, function(err, lists) {
+			if (err) {
+				reject(err);
+			}
+			else if (lists.length == 0) {
+				resolve(false, "");
+			}
+			else {
+				let result = { status: false, dir: "", all: [] };
+				for (let i = 0; i < lists.length; i += 1) {
+					let dir_ = path.join(dir, lists[i]);
+					stats = fse.lstatSync(dir_);
+					if (stats.isDirectory()) {
+						if (!result.status) {
+							result.status = true;
+							result.dir = dir_;
+						}
+						result.all.push(lists[i]);
+					}
+				}
+				if (!result.status) {
+					resolve({ status: false, dir: "" });
+				}
+				else
+					resolve(result);
+			}
+		});
+	});
+}
+
+function containFile(dir) {
+	return new Promise(function(resolve, reject) {
+		fse.readdir(dir, function(err, lists) {
+			if (err) {
+				reject(err);
+			}
+			else if (lists.length == 0) {
+				resolve(false, "");
+			}
+			else {
+				dir = path.join(dir, lists[0]);
+				fse.lstat(dir, function(err, stats) {
+					if (err) {
+						reject(err);
+					}
 					else {
-						resolve();
+						if (stats.isFile()) {
+							resolve({ status: true, dir: dir });
+						}
+						else {
+							resolve({ status: false, dir: "" });
+						}
 					}
 				});
 			}
+		});
+	});
+}
+
+function checkFormatAndFix() {
+	return new Promise(function(resolve, reject) {
+		let dir1 = path.join(testDir, "Tasks");
+		let dir_ = path.join(testDir, "Tasks2");
+		containFolder(dir1).then(function success(result) {
+			// folder01
+			// console.log(result);
+			if (result.status) {
+				let dir2 = result.dir;
+				let problems2 = result.all;
+				containFolder(dir2).then(function success(result) {
+					// folder01/folder02
+					// console.log(result);
+					if (result.status) {
+						let dir3 = result.dir;
+						let problems3 = result.all;
+						containFolder(dir3).then(function success(result) {
+							// console.log(result);
+							if (result.status) {
+								let dir4 = result.dir;
+								containFile(dir4).then(function success(result) {
+									// console.log(result);
+									if (result.status) {
+										fse.move(dir2, dir_, { overwrite: true }, function(err) {
+											if (err) {
+												console.log(err);
+												reject(err);
+											}
+											else {
+												let d = Date.now();
+												let newName = d.toString();
+												fse.copy(dir_, path.join(testDir, newName), function(err) {
+													if (err) {
+														console.log(err);
+														reject(err);
+													}
+													else {
+														fse.remove(dir1, function(err) {
+															if (err) {
+																console.log(err);
+																reject(err);
+															}
+															else {
+																console.log("move", dir_, dir1);
+																fse.move(dir_, dir1, function(err) {
+																	if (err) {
+																		console.log(err);
+																		reject(err);
+																	}
+																	else {
+																		console.log("check format OK");
+																		resolve({ testArchive: newName, problems: problems3 });
+																	}
+																});
+															}
+														});
+													}
+												});
+											}
+										});
+									}
+								}, function error(err) {
+									console.log(err);
+									reject(err);
+								});
+							}
+							else {
+								let d = Date.now();
+								let newName = d.toString();
+								fse.copy(dir1, path.join(testDir, newName), function(err) {
+									if (err) {
+										console.log(err);
+										reject(err);
+									}
+									else {
+										resolve({ testArchive: newName, problems: problems2 });
+									}
+								});
+							}
+						}, function error(err) {
+							console.log(err);
+							reject(err);
+						});
+					}
+				}, function error(err) {
+					console.log(err);
+					reject(err);
+				});
+			}
+		}, function error(err) {
+			console.log(err);
+			reject(err);
 		});
 	});
 }
@@ -211,7 +376,7 @@ function moveTestFolders(fileTestName) {
 		var pos = fileTestName.indexOf('.');
 		if (pos == -1) reject(Error('Invalid file test name'));
 		fileTestName = fileTestName.slice(0, pos);
-		fse.move(testDir + '/' + fileTestName, 'data/contests/Tasks', { overwrite: true }, function(err) {
+		fse.move(path.join(testDir, "Tasks"), 'data/contests/Tasks', { overwrite: true }, function(err) {
 			if (err) {
 				console.log(err.toString());
 				reject(Error(err.toString()));
@@ -722,5 +887,6 @@ module.exports = {
 	deleteContest: 					deleteContest,
 	canAddNewContest: 				canAddNewContest,
 	checkJob: 						checkJob,
-	checkIsConfiguringTest: 		checkIsConfiguringTest
+	checkIsConfiguringTest: 		checkIsConfiguringTest,
+	checkFormatAndFix: 				checkFormatAndFix
 };
