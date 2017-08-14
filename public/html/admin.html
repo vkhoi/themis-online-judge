@@ -74,7 +74,7 @@
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Upload test</label>
 			<div class="col-sm-7">
-				<button id="chooseTestButton" class="btn btn-secondary" ngf-select="ContestCtrl.uploadTest($file)" ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-accept="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
+				<button id="chooseTestButton" class="btn btn-secondary" ngf-select="ContestCtrl.uploadTest($file)" ng-model="ContestCtrl.fileTest" name="file" ngf-pattern="'.zip'" ngf-max-size="100MB">Chọn file (*.zip)</button>
 				<span>{{ ContestCtrl.uploadMessage(ContestCtrl.fileTest.name) }}</span>
 				<progress-circle amount="45"></progress-circle>
 				<p style="margin-top: 1rem;"><strong>Hướng dẫn cách tạo và nén thư mục test</strong></p>

@@ -98,7 +98,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function getContests() {
 		return new Promise(function(resolve, reject) {
-			$http.get('/api/contest/all').then(function successCallback(res) {
+			$http.post('/api/contest/all', { username: Session.username }).then(function successCallback(res) {
 				console.log(res);
 				vm.contests = [];
 				var contests = res.data.contests;
@@ -131,6 +131,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 							fileProblem: null,
 							status: getProblemStatus(contest.startTime, contest.endTime)
 						};
+						console.log(vm.runningContest);
 						vm.runningContest.problemsString = "";
 						if (vm.runningContest.problems && vm.runningContest.problems.length > 0) {
 							vm.runningContest.problemsString = vm.runningContest.problems[0].name;
@@ -297,7 +298,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				}, 5000);
 			}
 		}, function errorCallback(err) {
-			console.log(err);
+			// console.log(err);
 			if (err.status == 403) {
 				vm.showSpinnerTest = false;
 				getContests().then(function successCallback() {

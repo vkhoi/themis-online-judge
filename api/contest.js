@@ -8,6 +8,9 @@ const Contests 			= require('../helpers/contests');
 const dateTimeCvt		= require('../helpers/datetime-converter');
 const testDir 			= 'data/contests/tests';
 const moment 			= require('moment');
+const Users				= require('../helpers/users.js');
+const jwt				= require('jsonwebtoken');
+const config 			= require('../config');
 
 // Specify directory to store problem statements of contests.
 var storage = multer.diskStorage({
@@ -67,6 +70,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 				res.send({ status: 'SUCCESS', id: contestId });
 			});
 		}, function errorCallback(err) {
+			console.log(err);
 			res.send({ status: 'FAILED', message: err.toString() });
 		});
 	}
@@ -107,25 +111,46 @@ router.post('/addTest', [ensureAdmin, uploadTest], function(req, res) {
 						res.send({ status: 'SUCCESS' });
 					});
 				}, function errorCallback(err) {
+					console.log(err);
 					res.status(500).send(err.toString());
 				});
 			}, function errorCallback(err) {
+				console.log(err);
 				res.status(500).send(err.toString());
 			});
 		}, function errorCallback(err) {
+			console.log(err);
 			res.status(500).send(err.toString());
 		});
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
 
 // Name: Get all contests.
 // Type: GET.
-router.get('/all', [], function(req, res) {
-	Contests.getAllContests().then(function successCallback(contests){
-		res.send({ contests: contests });
+router.post('/all', [ensureAuthorized], function(req, res) {
+	let username = req.body.username;
+	if (!username) {
+		res.status(500).send("No username");
+	}
+
+	var token = jwt.sign(username, config.JWT_SECRET);
+	if (token != req.token) {
+		res.sendStatus(500);
+		return;
+	}
+
+	Users.isAdminUser(username).then(function successCallback(isAdmin) {
+		Contests.getAllContests(isAdmin).then(function successCallback(contests){
+			res.send({ contests: contests });
+		}, function errorCallback(err) {
+			console.log(err);
+			res.status(500).send(err.toString());
+		});
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
@@ -151,6 +176,7 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 	Contests.editContest(contest).then(function successCallback(result) {
 		res.send({ status: "SUCCESS "});
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
@@ -165,6 +191,7 @@ router.post('/editProblemFile', [ensureAdmin, upload], function(req, res) {
 	Contests.editContestProblemFile(contest).then(function successCallback(result) {
 		res.send({ status: "SUCCESS", filePath: contest.filePath });
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
@@ -180,6 +207,7 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 				Contests.stopCurrentContest(contest, false, true).then(function successCallback() {
 					res.send({ status: "SUCCESS" });
 				}, function errorCallback(err) {
+					console.log(err);
 					res.status(500).send(err.toString());
 				});
 			}
@@ -187,9 +215,11 @@ router.post('/stopRunningContest', [ensureAdmin], function(req, res) {
 				res.send({ status: "No running contest"});
 			}
 		}, function errorCallback(err) {
+			console.log(err);
 			res.status(500).send(err.toString());
 		});
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
@@ -208,6 +238,7 @@ router.post('/deleteContest', [ensureAdmin], function(req, res) {
 			Contests.deleteContest(contest).then(function successCallback() {
 				res.send({ status: "SUCCESS" });
 			}, function errorCallback(err) {
+				console.log(err);
 				res.status(500).send(err.toString());
 			});
 		}
@@ -215,6 +246,7 @@ router.post('/deleteContest', [ensureAdmin], function(req, res) {
 			res.send({ status: "Contest has already started so it cannot be deleted"});
 		}
 	}, function errorCallback(err) {
+		console.log(err);
 		res.status(500).send(err.toString());
 	});
 });
@@ -224,6 +256,7 @@ router.get('/secret', [], function(req, res) {
 	Contests.checkJob().then(function successCallback() {
 		res.send({ message: "SUCCESS" });
 	}, function errorCallback(err) {
+		console.log(err);
 		res.send({ message: "No current contest" });
 	});
 });

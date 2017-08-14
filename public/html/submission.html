@@ -25,7 +25,7 @@
 				<div class="form-group row">
 					<label for="chooseFileButton" class="col-sm-2 col-form-label">Chọn file mã nguồn</label>
 					<div class="col-sm-4">
-						<button id="chooseFileButton" type="button" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas/*'" ngf-accept="'.cpp,.pas/*'" ngf-max-size="5MB">Choose file</button>
+						<button id="chooseFileButton" type="button" class="btn btn-secondary" ngf-select ng-model="ContestCtrl.fileSubmit" name="file" ngf-pattern="'.cpp,.pas'" ngf-accept="'.cpp,.pas'" ngf-max-size="5MB">Choose file</button>
 						<span>{{ ContestCtrl.fileSubmit.name | fileNameFilter }}</span>
 					</div>
 				</div>

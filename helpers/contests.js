@@ -100,14 +100,7 @@ function addContest(newContest) {
 }
 
 // Function to get all contests from database.
-function getAllContests() {
-	// Constantly watching over start and end job.
-	checkJob().then(function successCallback() {
-
-	}, function errorCallback() {
-		
-	});
-
+function getAllContests(isAdmin) {
 	return new Promise(function(resolve, reject) {
 		Contests.find({}, function(err, data) {
 			if (err) {
@@ -127,7 +120,7 @@ function getAllContests() {
 						duration: contest.duration,
 						problems: contest.problems
 					};
-					if (moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
+					if (isAdmin || moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
 						elem.filePath = contest.filePath;
 					}
 					else {
@@ -559,8 +552,10 @@ function stopCurrentContest(contest, cancelStartJob = true, cancelEndJob = true)
 // Function to delete contest.
 function deleteContest(contest) {
 	return new Promise(function(resolve, reject) {
-		currentContestStartJob.cancel();
-		currentContestEndJob.cancel();
+		if (currentContestStartJob != null)
+			currentContestStartJob.cancel();
+		if (currentContestEndJob != null)
+			currentContestEndJob.cancel();
 		Contests.remove({ _id: contest._id }, {}, function(err, numRemoved) {
 			if (err) {
 				console.log(err);
@@ -605,11 +600,11 @@ function configTest(problems) {
 				}
 				else {
 					isConfiguringTest = true;
-					setTimeout(function() {
-						isConfiguringTest = false;
-						resolve();
-					}, 30000);
-					// resolve();
+					// setTimeout(function() {
+					// 	isConfiguringTest = false;
+					// 	resolve();
+					// }, 30000);
+					resolve();
 				}
 			}
 		});
