@@ -41,7 +41,7 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		let problem = vm.problems[idx];
 		// console.log(username, problem);
 
-		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem }).then(function success(data) {
+		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem, archived: "true", contestId: $state.params.id }).then(function success(data) {
 			data = data.data;
 			vm.userSubmissionLogs = [];
 			data.forEach(function(sub) {
@@ -62,7 +62,7 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		let problem = vm.userSubmissionLogs[idx].problem;
 		let username = vm.userSubmissionLogs[idx].username;
 		let timeStamp = vm.userSubmissionLogs[idx].timeStamp;
-		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp }).then(function success(data) {
+		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp, archived: "true", contestId: $state.params.id }).then(function success(data) {
 			vm.showCode = true;
 			data = data.data;
 			vm.userSubmissionCode = data;

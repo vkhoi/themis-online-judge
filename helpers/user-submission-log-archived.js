@@ -4,7 +4,7 @@ var config		= require('../config');
 var fse 		= require('fs-extra');
 
 function getSubmissionNames(contestId, username, problem) {
-	let	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', contestId + '-' + 'user-sub-log.db'), autoload: true });
+	let	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'contests', 'archive', contestId + '-' + 'user-sub-log.db'), autoload: true });
 	return new Promise(function(resolve, reject) {
 		UserSubLog.find({ username: username }, function(err, data) {
 			if (err) {
@@ -12,8 +12,12 @@ function getSubmissionNames(contestId, username, problem) {
 				reject(err);
 			}
 			else {
-				let submissions = data[0].submissions;
 				let res = [];
+				if (data.length == 0) {
+					resolve(res);
+					return;
+				}
+				let submissions = data[0].submissions;
 				Object.keys(submissions).forEach(function(key) {
 					let problem_ = key.split('[').pop().slice(0, -1);
 					if (problem_ == problem) {
@@ -27,7 +31,7 @@ function getSubmissionNames(contestId, username, problem) {
 }
 
 function getSubmissionCode(contestId, username, problem, timeStamp) {
-	let	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', contestId + '-' + 'user-sub-log.db'), autoload: true });
+	let	UserSubLog	= new DataStore({ filename: path.join(process.cwd(), 'data', 'contests', 'archive', contestId + '-' + 'user-sub-log.db'), autoload: true });
 	return new Promise(function(resolve, reject) {
 		UserSubLog.find({ username: username }, function(err, data) {
 			if (err) {
@@ -35,8 +39,12 @@ function getSubmissionCode(contestId, username, problem, timeStamp) {
 				reject(err);
 			}
 			else {
-				let submissions = data[0].submissions;
 				let res = "";
+				if (data.length == 0) {
+					resolve(res);
+					return;
+				}
+				let submissions = data[0].submissions;
 				Object.keys(submissions).forEach(function(key) {
 					let problem_ = key.split('[').pop().slice(0, -1);
 					if (problem_ == problem) {
