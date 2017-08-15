@@ -8,6 +8,7 @@
 		</a>
 	</div>
 	<h5 ng-show="ContestArchiveScoreboardCtrl.isNotFinal">Đây là kết quả tạm thời. Kết quả chính thức sẽ có trong tối đa 5 phút sau khi kì thi kết thúc.</h5>
+	<a href="/api/downloadScoreboard?id={{ ContestArchiveScoreboardCtrl.id }}" target="_blank"><button ng-show="!ContestArchiveScoreboardCtrl.isNotFinal" type="button" class="btn btn-primary" style="margin-bottom: 1rem;" ng-click="ContestArchiveScoreboardCtrl.downloadScoreboard()">Download bảng điểm</button></a>
 	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>

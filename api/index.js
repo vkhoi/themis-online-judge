@@ -9,6 +9,7 @@ router.use('/submit', require('./submit'));
 router.use('/getSubmissionLogs', require('./get-submission-logs'));
 router.use('/getProblems', require('./get-problems'));
 router.use('/getScoreboard', require('./get-scoreboard'));
+router.use('/downloadScoreboard', require('./download-scoreboard'));
 router.use('/getProblems', require('./get-problems'));
 router.use('/contest', require('./contest'));
 router.use('/uploadImage', require('./upload-image'));

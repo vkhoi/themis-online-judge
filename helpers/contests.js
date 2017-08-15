@@ -868,6 +868,40 @@ function checkIsConfiguringTest() {
 	return isConfiguringTest;
 }
 
+function getCSVScoreboard(contestId) {
+	return new Promise(function(resolve, reject) {
+		getContestProblemNames(contestId).then(function successCallback(problems) {
+			getArchivedScoreboard(contestId).then(function successCallback(data) {
+				let scoreboard = data.scoreboard;
+				let text = "Rank,Username";
+				problems.forEach(function(problemName) {
+					text += "," + problemName;
+				});
+				text += ",Total" + EOL;
+				for (let i = 0; i < scoreboard.length; i += 1) {
+					text += (i+1).toString() + "," + scoreboard[i].username;
+					problems.forEach(function(problemName) {
+						let score = "";
+						if (typeof scoreboard[i][problemName] === "undefined")
+							score = "0";
+						else
+							score = scoreboard[i][problemName];
+						text += "," + score;
+					});
+					text += "," + scoreboard[i].total + EOL;
+				}
+				resolve(text);
+			}, function errorCallback(err) {
+				console.log(err);
+				reject(err);
+			});
+		}, function errorCallback(err) {
+			console.log(err);
+			reject(err);
+		});
+	});
+}
+
 module.exports = {
 	addContest: 					addContest,
 	getAllContests: 				getAllContests,
@@ -891,5 +925,6 @@ module.exports = {
 	canAddNewContest: 				canAddNewContest,
 	checkJob: 						checkJob,
 	checkIsConfiguringTest: 		checkIsConfiguringTest,
-	checkFormatAndFix: 				checkFormatAndFix
+	checkFormatAndFix: 				checkFormatAndFix,
+	getCSVScoreboard: 				getCSVScoreboard
 };

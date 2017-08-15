@@ -9,12 +9,14 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 	vm.userSubmissionCode = "";
 
 	function init() {
+		vm.id = $state.params.id;
 		$http.post('/api/getProblems', { id: $state.params.id }).then(function successCallback(res) {
 			vm.problems = res.data.problems;
 			$http.post('/api/getScoreboard', { id: $state.params.id, archived: "true" } ).then(function successCallback(res) {
 				vm.isNotFinal = res.data.isNotFinal;
 				vm.scoreboard = [];
 				var scoreboard = res.data.scoreboard;
+				// console.log(scoreboard);
 				scoreboard.forEach(function(user) {
 					var elem = {
 						username: user.username,
@@ -81,5 +83,13 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		while (res.length < L)
 			res = "0" + res;
 		return res;
+	}
+
+	vm.downloadScoreboard = function() {
+		// let id = $state.params.id;
+		// $http.post('/api/getScoreboard/download', { id: id }).then(function successCallback(data) {
+		// }, function errorCallback(err) {
+		// 	console.log(err);
+		// });
 	}
 }]);
