@@ -43,7 +43,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
-			// console.log(res);
 			vm.scoreboard = [];
 			vm.contestGoingOn = res.data.contestExists;
 			var scoreboard = res.data.scoreboard;

@@ -123,7 +123,7 @@ function getAllContests(isAdmin) {
 						duration: contest.duration,
 						problems: contest.problems
 					};
-					if (isAdmin || moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment())) {
+					if (isAdmin || moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(elem.endTime, "HH:mm, DD/MM/YYYY"))) {
 						elem.filePath = contest.filePath;
 					}
 					else {
@@ -680,14 +680,32 @@ function editContestProblemFile(contest) {
 
 // Function to reschedule contest's start time.
 function rescheduleContestStart(t, contestId) {
-	currentContestStartJob.cancel();
-	scheduleContestStart(t, contestId);
+	if (currentContestStartJob == null) {
+		checkJob().then(function successCallback(res) {
+			currentContestStartJob.cancel();
+			scheduleContestStart(t, contestId);
+		}, function errorCallback(err) {
+		});
+	}
+	else {
+		currentContestStartJob.cancel();
+		scheduleContestStart(t, contestId);
+	}
 }
 
 // Function to reschedule contest's end time.
 function rescheduleContestEnd(t, contestId) {
-	currentContestEndJob.cancel();
-	scheduleContestEnd(t, contestId);
+	if (currentContestEndJob == null) {
+		checkJob().then(function successCallback(res) {
+			currentContestEndJob.cancel();
+			scheduleContestEnd(t, contestId);
+		}, function errorCallback(err) {
+		});
+	}
+	else {
+		currentContestEndJob.cancel();
+		scheduleContestEnd(t, contestId);
+	}
 }
 
 // Function to cancel the start+end job and stop current contest right away.
@@ -767,7 +785,7 @@ function configTest(problems) {
 					});
 				}
 				else {
-					isConfiguringTest = true;
+					// isConfiguringTest = true;
 					// setTimeout(function() {
 					// 	isConfiguringTest = false;
 					// 	resolve();

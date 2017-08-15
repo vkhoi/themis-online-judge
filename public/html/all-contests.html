@@ -43,7 +43,7 @@
 				</td>
 				<td style="width: 20%;">{{ contest.topic }}</td>
 				<td style="width: 15%;">
-					<a ui-sref="home.contest.archiveScoreboard({ id: contest.id })" ng-show="contest.filePath != -1 && contest.status.isEnded">Bảng xếp hạng</a>
+					<a ui-sref="home.contest.archiveScoreboard({ id: contest.id })" ng-show="contest.status.isEnded">Bảng xếp hạng</a>
 					<a ui-sref="home.contest.scoreboard" ng-show="contest.status.isStarted && !contest.status.isEnded">Bảng xếp hạng</a>
 				</td>
 			</tr>

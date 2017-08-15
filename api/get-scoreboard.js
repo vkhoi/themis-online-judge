@@ -8,6 +8,10 @@ var Contests 			= require('../helpers/contests');
 // Data: id (optional).
 router.post('/', [ensureAuthorized], function(req, res) {
 	let id = req.body.id;
+	if (typeof id === "undefined") {
+		res.sendStatus(500);
+		return;
+	}
 	let archived = req.body.archived;
 	if (archived == "true") {
 		Contests.getArchivedScoreboard(id).then(function successCallback(data) {
