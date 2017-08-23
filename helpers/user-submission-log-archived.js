@@ -18,12 +18,17 @@ function getSubmissionNames(contestId, username, problem) {
 					return;
 				}
 				let submissions = data[0].submissions;
+				console.log(problem);
 				Object.keys(submissions).forEach(function(key) {
 					let problem_ = key.split('[').pop().slice(0, -1);
+					console.log(problem_);
 					if (problem_ == problem) {
 						res.push(key.split('-')[0]);
 					}
 				});
+				// setTimeout(function() {
+				// 	resolve(res);
+				// }, 3000);
 				resolve(res);
 			}
 		});
@@ -55,6 +60,9 @@ function getSubmissionCode(contestId, username, problem, timeStamp) {
 						}
 					}
 				});
+				// setTimeout(function() {
+				// 	resolve(res);
+				// }, 3000);
 				resolve(res);
 			}
 		});

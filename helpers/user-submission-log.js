@@ -278,6 +278,9 @@ function getSubmissionNames(username, problem) {
 						res.push(key.split('-')[0]);
 					}
 				});
+				// setTimeout(function() {
+				// 	resolve(res);
+				// }, 3000);
 				resolve(res);
 			}
 		});
@@ -304,6 +307,9 @@ function getSubmissionCode(username, problem, timeStamp) {
 						}
 					}
 				});
+				// setTimeout(function() {
+				// 	resolve(res);
+				// }, 3000);
 				resolve(res);
 			}
 		});

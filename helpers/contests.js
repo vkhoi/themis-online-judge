@@ -428,6 +428,49 @@ function scheduleContestStart(t, contestId) {
 	});
 }
 
+function isStillGrading() {
+	let lists = fse.readdirSync("uploads/");
+	let cnt = 0;
+	for (let i = 0; i < lists.length; i += 1) {
+		if (lists[i][0] != '.' && lists[i] != "Logs") {
+			cnt += 1;
+			break;
+		}
+	}
+	if (cnt > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function stopGrading(contest, contestId, extraJudgingTime) {
+	setTimeout(function() {
+		let problemNames = [];
+		contest.problems.forEach(function(problem) {
+			problemNames.push(problem.name);
+		});
+		scoreboard.getScoreboard(problemNames).then(function successCallback(sb) {
+			fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
+				if (err)
+					console.log(err);
+			});
+			scoreboard.stopContest();
+			UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
+				UserSubLog.clearAllSubmissions().then(function successCallback() {
+				}, function errorCallback(err) {
+					console.log(err);
+				});
+			}, function errorCallback(err) {
+				console.log(err);
+			});
+		}, function errorCallback(err) {
+			console.log(err);
+		});
+	}, extraJudgingTime);
+}
+
 // Function to end current contest.
 function endCurrentContest(extraJudgingTime = 300000) {
 	getCurrentContestId().then(function successCallback(contestId) {
@@ -439,29 +482,18 @@ function endCurrentContest(extraJudgingTime = 300000) {
 			// Only stop contest 5 minutes after actual endTime. This is because
 			// there might be some submissions that were submitted near the end
 			// of the contest and have not been graded.
-			setTimeout(function() {
-				let problemNames = [];
-				contest.problems.forEach(function(problem) {
-					problemNames.push(problem.name);
-				});
-				scoreboard.getScoreboard(problemNames).then(function successCallback(sb) {
-					fse.outputJson('data/contests/archive/' + contestId + '-scoreboard.json', sb, function(err) {
-						if (err)
-							console.log(err);
-					});
-					scoreboard.stopContest();
-					UserSubLog.copyUserSubLog(contestId).then(function successCallback() {
-						UserSubLog.clearAllSubmissions().then(function successCallback() {
-						}, function errorCallback(err) {
-							console.log(err);
-						});
-					}, function errorCallback(err) {
-						console.log(err);
-					});
-				}, function errorCallback(err) {
-					console.log(err);
-				});
-			}, extraJudgingTime);
+			let intervalId = setInterval(function() {
+				console.log("checking is still grading");
+				if (!isStillGrading()) {
+					console.log("stop grading");
+					stopGrading(contest, contestId, extraJudgingTime);
+					clearInterval(intervalId);
+				}
+				else {
+					console.log("is still grading");
+				}
+			}, 10000);
+			
 		}, function errorCallback(err) {
 			if (err)
 				console.log(err.toString());
@@ -815,7 +847,12 @@ function canAddNewContest() {
 					}
 				}
 				if (ok) {
-					resolve();
+					if (isStillGrading()) {
+						reject(Error("Máy chấm vẫn đang chấm bài"));
+					}
+					else {
+						resolve();
+					}
 				}
 				else {
 					reject(Error("Thời gian bắt đầu phải cách thời gian kết thúc của kì thi trước ít nhất là 5 phút"));

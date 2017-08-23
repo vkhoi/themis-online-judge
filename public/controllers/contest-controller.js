@@ -38,7 +38,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 	// For admin.
 	vm.showCode = false;
+	vm.userSubmissionLogsLoaded = false;
 	vm.userSubmissionLogs = [];
+	vm.userSubmissionCodeLoaded = false;
+	vm.codeRequested = false;
 	vm.userSubmissionCode = "";
 
 	function getScoreboard(refresh = true) {
@@ -615,7 +618,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			vm.fileTest = null;
 			vm.uploadTestPercent = 0;
 			if (err.data != "FILE NULL") {
-				swal("Thất bại!", "Có lỗi xảy ra. Có thể format của file test không đúng với yêu cầu.", "warning");
+				swal("Thất bại!", "Có lỗi xảy ra. 1. Có thể có bài vẫn còn đang chấm. 2. Có thể format của file test không đúng với yêu cầu.", "warning");
 			}
 		}, function update(evt) {
 			vm.uploadTestPercent = Math.min(99, parseInt(100.0 * evt.loaded / evt.total));
@@ -679,9 +682,10 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		let problem = vm.runningContest.problems[idx].name;
 		// console.log(username, problem);
 
+		vm.userSubmissionLogs = [];
+		vm.userSubmissionLogsLoaded = false;
 		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem }).then(function success(data) {
 			data = data.data;
-			vm.userSubmissionLogs = [];
 			data.forEach(function(sub) {
 				let x = timeToDate(parseInt(sub));
 				vm.userSubmissionLogs.push({
@@ -691,6 +695,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 					problem: problem
 				});
 			});
+			vm.userSubmissionLogsLoaded = true;
 		}, function error(err) {
 			console.log(err);
 		});
@@ -700,7 +705,11 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		let problem = vm.userSubmissionLogs[idx].problem;
 		let username = vm.userSubmissionLogs[idx].username;
 		let timeStamp = vm.userSubmissionLogs[idx].timeStamp;
+
+		vm.codeRequested = true;
+		vm.userSubmissionCode = "";
 		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp }).then(function success(data) {
+			vm.codeRequested = false;
 			vm.showCode = true;
 			data = data.data;
 			vm.userSubmissionCode = data;

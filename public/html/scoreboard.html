@@ -42,12 +42,14 @@
 						<button type="button" class="close close-dialog" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					</div>
 					<div class="modal-body">
-						<div ng-hide="ContestCtrl.showCode">
-							<p ng-show="ContestCtrl.userSubmissionLogs.length == 0">Chưa nộp lần nào</p>
+						<div ng-hide="ContestCtrl.codeRequested || ContestCtrl.showCode">
+							<p ng-show="!ContestCtrl.userSubmissionLogsLoaded">Đang load...</p>
+							<p ng-show="ContestCtrl.userSubmissionLogsLoaded && ContestCtrl.userSubmissionLogs.length == 0">Chưa nộp lần nào</p>
 							<ul>
 								<li ng-repeat="sub in ContestCtrl.userSubmissionLogs"><a href="#" ng-click="ContestCtrl.onUserSubmissionCode($index)">{{sub.time}}</a></li>
 							</ul>
 						</div>
+						<p ng-show="ContestCtrl.codeRequested">Đang load...</p>
 						<div ng-show="ContestCtrl.showCode">
 							<pre>{{ContestCtrl.userSubmissionCode}}</pre>
 						</div>

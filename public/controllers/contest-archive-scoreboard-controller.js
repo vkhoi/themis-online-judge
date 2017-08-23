@@ -5,8 +5,11 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 
 	// For admin.
 	vm.showCode = false;
+	vm.codeRequested = false;
 	vm.userSubmissionLogs = [];
+	vm.userSubmissionLogsLoaded = false;
 	vm.userSubmissionCode = "";
+	vm.userSubmissionCodeLoaded = false;
 
 	function init() {
 		vm.id = $state.params.id;
@@ -43,9 +46,10 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		let problem = vm.problems[idx];
 		// console.log(username, problem);
 
+		vm.userSubmissionLogs = [];
+		vm.userSubmissionLogsLoaded = false;
 		$http.post('/api/getSubmissionLogs/names', { username: username, problem: problem, archived: "true", contestId: $state.params.id }).then(function success(data) {
 			data = data.data;
-			vm.userSubmissionLogs = [];
 			data.forEach(function(sub) {
 				let x = timeToDate(parseInt(sub));
 				vm.userSubmissionLogs.push({
@@ -55,6 +59,7 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 					problem: problem
 				});
 			});
+			vm.userSubmissionLogsLoaded = true;
 		}, function error(err) {
 			console.log(err);
 		});
@@ -64,7 +69,11 @@ themisApp.controller('ContestArchiveScoreboardController', ['$state', '$scope', 
 		let problem = vm.userSubmissionLogs[idx].problem;
 		let username = vm.userSubmissionLogs[idx].username;
 		let timeStamp = vm.userSubmissionLogs[idx].timeStamp;
+
+		vm.codeRequested = true;
+		vm.userSubmissionCode = "";
 		$http.post('/api/getSubmissionLogs/code', { username: username, problem: problem, timeStamp: timeStamp, archived: "true", contestId: $state.params.id }).then(function success(data) {
+			vm.codeRequested = false;
 			vm.showCode = true;
 			data = data.data;
 			vm.userSubmissionCode = data;
