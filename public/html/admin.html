@@ -84,11 +84,80 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="row">
+			<label class="col-sm-2 col-form-label">Đối tượng tham gia</label>
+			<div class="col-sm-10">
+				<div style="margin-bottom: 1rem;">
+					<button type="button" class="btn btn-secondary" ng-class="{ 'contestant-selection': ContestCtrl.individualSelection }" ng-click="ContestCtrl.selectIndividual(true)">Chọn cá nhân</button>
+					<button type="button" class="btn btn-secondary" ng-class="{ 'contestant-selection': !ContestCtrl.individualSelection }" ng-click="ContestCtrl.selectIndividual(false)">Chọn nhóm</button>
+				</div>
+
+				<p style="text-decoration: underline; cursor: pointer;" ng-click="ContestCtrl.showHideAllowToggle()" ng-show="!ContestCtrl.showHideAllow">
+					Hiển thị danh sách
+				</p>
+				<p style="text-decoration: underline; cursor: pointer;" ng-click="ContestCtrl.showHideAllowToggle()" ng-show="ContestCtrl.showHideAllow">
+					Ẩn danh sách
+				</p>
+
+				<table class="table table-bordered table-hover" style="margin-top: 1rem;" ng-show="ContestCtrl.individualSelection && ContestCtrl.showHideAllow">
+		            <thead class="table-inverse">
+		                <tr>
+		                    <th style="width: 5%;">#</th>
+		                    <th style="width: 20%">Tên tài khoản</th>
+		                    <th style="width: 25%">Họ và tên</th>
+		                    <th style="width: 20%">Ghi chú</th>
+		                    <th style="width: 15%" class="text-center">
+		                    	Chọn
+		                    	<input type="checkbox" ng-checked="ContestCtrl.chooseAllUsers" ng-click="ContestCtrl.toggleChooseAllUsers()">
+		                    </th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr ng-repeat="user in ContestCtrl.users" ng-class="{ 'user-allow': user.isAllowed }">
+		                    <td style="width: 5%;">{{ $index + 1 }}</td>
+		                    <td style="width: 20%;">{{ user.username }}</td>
+		                    <td style="width: 25%;">{{ user.name }}</td>
+		                    <td style="width: 20%;">{{ user.info }}</td>
+		                    <td style="width: 15%;" class="text-center">
+		                        <input class="form-check-input" type="checkbox" ng-model="user.isAllowed" ng-click="ContestCtrl.toggleAllowUser(user)" style="margin-left: 0;">
+		                    </td>
+		                </tr>
+		            </tbody>
+		        </table>
+
+		        <table class="table table-bordered table-hover" style="margin-top: 1rem;" ng-show="!ContestCtrl.individualSelection && ContestCtrl.showHideAllow">
+		            <thead class="table-inverse">
+		                <tr>
+		                    <th style="width: 5%;">#</th>
+		                    <th style="width: 35%">Tên nhóm</th>
+		                    <th style="width: 40%">Ghi chú</th>
+		                    <th style="width: 15%" class="text-center">
+		                    	Chọn
+		                    	<input type="checkbox" ng-checked="ContestCtrl.chooseAllGroups" ng-click="ContestCtrl.toggleChooseAllGroups()">
+		                    </th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr ng-repeat="group in ContestCtrl.groups" ng-class="{ 'user-allow': group.isAllowed }">
+		                    <td style="width: 5%;">{{ $index + 1 }}</td>
+		                    <td style="width: 35%;">{{ group.name }}</td>
+		                    <td style="width: 40%;">{{ group.info }}</td>
+		                    <td style="width: 10%;" class="text-center">
+		                        <input class="form-check-input" type="checkbox" ng-model="group.isAllowed" ng-click="ContestCtrl.toggleAllowGroup(group)" style="margin-left: 0;">
+		                    </td>
+		                </tr>
+		            </tbody>
+		        </table>
+			</div>
+		</div>
+
 		<div class="form-group row">
 			<div class="col-sm-2 offset-sm-2">
 				<button id="creatContestButton" class="btn btn-primary" type="submit" ng-disabled="vm.uploading" ng-click="ContestCtrl.createContest()">Tạo kỳ thi</button>
 			</div>
 		</div>
+
 	</form>
 	<form id="admin-edit-contest" ng-show="ContestCtrl.runningContest.exists">
 		<h3 style="margin-bottom: 1rem;">Thông tin kì thi sắp diễn ra</h3>
@@ -162,6 +231,74 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="row">
+			<label class="col-sm-2 col-form-label">Đối tượng tham gia</label>
+			<div class="col-sm-10">
+				<div style="margin-bottom: 1rem;">
+					<button type="button" class="btn btn-secondary" ng-class="{ 'contestant-selection': ContestCtrl.individualSelection }" ng-click="ContestCtrl.selectIndividual(true)">Chọn cá nhân</button>
+					<button type="button" class="btn btn-secondary" ng-class="{ 'contestant-selection': !ContestCtrl.individualSelection }" ng-click="ContestCtrl.selectIndividual(false)">Chọn nhóm</button>
+				</div>
+
+				<p style="text-decoration: underline; cursor: pointer;" ng-click="ContestCtrl.showHideAllowToggle()" ng-show="!ContestCtrl.showHideAllow">
+					Hiển thị danh sách
+				</p>
+				<p style="text-decoration: underline; cursor: pointer;" ng-click="ContestCtrl.showHideAllowToggle()" ng-show="ContestCtrl.showHideAllow">
+					Ẩn danh sách
+				</p>
+
+				<table class="table table-bordered table-hover" style="margin-top: 1rem;" ng-show="ContestCtrl.individualSelection && ContestCtrl.showHideAllow">
+		            <thead class="table-inverse">
+		                <tr>
+		                    <th style="width: 5%;">#</th>
+		                    <th style="width: 20%">Tên tài khoản</th>
+		                    <th style="width: 25%">Họ và tên</th>
+		                    <th style="width: 20%">Ghi chú</th>
+		                    <th style="width: 15%" class="text-center">
+		                    	Chọn
+		                    	<input type="checkbox" ng-checked="ContestCtrl.chooseAllUsers" ng-click="ContestCtrl.toggleChooseAllUsers()">
+		                    </th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr ng-repeat="user in ContestCtrl.users" ng-class="{ 'user-allow': user.isAllowed }">
+		                    <td style="width: 5%;">{{ $index + 1 }}</td>
+		                    <td style="width: 20%;">{{ user.username }}</td>
+		                    <td style="width: 25%;">{{ user.name }}</td>
+		                    <td style="width: 20%;">{{ user.info }}</td>
+		                    <td style="width: 15%;" class="text-center">
+		                        <input class="form-check-input" type="checkbox" ng-model="user.isAllowed" ng-click="ContestCtrl.toggleAllowUser(user)" style="margin-left: 0;">
+		                    </td>
+		                </tr>
+		            </tbody>
+		        </table>
+
+		        <table class="table table-bordered table-hover" style="margin-top: 1rem;" ng-show="!ContestCtrl.individualSelection && ContestCtrl.showHideAllow">
+		            <thead class="table-inverse">
+		                <tr>
+		                    <th style="width: 5%;">#</th>
+		                    <th style="width: 35%">Tên nhóm</th>
+		                    <th style="width: 40%">Ghi chú</th>
+		                    <th style="width: 15%" class="text-center">
+		                    	Chọn
+		                    	<input type="checkbox" ng-checked="ContestCtrl.chooseAllGroups" ng-click="ContestCtrl.toggleChooseAllGroups()">
+		                    </th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr ng-repeat="group in ContestCtrl.groups" ng-class="{ 'user-allow': group.isAllowed }">
+		                    <td style="width: 5%;">{{ $index + 1 }}</td>
+		                    <td style="width: 35%;">{{ group.name }}</td>
+		                    <td style="width: 40%;">{{ group.info }}</td>
+		                    <td style="width: 10%;" class="text-center">
+		                        <input class="form-check-input" type="checkbox" ng-model="group.isAllowed" ng-click="ContestCtrl.toggleAllowGroup(group)" style="margin-left: 0;">
+		                    </td>
+		                </tr>
+		            </tbody>
+		        </table>
+			</div>
+		</div>
+
 		<div class="form-group row">
 			<div class="col-sm-4 offset-sm-2">
 				<button class="btn btn-primary" type="submit" ng-click="ContestCtrl.editContest()">Chỉnh sửa</button>

@@ -43,9 +43,11 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
 		filePath: path.join('data/contests', req.file.filename),
-		problems: req.body.problems
+		problems: req.body.problems,
+		usersAllowed: req.body.usersAllowed,
+		groupsAllowed: req.body.groupsAllowed
 	};
-	console.log(newContest)
+
 	for (let i = 0; i < newContest.problems.length; i += 1) {
 		if ("$hashKey" in newContest.problems[i]) {
 			delete newContest.problems[i].$hashKey;
@@ -182,7 +184,9 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
-		problems: req.body.problems
+		problems: req.body.problems,
+		usersAllowed: req.body.usersAllowed,
+		groupsAllowed: req.body.groupsAllowed
 	};
 	contest.problems.forEach(function(problem) {
 		problem.testScore = parseInt(problem.testScore);

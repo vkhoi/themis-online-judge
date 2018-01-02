@@ -22,7 +22,8 @@ function getAllGroups() {
                     res.push({
                         _id: groups[i]._id,
                         name: groups[i].name,
-                        info: groups[i].info
+                        info: groups[i].info,
+                        members: groups[i].members
                     });
                 }
                 resolve(res);

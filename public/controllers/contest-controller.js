@@ -44,6 +44,15 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.codeRequested = false;
 	vm.userSubmissionCode = "";
 
+	vm.individualSelection = true;
+	vm.users = [];
+	vm.groups = [];
+	var usersAllowed = [];
+	var groupsAllowed = [];
+	vm.showHideAllow = true;
+	vm.chooseAllUsers = false;
+	vm.chooseAllGroups = false;
+
 	function getScoreboard(refresh = true) {
 		$http.post('/api/getScoreboard', { id: vm.runningContest.id, archived: "false" }).then(function successCallback(res) {
 			vm.scoreboard = [];
@@ -138,6 +147,18 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 							fileProblem: null,
 							status: getProblemStatus(contest.startTime, contest.endTime)
 						};
+						usersAllowed = contest.usersAllowed;
+						groupsAllowed = contest.groupsAllowed;
+
+						if (!groupsAllowed || groupsAllowed.length == 0) {
+							vm.individualSelection = true;
+							groupsAllowed = [];
+						}
+						else {
+							vm.individualSelection = false;
+							usersAllowed = [];
+						}
+
 						// console.log(vm.runningContest);
 						vm.runningContest.problemsString = "";
 						if (vm.runningContest.problems && vm.runningContest.problems.length > 0) {
@@ -290,9 +311,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			if (res.status == 403 || res.data.status == "FALSE") {
 				vm.showSpinnerTest = false;
 				getContests().then(function successCallback() {
-					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
+					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded) {
 						getScoreboard();
+					}
+					getUsersAndGroups();
 				}, function errorCallback(err) {
+					getUsersAndGroups();
 					console.log(err);
 				});
 				getSubmissionLogs();
@@ -309,14 +333,49 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			if (err.status == 403) {
 				vm.showSpinnerTest = false;
 				getContests().then(function successCallback() {
-					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded)
+					if (vm.runningContest.exists && vm.runningContest.status.isStarted && !vm.runningContest.status.isEnded) {
 						getScoreboard();
+					}
+					getUsersAndGroups();
 				}, function errorCallback(err) {
+					getUsersAndGroups();
 					console.log(err);
 				});
 				getSubmissionLogs();
 			}
 		});
+	}
+
+	function getUsersAndGroups() {
+		$http.get('/api/users/getAllUsers').then(function successCallback(res) {
+            vm.users = res.data;
+            for (let i = 0; i < vm.users.length; i += 1) {
+            	if (usersAllowed.indexOf(vm.users[i].username) > -1)
+            		vm.users[i].isAllowed = true;
+            	else
+            		vm.users[i].isAllowed = false;
+            }
+        }, function errorCallback(err) {
+            if (err.status == 403) {
+                AuthService.resetAuthentication();
+                $state.go('login');
+            }
+        });
+
+        $http.get('/api/groups/getAllGroups').then(function successCallback(res) {
+            vm.groups = res.data;
+            for (let i = 0; i < vm.groups.length; i += 1) {
+            	if (groupsAllowed.indexOf(vm.groups[i].name) > -1)
+            		vm.groups[i].isAllowed = true;
+            	else
+            		vm.groups[i].isAllowed = false;
+            }
+        }, function errorCallback(err) {
+            if (err.status == 403) {
+                AuthService.resetAuthentication();
+                $state.go('login');
+            }
+        });
 	}
 
 	function init() {
@@ -404,7 +463,14 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			else
 				problem.judgedByCode = false;
 		});
-		
+
+		if (vm.individualSelection) {
+			groupsAllowed = [];
+		}
+		else {
+			usersAllowed = [];
+		}
+
 		Upload.upload({
 			url: '/api/contest/create',
 			data: {
@@ -414,7 +480,9 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				problems: vm.problems,
 				startTime: vm.startTime,
 				endTime: vm.endTime,
-				file: vm.fileProblem
+				file: vm.fileProblem,
+				usersAllowed: usersAllowed,
+				groupsAllowed: groupsAllowed
 			}
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
@@ -504,6 +572,13 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			problem.memoryLimit = parseInt(problem.memoryLimit);
 		});
 
+		if (vm.individualSelection) {
+			groupsAllowed = [];
+		}
+		else {
+			usersAllowed = [];
+		}
+
 		$http.post('/api/contest/edit', {
 			id: vm.runningContest.id,
 			name: vm.runningContest.name,
@@ -511,6 +586,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			problems: vm.runningContest.problems,
 			startTime: vm.runningContest.start,
 			endTime: vm.runningContest.end,
+			usersAllowed: usersAllowed,
+			groupsAllowed: groupsAllowed
 		}).then(function successCallback(res) {
 			if (vm.runningContest.fileProblem) {
 				Upload.upload({
@@ -716,6 +793,76 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 		}, function error(err) {
 			console.log(err);
 		});
+	}
+
+	vm.selectIndividual = function(isIndividual) {
+		vm.individualSelection = isIndividual;
+	}
+
+	vm.toggleAllowUser = function(user) {
+		let pos = usersAllowed.indexOf(user.username);
+        if (pos > -1) {
+        	user.isAllowed = false;
+            usersAllowed.splice(pos, 1);
+        }
+        else {
+        	user.isAllowed = true;
+            usersAllowed.push(user.username);
+        }
+        console.log(usersAllowed);
+	}
+	vm.toggleAllowGroup = function(group) {
+		let pos = groupsAllowed.indexOf(group.name);
+        if (pos > -1) {
+        	group.isAllowed = false;
+            groupsAllowed.splice(pos, 1);
+        }
+        else {
+        	group.isAllowed = true;
+            groupsAllowed.push(group.name);
+        }
+        console.log(groupsAllowed);
+	}
+	vm.showHideAllowToggle = function() {
+		if (vm.showHideAllow) {
+			vm.showHideAllow = false;
+		} else {
+			vm.showHideAllow = true;
+		}
+	}
+	vm.toggleChooseAllUsers = function() {
+		vm.chooseAllUsers = !vm.chooseAllUsers;
+		usersAllowed = [];
+
+		if (vm.chooseAllUsers) {
+			for (let i = 0; i < vm.users.length; i += 1) {
+				vm.users[i].isAllowed = true;
+				usersAllowed.push(vm.users[i].username);
+			}
+		}
+		else {
+			for (let i = 0; i < vm.users.length; i += 1) {
+				vm.users[i].isAllowed = false;
+			}
+		}
+        console.log(usersAllowed);
+	}
+	vm.toggleChooseAllGroups = function() {
+		vm.chooseAllGroups = !vm.chooseAllGroups;
+		groupsAllowed = [];
+
+		if (vm.chooseAllGroups) {
+			for (let i = 0; i < vm.groups.length; i += 1) {
+				vm.groups[i].isAllowed = true;
+				groupsAllowed.push(vm.groups[i].name);
+			}
+		}
+		else {
+			for (let i = 0; i < vm.groups.length; i += 1) {
+				vm.groups[i].isAllowed = false;
+			}
+		}
+        console.log(groupsAllowed);
 	}
 }]);
 

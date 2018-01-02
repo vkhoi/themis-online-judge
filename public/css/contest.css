@@ -46,3 +46,9 @@
 #adminTab .problem-name:not(:first-child) {
 	margin-left: 0.3rem;
 }
+#adminTab .user-allow {
+    background-color: #f1f8e9;
+}
+button.contestant-selection {
+	background-color: #ccc;
+}
