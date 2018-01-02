@@ -15,5 +15,6 @@ router.use('/contest', require('./contest'));
 router.use('/uploadImage', require('./upload-image'));
 router.use('/posts', require('./posts'));
 router.use('/users', require('./users'));
+router.use('/groups', require('./groups'));
 
 module.exports = router;

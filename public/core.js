@@ -139,6 +139,36 @@ themisApp.config(function($stateProvider, $locationProvider, $urlRouterProvider,
 				controllerAs: 'AccountCtrl',
 				templateUrl: 'html/account.html'
 			})
+			.state('home.groups', {
+				url: 'groups',
+				controller: 'GroupsController',
+				controllerAs: 'GroupsCtrl',
+				templateUrl: 'html/groups.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
+			})
+			.state('home.groupCreate', {
+				url: 'groups/create',
+				controller: 'GroupAddEditController',
+				controllerAs: 'GroupAddEditCtrl',
+				templateUrl: 'html/group-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
+			})
+			.state('home.groupEdit', {
+				url: 'groups/edit/:id',
+				controller: 'GroupAddEditController',
+				controllerAs: 'GroupAddEditCtrl',
+				templateUrl: 'html/group-add-edit.html',
+				data: {
+					authorizedRoles: [USER_ROLES.admin],
+					redirectTo: 'home.contest.scoreboard'
+				}
+			})
 
 	$locationProvider.html5Mode(true);
 

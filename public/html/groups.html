@@ -1,0 +1,40 @@
+<div id="site-groups" class="container">
+    <div class="row">
+        <h3 style="padding: 0.25rem;">Quản lý nhóm</h3>
+        <a style="margin-left: 0.5rem;" ui-sref="home.groupCreate">
+            <button type="button" class="btn btn-primary">
+                <i class="fa fa-plus"></i>
+                Thêm nhóm
+            </button>
+        </a>
+    </div>
+    <div class="row" style="margin-top: 1rem;">
+        <table class="table table-bordered table-hover ">
+            <thead class="table-inverse">
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 35%">Tên nhóm</th>
+                    <th style="width: 40%">Ghi chú</th>
+                    <th style="width: 10%" class="text-center">Chỉnh sửa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="group in GroupsCtrl.groups">
+                    <td style="width: 5%;">{{ $index + 1 }}</td>
+                    <td style="width: 35%;">{{ group.name }}</td>
+                    <td style="width: 40%;">{{ group.info }}</td>
+                    <td style="width: 10%;" class="text-center">
+                        <a ui-sref="home.groupEdit({ id: group._id })">
+                            <button type="button" class="btn btn-info">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </a>
+                        <button type="button" class="btn btn-danger" ng-click="GroupsCtrl.removeGroup($index)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

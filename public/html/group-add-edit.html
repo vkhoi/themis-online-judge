@@ -1,0 +1,62 @@
+<spinner ng-show="GroupAddEditCtrl.showSpinner"></spinner>
+<div id="group-add-edit" class="container" style="margin-bottom: 4rem;">
+    <div class="row" style="margin-bottom: 1rem;">
+        <a ui-sref="home.groups">
+            <button type="button" class="btn btn-secondary">
+                <i class="fa fa-long-arrow-left"></i>
+                Trở lại
+            </button>
+        </a>
+    </div>
+    <div class="row" style="margin-bottom: 1rem;">
+        <h3>{{ GroupAddEditCtrl.pageName }}</h3>
+    </div>
+    <div class="form-group row">
+        <label for="group-name" class="col-2 col-form-label">Tên nhóm</label>
+        <div class="col-10">
+            <input class="form-control" type="text" id="group-name" ng-model="GroupAddEditCtrl.name" ng-disabled="{{ GroupAddEditCtrl.isNameDisabled }}">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="member-name" class="col-2 col-form-label">Ghi chú</label>
+        <div class="col-10">
+            <input class="form-control" type="text" id="group-info" ng-model="GroupAddEditCtrl.info">
+        </div>
+    </div>
+    <div class="row" style="margin-top: 2rem;">
+        <h5 style="padding: 0.25rem;">Thành viên</h5>
+        <!-- <a style="margin-left: 0.5rem;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#remainingUsers">
+                <i class="fa fa-plus"></i>
+                Thêm thành viên
+            </button>
+        </a> -->
+        <table class="table table-bordered table-hover" style="margin-top: 1rem;">
+            <thead class="table-inverse">
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 20%">Tên tài khoản</th>
+                    <th style="width: 25%">Họ và tên</th>
+                    <th style="width: 20%">Ghi chú</th>
+                    <th style="width: 15%" class="text-center">Chọn</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in GroupAddEditCtrl.users" ng-class="{ 'member': GroupAddEditCtrl.isUserInGroup(user.username) }">
+                    <td style="width: 5%;">{{ $index + 1 }}</td>
+                    <td style="width: 20%;">{{ user.username }}</td>
+                    <td style="width: 25%;">{{ user.name }}</td>
+                    <td style="width: 20%;">{{ user.info }}</td>
+                    <td style="width: 15%;" class="text-center">
+                        <input class="form-check-input" type="checkbox" ng-checked="GroupAddEditCtrl.isUserInGroup(user.username)" ng-click="GroupAddEditCtrl.toggleMember(user.username)" style="margin-left: 0;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <button type="button" class="btn btn-primary" ng-click="GroupAddEditCtrl.addEditGroup()">{{ GroupAddEditCtrl.addEditBtnName }}</button>
+    </div>
+
+</div>

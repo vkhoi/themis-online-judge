@@ -892,8 +892,8 @@ function regenerateContestEndJob(contest) {
 }
 
 function checkJob() {
-	console.log(currentContestStartJob == null);
-	console.log(currentContestEndJob == null);
+	// console.log(currentContestStartJob == null);
+	// console.log(currentContestEndJob == null);
 
 	return new Promise(function(resolve, reject) {
 		getCurrentContestId().then(function successCallback(id) {
