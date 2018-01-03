@@ -123,10 +123,37 @@ function removeGroup(group) {
     });
 }
 
+function checkUserAllowed(username, groupsId) {
+    var cnt = groupsId.length;
+
+    return new Promise(function(resolve, reject) {
+        for (let i = 0; i < groupsId.length; i += 1) {
+            Groups.findOne({ _id: groupsId[i] }, function(err, group) {
+                if (err || !group) {
+                    resolve(false);
+                }
+                else {
+                    let members = group.members;
+                    if (members.indexOf(username) > -1) {
+                        resolve(true);
+                    }
+                    else {
+                        cnt -= 1;
+                        if (cnt <= 0) {
+                            resolve(false);
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
+
 module.exports = {
-    getAllGroups:   getAllGroups,
-    getGroupWithId: getGroupWithId,
-    createGroup:    createGroup,
-    editGroup:      editGroup,
-    removeGroup:    removeGroup
+    getAllGroups:       getAllGroups,
+    getGroupWithId:     getGroupWithId,
+    createGroup:        createGroup,
+    editGroup:          editGroup,
+    removeGroup:        removeGroup,
+    checkUserAllowed:   checkUserAllowed
 };

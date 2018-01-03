@@ -4,6 +4,7 @@ var fs 					= require('fs');
 var path				= require('path');
 var multer				= require('multer');
 var ensureAuthorized 	= require('../helpers/ensure-authorized');
+var ensureAllowed       = require('../helpers/ensure-contest-allowed');
 var UserSubLog			= require('../helpers/user-submission-log');
 var jury				= require('../helpers/jury');
 var scoreboard 			= require('../helpers/scoreboard');
@@ -56,7 +57,7 @@ function retrieveScore(username, submissionName) {
 
 // Name: Upload code.
 // Type: POST.
-router.post('/', [ensureAuthorized, upload], function(req, res) {
+router.post('/', [ensureAuthorized, ensureAllowed, upload], function(req, res) {
 	// Get submission file's content and store it in database.
 	// Themis is programmed to delete source code after grading so this is one way
 	// to store the source code of contestants.

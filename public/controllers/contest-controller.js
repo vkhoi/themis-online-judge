@@ -49,6 +49,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.groups = [];
 	var usersAllowed = [];
 	var groupsAllowed = [];
+	var groupsIdAllowed = [];
 	vm.showHideAllow = true;
 	vm.chooseAllUsers = false;
 	vm.chooseAllGroups = false;
@@ -148,15 +149,22 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 							status: getProblemStatus(contest.startTime, contest.endTime)
 						};
 						usersAllowed = contest.usersAllowed;
-						groupsAllowed = contest.groupsAllowed;
+						groupsIdAllowed = contest.groupsIdAllowed;
 
-						if (!groupsAllowed || groupsAllowed.length == 0) {
+						if (!groupsIdAllowed || groupsIdAllowed.length == 0) {
 							vm.individualSelection = true;
-							groupsAllowed = [];
+							groupsIdAllowed = [];
 						}
 						else {
 							vm.individualSelection = false;
 							usersAllowed = [];
+							groupsAllowed = [];
+							for (let i = 0; i < groupsIdAllowed.length; i += 1) {
+								$http.post('/api/groups/getGroup', { _id: groupsIdAllowed[i] }).then(function successCallback(res) {
+					                groupsAllowed.push(res.data.name);
+					            }, function errorCallback(err) {
+					            });
+							}
 						}
 
 						// console.log(vm.runningContest);
@@ -300,8 +308,8 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			askJuryForScore(latestSubmission);
 		}, function errorCallback(err) {
 			vm.showSpinner = false;
-			console.log(err);
-			swal("Thất bại!", "Có lỗi trong quá trình upload ", "warning");
+			// console.log(err);
+			swal("Thất bại!", "Có lỗi trong quá trình upload. Có thể bạn không nằm trong nhóm đối tượng được tham gia kì thi.", "warning");
 		});
 	}
 
@@ -364,6 +372,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
         $http.get('/api/groups/getAllGroups').then(function successCallback(res) {
             vm.groups = res.data;
+            console.log(groupsAllowed);
             for (let i = 0; i < vm.groups.length; i += 1) {
             	if (groupsAllowed.indexOf(vm.groups[i].name) > -1)
             		vm.groups[i].isAllowed = true;
@@ -466,6 +475,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 		if (vm.individualSelection) {
 			groupsAllowed = [];
+			groupsIdAllowed = [];
 		}
 		else {
 			usersAllowed = [];
@@ -482,7 +492,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 				endTime: vm.endTime,
 				file: vm.fileProblem,
 				usersAllowed: usersAllowed,
-				groupsAllowed: groupsAllowed
+				groupsIdAllowed: groupsIdAllowed
 			}
 		}).then(function successCallback(res) {
 			if (res.data.status == "FAILED") {
@@ -574,6 +584,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
 		if (vm.individualSelection) {
 			groupsAllowed = [];
+			groupsIdAllowed = [];
 		}
 		else {
 			usersAllowed = [];
@@ -587,7 +598,7 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 			startTime: vm.runningContest.start,
 			endTime: vm.runningContest.end,
 			usersAllowed: usersAllowed,
-			groupsAllowed: groupsAllowed
+			groupsIdAllowed: groupsIdAllowed
 		}).then(function successCallback(res) {
 			if (vm.runningContest.fileProblem) {
 				Upload.upload({
@@ -816,10 +827,12 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
         if (pos > -1) {
         	group.isAllowed = false;
             groupsAllowed.splice(pos, 1);
+            groupsIdAllowed.splice(pos, 1);
         }
         else {
         	group.isAllowed = true;
             groupsAllowed.push(group.name);
+            groupsIdAllowed.push(group._id);
         }
         console.log(groupsAllowed);
 	}
@@ -850,11 +863,13 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 	vm.toggleChooseAllGroups = function() {
 		vm.chooseAllGroups = !vm.chooseAllGroups;
 		groupsAllowed = [];
+		groupsIdAllowed = [];
 
 		if (vm.chooseAllGroups) {
 			for (let i = 0; i < vm.groups.length; i += 1) {
 				vm.groups[i].isAllowed = true;
 				groupsAllowed.push(vm.groups[i].name);
+				groupsIdAllowed.push(vm.groups[i]._id);
 			}
 		}
 		else {

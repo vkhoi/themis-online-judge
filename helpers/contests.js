@@ -68,7 +68,7 @@ function addContest(newContest) {
 							filePath: newContest.filePath,
 							problems: newContest.problems,
 							usersAllowed: newContest.usersAllowed,
-							groupsAllowed: newContest.groupsAllowed
+							groupsIdAllowed: newContest.groupsIdAllowed
 						}, function(err, contest) {
 							if (err) {
 								console.log(err);
@@ -128,7 +128,7 @@ function getAllContests(isAdmin) {
 					if (isAdmin || moment(elem.startTime, "HH:mm, DD/MM/YYYY").isBefore(moment()) && moment().isBefore(moment(elem.endTime, "HH:mm, DD/MM/YYYY"))) {
 						elem.filePath = contest.filePath;
 						elem.usersAllowed = contest.usersAllowed;
-						elem.groupsAllowed = contest.groupsAllowed;
+						elem.groupsIdAllowed = contest.groupsIdAllowed;
 					}
 					else {
 						elem.filePath = -1;
@@ -649,7 +649,6 @@ function editContest(contest) {
 							break;
 						}
 					}
-
 					Contests.update({ _id: contest.id }, {
 						$set: {
 							name: contest.name,
@@ -659,7 +658,7 @@ function editContest(contest) {
 							endTime: contest.endTime,
 							duration: contest.duration,
 							usersAllowed: contest.usersAllowed,
-							groupsAllowed: contest.groupsAllowed
+							groupsIdAllowed: contest.groupsIdAllowed
 						}
 					}, {}, function(err, numAffected) {
 						if (err) {

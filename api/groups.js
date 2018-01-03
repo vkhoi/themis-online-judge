@@ -28,7 +28,7 @@ router.post('/getGroup', [ensureAdmin], function(req, res) {
             res.send(group);
         }, function errorCallback(err) {
             res.status(500).send(err.toString());
-        })
+        });
     }
 });
 

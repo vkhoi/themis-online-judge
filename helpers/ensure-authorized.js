@@ -18,7 +18,15 @@ module.exports = function(req, res, next) {
         redisClient.exists(bearerToken, function(err, reply) {
         	if (reply) {
         		req.token = bearerToken;
-        		next();
+                redisClient.get(bearerToken, function(err, reply) {
+                    if (reply) {
+                        req.username = reply;
+                        next();
+                    }
+                    else {
+                        res.sendStatus(403);
+                    }
+                });
         	}
         	else {
         		res.sendStatus(403);

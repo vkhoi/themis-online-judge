@@ -9,6 +9,7 @@ const dateTimeCvt		= require('../helpers/datetime-converter');
 const testDir 			= 'data/contests/tests';
 const moment 			= require('moment');
 const Users				= require('../helpers/users.js');
+const Groups            = require('../helpers/groups.js');
 const jwt				= require('jsonwebtoken');
 const config 			= require('../config');
 
@@ -45,7 +46,7 @@ router.post('/create', [ensureAdmin, upload], function(req, res) {
 		filePath: path.join('data/contests', req.file.filename),
 		problems: req.body.problems,
 		usersAllowed: req.body.usersAllowed,
-		groupsAllowed: req.body.groupsAllowed
+		groupsIdAllowed: req.body.groupsIdAllowed
 	};
 
 	for (let i = 0; i < newContest.problems.length; i += 1) {
@@ -162,8 +163,37 @@ router.post('/all', [ensureAuthorized], function(req, res) {
 	}
 
 	Users.isAdminUser(username).then(function successCallback(isAdmin) {
-		Contests.getAllContests(isAdmin).then(function successCallback(contests){
-			res.send({ contests: contests });
+		Contests.getAllContests(isAdmin).then(function successCallback(contests) {
+			if (!isAdmin) {
+				let cnt = contests.length;
+				for (let i = 0; i < contests.length; i += 1) {
+					if (contests[i].filePath != -1) {
+						if (contests[i].usersAllowed && contests[i].usersAllowed.length > 0 && contests[i].usersAllowed.indexOf(username) == -1) {
+							contests[i].filePath = -1;
+							cnt -= 1;
+						}
+						else if (contests[i].groupsIdAllowed && contests[i].groupsIdAllowed.length > 0) {
+							Groups.checkUserAllowed(username, contests[i].groupsIdAllowed).then(function successCallback(result) {
+								if (!result) {
+									contests[i].filePath = -1;
+								}
+								cnt -= 1;
+								if (cnt <= 0) {
+									res.send({ contests: contests });
+								}
+							});
+						}
+					} else {
+						cnt -= 1;
+					}
+				}
+				if (cnt <= 0) {
+					res.send({ contests: contests });
+				}
+			}
+			else {
+				res.send({ contests: contests });
+			}
 		}, function errorCallback(err) {
 			console.log(err);
 			res.status(500).send(err.toString());
@@ -186,7 +216,7 @@ router.post('/edit', [ensureAdmin], function(req, res) {
 		duration: dateTimeCvt.toDuration(req.body.startTime, req.body.endTime),	
 		problems: req.body.problems,
 		usersAllowed: req.body.usersAllowed,
-		groupsAllowed: req.body.groupsAllowed
+		groupsIdAllowed: req.body.groupsIdAllowed
 	};
 	contest.problems.forEach(function(problem) {
 		problem.testScore = parseInt(problem.testScore);
