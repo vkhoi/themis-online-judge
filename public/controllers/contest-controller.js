@@ -372,7 +372,6 @@ themisApp.controller('ContestController', ['$state', '$scope', '$http', 'AuthSer
 
         $http.get('/api/groups/getAllGroups').then(function successCallback(res) {
             vm.groups = res.data;
-            console.log(groupsAllowed);
             for (let i = 0; i < vm.groups.length; i += 1) {
             	if (groupsAllowed.indexOf(vm.groups[i].name) > -1)
             		vm.groups[i].isAllowed = true;

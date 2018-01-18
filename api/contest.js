@@ -183,6 +183,9 @@ router.post('/all', [ensureAuthorized], function(req, res) {
 								}
 							});
 						}
+						else {
+							cnt -= 1;
+						}
 					} else {
 						cnt -= 1;
 					}
