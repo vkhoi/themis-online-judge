@@ -165,33 +165,31 @@ router.post('/all', [ensureAuthorized], function(req, res) {
 	Users.isAdminUser(username).then(function successCallback(isAdmin) {
 		Contests.getAllContests(isAdmin).then(function successCallback(contests) {
 			if (!isAdmin) {
-				let cnt = contests.length;
+				let groupId = -1;
 				for (let i = 0; i < contests.length; i += 1) {
 					if (contests[i].filePath != -1) {
 						if (contests[i].usersAllowed && contests[i].usersAllowed.length > 0 && contests[i].usersAllowed.indexOf(username) == -1) {
 							contests[i].filePath = -1;
-							cnt -= 1;
+							res.send({ contests: contests });
+							return;
 						}
 						else if (contests[i].groupsIdAllowed && contests[i].groupsIdAllowed.length > 0) {
-							Groups.checkUserAllowed(username, contests[i].groupsIdAllowed).then(function successCallback(result) {
-								if (!result) {
-									contests[i].filePath = -1;
-								}
-								cnt -= 1;
-								if (cnt <= 0) {
-									res.send({ contests: contests });
-								}
-							});
+							groupId = i;
 						}
-						else {
-							cnt -= 1;
-						}
-					} else {
-						cnt -= 1;
 					}
 				}
-				if (cnt <= 0) {
+				if (groupId == -1) {
 					res.send({ contests: contests });
+					return;
+				}
+				else {
+					let i = groupId;
+					Groups.checkUserAllowed(username, contests[i].groupsIdAllowed).then(function successCallback(result) {
+						if (!result) {
+							contests[i].filePath = -1;
+						}
+						res.send({ contests: contests });
+					});
 				}
 			}
 			else {
